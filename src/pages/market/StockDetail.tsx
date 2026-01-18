@@ -2,10 +2,13 @@ import { useParams } from "react-router";
 import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { companyMeta } from "../../data/companyMeta";
+import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
+import { useState } from "react";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [period, setPeriod] = useState<"7d" | "30d">("7d");
 
   if (!id || !companyMeta[id]) {
     return <div>회사를 찾을 수 없어요 🥲</div>;
@@ -30,6 +33,7 @@ const StockDetail = () => {
       </InfoBox>
 
       {/* 📊 차트는 다음 단계에서 추가 */}
+      <ChartPeriodToggle value={period} onChange={setPeriod} />
       <InfoBox>📈 가격 그래프가 들어올 자리</InfoBox>
     </Wrapper>
   );
