@@ -7,6 +7,7 @@ import { companyMeta } from "../../data/companyMeta";
 const BASE_MONEY = 100000; //초기 사이버 머니(고정값)
 const PortfolioSummaryCard = () => {
   const { items } = usePortfolio();
+  const { canBuyToday } = usePortfolio();
 
   //보유 종목 수
   const stockCount = items.length;
@@ -22,6 +23,8 @@ const PortfolioSummaryCard = () => {
 
   return (
     <Card>
+      {/* 오늘의한번 뱃지🎖️*/}
+      {!canBuyToday && <Badge>오늘의 한 번 🎖️</Badge>}
       <Row>
         <Label>보유 종목</Label>
         <Value>{stockCount}개</Value>
@@ -82,6 +85,15 @@ const TotalValue = styled.span`
   font-size: 18px;
   font-weight: 800;
   color: ${({ theme }) => theme.colors.primary};
+`;
+const Badge = styled.div`
+  align-self: flex-start;
+  background: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
 `;
 
 export default PortfolioSummaryCard;
