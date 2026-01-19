@@ -12,7 +12,7 @@ import { usePortfolio } from "../../context/PortfolioContext";
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addItem } = usePortfolio();
+  const { addItem, canBuyToday } = usePortfolio();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
@@ -95,7 +95,15 @@ const StockDetail = () => {
         </ChartPlaceholder>
       </ChartSection>
       {/* 🛒 구매 버튼 */}
-      <BuyButton onClick={handleBuy}>이 주식 사기 🛒</BuyButton>
+      {!canBuyToday && (
+        <HintText>
+          하루에 한 번만 살 수 있어요 🙂 내일 다시 도전해보세요!
+        </HintText>
+      )}
+      <BuyButton onClick={handleBuy} disabled={!canBuyToday}>
+        {canBuyToday ? "이 주식 구매하기 🛒" : "오늘은 이미 구매했어요 🌙"}
+      </BuyButton>
+
       {/* 💡 설명 카드 */}
       <ExplainCard>
         <ExplainTitle>{explain?.title}</ExplainTitle>
@@ -224,19 +232,27 @@ const ExplainText = styled.p`
   line-height: 1.4;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
-const BuyButton = styled.button`
+const BuyButton = styled.button<{ disabled?: boolean }>`
   margin-top: 12px;
   padding: 14px;
   border: none;
   border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.primary};
+  background: ${({ theme, disabled }) =>
+    disabled ? theme.colors.muted : theme.colors.primary};
   color: white;
   font-size: 16px;
   font-weight: 700;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 
   &:active {
-    transform: scale(0.98);
+    transform: ${({ disabled }) => (disabled ? "none" : "scale(0.98)")};
   }
+`;
+
+const HintText = styled.div`
+  margin-top: 8px;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.muted};
+  text-align: center;
 `;
 export default StockDetail;
