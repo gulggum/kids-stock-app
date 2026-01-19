@@ -1,21 +1,47 @@
 import { useParams } from "react-router";
 import { useNavigate } from "react-router";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { companyMeta } from "../../data/companyMeta";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
 import { useState } from "react";
 import { companyExplain } from "../../data/companyExplain";
+import { chartMock } from "../../data/chartMock";
+import StockChart from "../../components/stock/StockChart";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const explain = companyExplain[Number(id)];
+  const theme = useTheme(); //테마 가져오기
 
   if (!id || !companyMeta[id]) {
     return <div>회사를 찾을 수 없어요 🥲</div>;
   }
   const company = companyMeta[id];
+
+  //차트 데이터의 시작값과 마지막 값을 비교해, 전체 흐름이 상승인지/하락인지 판단
+  const isChartUptrend = (data: { price: number }[]) => {
+    if (data.length < 2) return true;
+    return data[data.length - 1].price >= data[0].price;
+  };
+  //차트 선 색 결정 함수
+  const getChartColor = (isUp: boolean, theme: any) => {
+    return isUp ? theme.colors.up : theme.colors.down;
+  };
+  //차트 흐름에 따라 아이 눈높이 설명 문구 생성
+  const getExplainTextByTrend = (isUp: boolean, companyName: string) => {
+    return isUp
+      ? `${companyName}를 좋아하는 사람이 늘어나서, 회사의 가치가 조금 올라간 것 같아요.`
+      : `${companyName}를 찾는 사람이 잠시 줄어서, 가격이 내려갔을 수도 있어요.`;
+  };
+
+  //선택된 기간의 차트 데이터
+  const chartData = chartMock[company.id][period];
+  //상승,하락 판단
+  const isUptrend = isChartUptrend(chartData);
+  //설명 문구 생성
+  const explainText = getExplainTextByTrend(isUptrend, company.name);
 
   return (
     <Wrapper>
@@ -49,7 +75,12 @@ const StockDetail = () => {
         </ChartHeader>
 
         {/* 차트 컴포넌트 자리 */}
-        <ChartPlaceholder>📈 여기에 차트가 들어와요</ChartPlaceholder>
+        <ChartPlaceholder>
+          <StockChart
+            data={chartData}
+            strokeColor={isUptrend ? theme.colors.up : theme.colors.down}
+          />
+        </ChartPlaceholder>
       </ChartSection>
       {/* 💡 설명 카드 */}
       <ExplainCard>
