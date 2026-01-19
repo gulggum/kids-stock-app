@@ -7,10 +7,12 @@ import { useState } from "react";
 import { companyExplain } from "../../data/companyExplain";
 import { chartMock } from "../../data/chartMock";
 import StockChart from "../../components/stock/StockChart";
+import { usePortfolio } from "../../context/PortfolioContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { addItem } = usePortfolio();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
@@ -42,6 +44,16 @@ const StockDetail = () => {
   const isUptrend = isChartUptrend(chartData);
   //설명 문구 생성
   const explainText = getExplainTextByTrend(isUptrend, company.name);
+
+  const handleBuy = () => {
+    addItem({
+      id: company.id,
+      name: company.name,
+      quantity: 1, // ⭐ 지금은 항상 1주
+      buyPrice: company.price,
+    });
+    alert("포트폴리오에 추가했어요!💼");
+  };
 
   return (
     <Wrapper>
@@ -82,6 +94,8 @@ const StockDetail = () => {
           />
         </ChartPlaceholder>
       </ChartSection>
+      {/* 🛒 구매 버튼 */}
+      <BuyButton onClick={handleBuy}>이 주식 사기 🛒</BuyButton>
       {/* 💡 설명 카드 */}
       <ExplainCard>
         <ExplainTitle>{explain?.title}</ExplainTitle>
@@ -209,5 +223,20 @@ const ExplainText = styled.p`
   font-size: 14px;
   line-height: 1.4;
   color: ${({ theme }) => theme.colors.textSecondary};
+`;
+const BuyButton = styled.button`
+  margin-top: 12px;
+  padding: 14px;
+  border: none;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.98);
+  }
 `;
 export default StockDetail;
