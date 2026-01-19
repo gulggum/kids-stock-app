@@ -26,7 +26,7 @@ export const PortfolioProvider = ({
   const addItem = (item: PortfolioItem) => {
     setItems((prev) => [...prev, item]);
   };
-
+  console.log("도착 넘어옴!!", items);
   return (
     <PortfolioContext.Provider value={{ items, addItem }}>
       {children}

@@ -1,3 +1,7 @@
+//주식 특성상 시간에 따라 바뀌는 데이터
+//가격이 오르락내리락하는 “흐름”
+// 화면에 차트를 그리기 위해 임시로 만든 데이터
+
 export type ChartPoint = {
   date: string;
   price: number;
@@ -23,7 +27,7 @@ export const chartMock: Record<string, CompanyChartData> = {
     ],
     "30d": Array.from({ length: 30 }, (_, i) => ({
       date: `${i + 1}`,
-      price: 68000 + i * 200,
+      price: Math.round(68000 + i * 200),
     })),
   },
 
@@ -40,7 +44,7 @@ export const chartMock: Record<string, CompanyChartData> = {
     ],
     "30d": Array.from({ length: 30 }, (_, i) => ({
       date: `${i + 1}`,
-      price: 390000 + Math.sin(i / 3) * 15000,
+      price: Math.round(390000 + Math.sin(i / 3) * 15000),
     })),
   },
 
@@ -57,7 +61,7 @@ export const chartMock: Record<string, CompanyChartData> = {
     ],
     "30d": Array.from({ length: 30 }, (_, i) => ({
       date: `${i + 1}`,
-      price: 165000 + i * 600,
+      price: Math.round(165000 + i * 600),
     })),
   },
 };

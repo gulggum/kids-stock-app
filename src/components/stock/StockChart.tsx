@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import styled from "styled-components";
+import CustomTooltip from "./CustomTooltip";
 
 export type ChartPoint = {
   date: string; // x축 (날짜 or 인덱스)
@@ -36,9 +37,7 @@ const StockChart = ({ data, strokeColor }: StockChartProps) => {
 
           {/* 💬 툴팁: 눌렀을 때 가격만 보여줌 */}
           <Tooltip
-            formatter={(value: number | undefined) =>
-              value !== undefined ? `${value.toLocaleString()}원` : ""
-            }
+            content={<CustomTooltip />}
             contentStyle={{
               borderRadius: 12,
               border: "none",
@@ -54,6 +53,8 @@ const StockChart = ({ data, strokeColor }: StockChartProps) => {
             strokeWidth={4}
             dot={false}
             activeDot={{ r: 6 }}
+            isAnimationActive={true} // ⭐ 애니메이션 ON
+            animationDuration={600}
           />
         </LineChart>
       </ResponsiveContainer>

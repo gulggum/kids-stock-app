@@ -1,3 +1,6 @@
+//아이 눈높이 설명
+//뉴스 대신 보여주는 “해석 텍스트”
+
 export const companyExplain: Record<
   string,
   { title: string; text: string } | undefined
