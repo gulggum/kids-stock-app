@@ -6,6 +6,7 @@ import Community from "../pages/Community";
 import Shop from "../pages/Shop";
 import StockDetail from "../pages/market/StockDetail";
 import PortfolioPage from "../pages/portfolio/PortfolioPage";
+import CharacterPage from "../pages/character/CharacterPage";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
       { path: "portfolio", element: <PortfolioPage /> },
       { path: "community", element: <Community /> },
       { path: "shop", element: <Shop /> },
+      {
+        path: "character",
+        element: <CharacterPage />,
+      },
     ],
   },
 ]);

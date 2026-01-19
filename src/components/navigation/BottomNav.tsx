@@ -29,6 +29,10 @@ const BottomNav = () => {
           <Icon>🛍</Icon>
           상점
         </Item>
+        <Item to="/character">
+          <Icon>👦</Icon>
+          캐릭터
+        </Item>
       </Nav>
     </BottomWrapper>
   );
