@@ -9,6 +9,7 @@ import { chartMock } from "../../data/chartMock";
 import StockChart from "../../components/stock/StockChart";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useCoin } from "../../context/CoinContext";
+import { useToast } from "../../context/ToastContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +47,7 @@ const StockDetail = () => {
   const isUptrend = isChartUptrend(chartData);
   //설명 문구 생성
   const explainText = getExplainTextByTrend(isUptrend, company.name);
-
+  const { createToast } = useToast();
   const handleBuy = () => {
     addItem({
       id: company.id,
@@ -55,7 +56,7 @@ const StockDetail = () => {
       buyPrice: company.price,
     });
     addCoin(1); //오늘의 한 번 보상
-    alert("오늘의 투자 완료! 코인 +1 🪙");
+    createToast("오늘의 투자 완료! 코인 + 1 🪙");
   };
 
   return (
