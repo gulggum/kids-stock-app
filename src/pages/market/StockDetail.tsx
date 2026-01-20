@@ -8,11 +8,13 @@ import { companyExplain } from "../../data/companyExplain";
 import { chartMock } from "../../data/chartMock";
 import StockChart from "../../components/stock/StockChart";
 import { usePortfolio } from "../../context/PortfolioContext";
+import { useCoin } from "../../context/CoinContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem, canBuyToday } = usePortfolio();
+  const { addCoin } = useCoin();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
@@ -52,7 +54,8 @@ const StockDetail = () => {
       quantity: 1, // ⭐ 지금은 항상 1주
       buyPrice: company.price,
     });
-    alert("포트폴리오에 추가했어요!💼");
+    addCoin(1); //오늘의 한 번 보상
+    alert("오늘의 투자 완료! 코인 +1 🪙");
   };
 
   return (

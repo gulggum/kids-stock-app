@@ -1,6 +1,8 @@
 import styled from "styled-components";
+import { useCoin } from "../../context/CoinContext";
 
 const CharacterPage = () => {
+  const { coins } = useCoin(); //전역 코인상태 연결
   return (
     <Wrapper>
       {/* 👦 캐릭터 영역 */}
@@ -14,7 +16,7 @@ const CharacterPage = () => {
       <StatusCard>
         <StatusRow>
           <span>🪙 보유 코인</span>
-          <strong>3</strong>
+          <strong>{coins}</strong>
         </StatusRow>
         <Badge>🎖️ 오늘의 한 번 완료</Badge>
       </StatusCard>
