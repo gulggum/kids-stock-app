@@ -1,8 +1,26 @@
 import styled from "styled-components";
 import { useCoin } from "../../context/CoinContext";
+import { useState } from "react";
+import { characterItems } from "../../data/characterItems";
 
 const CharacterPage = () => {
-  const { coins } = useCoin(); //전역 코인상태 연결
+  const { coins, spendCoin } = useCoin(); //전역 코인상태 연결
+
+  //구매한 아이템 id 목록
+  const [ownedItems, setOwnedItems] = useState<string[]>([]);
+
+  //아이템 구매 시도
+  const handleBuyItem = (itemId: string, price: number) => {
+    const success = spendCoin(price);
+    if (!success) {
+      alert("코인이 부족해요 🥲");
+      return;
+    }
+
+    setOwnedItems((prev) => [...prev, itemId]);
+    alert("아이템을 얻었어요! 🎉");
+  };
+
   return (
     <Wrapper>
       {/* 👦 캐릭터 영역 */}
@@ -26,26 +44,25 @@ const CharacterPage = () => {
         <SectionTitle>꾸미기 아이템</SectionTitle>
 
         <ItemGrid>
-          <Item locked>
-            <ItemEmoji>🧢</ItemEmoji>
-            <ItemName>모자</ItemName>
-            <ItemPrice>5코인</ItemPrice>
-            <Lock>🔒</Lock>
-          </Item>
+          {characterItems.map((item) => {
+            const owned = ownedItems.includes(item.id);
+            const affordable = coins >= item.price;
 
-          <Item>
-            <ItemEmoji>👕</ItemEmoji>
-            <ItemName>티셔츠</ItemName>
-            <ItemPrice>3코인</ItemPrice>
-            <Lock>🔓</Lock>
-          </Item>
-
-          <Item locked>
-            <ItemEmoji>👟</ItemEmoji>
-            <ItemName>운동화</ItemName>
-            <ItemPrice>4코인</ItemPrice>
-            <Lock>🔒</Lock>
-          </Item>
+            return (
+              <Item
+                key={item.id}
+                locked={!owned}
+                onClick={() => {
+                  if (!owned) handleBuyItem(item.id, item.price);
+                }}
+              >
+                <ItemEmoji>{item.emoji}</ItemEmoji>
+                <ItemName>{item.name}</ItemName>
+                <ItemPrice>{item.price}코인</ItemPrice>
+                <Lock>{owned ? "🔓" : "🔒"}</Lock>
+              </Item>
+            );
+          })}
         </ItemGrid>
       </ItemSection>
     </Wrapper>
@@ -135,6 +152,7 @@ const Item = styled.div<{ locked?: boolean }>`
   align-items: center;
   gap: 4px;
   opacity: ${({ locked }) => (locked ? 0.6 : 1)};
+  cursor: pointer;
 `;
 
 const ItemEmoji = styled.div`
