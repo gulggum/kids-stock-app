@@ -13,7 +13,7 @@ const Shop = () => {
   const { createToast } = useToast();
   const { buyItem, isOwned } = useItem();
   const [sparkleItemId, setSparkleItemId] = useState<string | null>(null);
-  console.log("⭐", sparkleItemId);
+
   const handleBuyItem = (itemId: string, price: number) => {
     const result = buyItem(itemId, price);
     if (result === "ALREADY_OWNED") {

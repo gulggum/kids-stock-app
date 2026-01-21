@@ -7,7 +7,7 @@ import { useItem } from "../../context/ItemContext";
 const CharacterPage = () => {
   const { createToast } = useToast();
   const { coins } = useCoin(); //전역 코인 상태 연결
-  const { buyItem, isOwned } = useItem();
+  const { buyItem, isOwned, equippedItems, toggleEquip } = useItem();
 
   //아이템 구매 시도
   const handleBuyItem = (itemId: string, price: number) => {
@@ -25,7 +25,13 @@ const CharacterPage = () => {
     <Wrapper>
       {/* 👦 캐릭터 영역 */}
       <CharacterCard>
-        <Avatar>🧒</Avatar>
+        <Avatar>
+          {" "}
+          <BaseCharacter>🧒</BaseCharacter>
+          {equippedItems.hat && <Hat>🧢</Hat>}
+          {equippedItems.top && <Top>👕</Top>}
+          {equippedItems.shoes && <Shoes>👟</Shoes>}
+        </Avatar>
         <Name>초보 투자자</Name>
         <Level>Lv. 1 🌱</Level>
       </CharacterCard>
@@ -46,19 +52,33 @@ const CharacterPage = () => {
         <ItemGrid>
           {characterItems.map((item) => {
             const owned = isOwned(item.id);
-
+            const isEquipped = equippedItems[item.slot] === item.id;
             return (
               <Item
                 key={item.id}
                 $locked={!owned}
                 onClick={() => {
                   if (!owned) handleBuyItem(item.id, item.price);
+
+                  //이미 가지고 있으면 ->장착 /해제 토글
+                  toggleEquip(item.slot, item.id);
                 }}
               >
                 <ItemEmoji>{item.emoji}</ItemEmoji>
                 <ItemName>{item.name}</ItemName>
-                <ItemPrice>{item.price}코인</ItemPrice>
-                <Lock>{owned ? "🔓" : "🔒"}</Lock>
+                {!owned && <ItemPrice>{item.price}코인</ItemPrice>}
+                <Lock>
+                  {" "}
+                  {!owned && "🔒"}
+                  {owned && !isEquipped && "🎒"} {/* 보유만 */}
+                  {isEquipped && "⭐"} {/* 착용 중 */}
+                </Lock>
+                {/* 🏷 상태 텍스트 (아이 UX용) */}
+                <ItemStatus>
+                  {!owned && "구매하기"}
+                  {owned && !isEquipped && "착용하기"}
+                  {isEquipped && "착용중"}
+                </ItemStatus>
               </Item>
             );
           })}
@@ -87,12 +107,10 @@ const CharacterCard = styled.div`
 
 const Avatar = styled.div`
   font-size: 64px;
+  position: relative;
+  font-size: 72px;
 `;
-
-const Name = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-`;
+const BaseCharacter = styled.div``;
 
 const Level = styled.div`
   font-size: 13px;
@@ -124,7 +142,7 @@ const Badge = styled.div`
   font-weight: 700;
 `;
 
-/* 🧢 아이템 */
+/* 🧢 아이템 카드*/
 const ItemSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -181,6 +199,35 @@ const ItemPrice = styled.div`
 
 const Lock = styled.div`
   font-size: 14px;
+`;
+const Hat = styled.div`
+  position: absolute;
+  top: -18px;
+  left: 20px;
+`;
+
+const Top = styled.div`
+  position: absolute;
+  top: 40px;
+  left: 20px;
+`;
+
+const Shoes = styled.div`
+  position: absolute;
+  top: 90px;
+  left: 20px;
+`;
+
+const Name = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+`;
+
+const ItemStatus = styled.div`
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 export default CharacterPage;
