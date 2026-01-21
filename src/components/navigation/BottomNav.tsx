@@ -24,14 +24,13 @@ const BottomNav = () => {
           <Icon>💬</Icon>
           커뮤니티
         </Item>
-
-        <Item to="/shop">
-          <Icon>🛍</Icon>
-          상점
-        </Item>
         <Item to="/character">
           <Icon>👦</Icon>
           캐릭터
+        </Item>
+        <Item to="/shop">
+          <Icon>🛍</Icon>
+          상점
         </Item>
       </Nav>
     </BottomWrapper>

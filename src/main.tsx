@@ -6,6 +6,7 @@ import { AppRouter } from "./router/router.tsx";
 import { PortfolioProvider } from "./context/PortfolioContext.tsx";
 import { CoinProvider } from "./context/CoinContext.tsx";
 import { ToastProvider } from "./context/ToastContext.tsx";
+import { ItemProvider } from "./context/ItemContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,10 +14,12 @@ createRoot(document.getElementById("root")!).render(
     <AppThemeProvider>
       <ToastProvider>
         <CoinProvider>
-          <PortfolioProvider>
-            <AppRouter />
-            <App />
-          </PortfolioProvider>
+          <ItemProvider>
+            <PortfolioProvider>
+              <AppRouter />
+              <App />
+            </PortfolioProvider>
+          </ItemProvider>
         </CoinProvider>
       </ToastProvider>
     </AppThemeProvider>
