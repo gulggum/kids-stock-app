@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { usePortfolio } from "../../context/PortfolioContext";
-import PortfolioSummaryCard from "../../components/portfolio/PortfolioSummaryCard";
+import { usePortfolio } from "../context/PortfolioContext";
+import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 
 const PortfolioPage = () => {
   const { items } = usePortfolio();

@@ -5,8 +5,8 @@ import Market from "../pages/market/Market";
 import Community from "../pages/Community";
 import Shop from "../pages/Shop";
 import StockDetail from "../pages/market/StockDetail";
-import PortfolioPage from "../pages/portfolio/PortfolioPage";
-import CharacterPage from "../pages/character/CharacterPage";
+import PortfolioPage from "../pages/PortfolioPage";
+import CharacterPage from "../pages/CharacterPage";
 
 export const router = createBrowserRouter([
   {

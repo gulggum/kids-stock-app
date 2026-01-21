@@ -11,18 +11,21 @@ import { useState } from "react";
 const Shop = () => {
   const { coins } = useCoin();
   const { createToast } = useToast();
-  const { buyItem, isOwned } = useItem();
+  const { buyItem, isOwned, equippedItems } = useItem();
   const [sparkleItemId, setSparkleItemId] = useState<string | null>(null);
 
   const handleBuyItem = (itemId: string, price: number) => {
     const result = buyItem(itemId, price);
     if (result === "ALREADY_OWNED") {
       createToast("이미 가지고 있는 아이템이에요 😊");
+      console.log("가지고있음!");
     } else if (result === "NOT_ENOUGH_COIN") {
       createToast("코인이 부족해요 🥲");
+      console.log("코인부족!");
     } else if (result === "SUCCESS") {
       createToast("아이템을 얻었어요! 🎉");
       setSparkleItemId(itemId); //반짝시작
+      console.log("얻었다!!");
       setTimeout(() => {
         setSparkleItemId(null);
       }, 600);
@@ -40,6 +43,7 @@ const Shop = () => {
       <Grid>
         {characterItems.map((item) => {
           const owned = isOwned(item.id);
+          const isEquipped = equippedItems[item.slot] === item.id;
           return (
             <ItemCard
               key={item.id}
@@ -49,8 +53,20 @@ const Shop = () => {
             >
               <Emoji>{item.emoji}</Emoji>
               <Name>{item.name}</Name>
-              <Price>{item.price} 코인</Price>
-              <Status>{owned ? "보유중" : "구매하기"}</Status>
+              {!owned && <Price>{item.price} 코인</Price>}
+              {/* 상태 아이콘 */}
+              <StatusIcon>
+                {!owned && "🔒"}
+                {owned && !isEquipped && "🎒"}
+                {isEquipped && "⭐"}
+              </StatusIcon>
+
+              {/* 상태 텍스트 */}
+              <StatusText>
+                {!owned && "구매하기"}
+                {owned && !isEquipped && "보유중"}
+                {isEquipped && "착용중"}
+              </StatusText>
             </ItemCard>
           );
         })}
@@ -134,9 +150,16 @@ const Price = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-const Status = styled.div`
+const StatusIcon = styled.div`
+  font-size: 18px;
+  margin-top: 6px;
+`;
+
+const StatusText = styled.div`
+  margin-top: 4px;
   font-size: 12px;
   font-weight: 700;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 export default Shop;

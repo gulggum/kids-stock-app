@@ -1,33 +1,37 @@
-import styled from "styled-components";
-import { useCoin } from "../../context/CoinContext";
-import { characterItems } from "../../data/characterItems";
-import { useToast } from "../../context/ToastContext";
-import { useItem } from "../../context/ItemContext";
+import styled, { keyframes } from "styled-components";
+import { useCoin } from "../context/CoinContext";
+import { characterItems } from "../data/characterItems";
+import { useToast } from "../context/ToastContext";
+import { useItem } from "../context/ItemContext";
+import { useEffect, useState } from "react";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
   const { coins } = useCoin(); //전역 코인 상태 연결
-  const { buyItem, isOwned, equippedItems, toggleEquip } = useItem();
+  const { isOwned, equippedItems, toggleEquip } = useItem();
+  const [animate, setAnimate] = useState(false); //착장애니메이션
 
-  //아이템 구매 시도
-  const handleBuyItem = (itemId: string, price: number) => {
-    const result = buyItem(itemId, price);
-    if (result === "ALREADY_OWNED") {
-      createToast("이미 가지고 있는 아이템이에요 😊");
-    } else if (result === "NOT_ENOUGH_COIN") {
-      createToast("코인이 부족해요 🥲");
-    } else if (result === "SUCCESS") {
-      createToast("아이템을 얻었어요! 🎉");
-    }
-  };
+  useEffect(() => {
+    // 장착 상태가 바뀔 때마다 애니메이션 ON
+    setAnimate(true);
+
+    // 0.4초 뒤 애니메이션 OFF
+    const timer = setTimeout(() => {
+      setAnimate(false);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [equippedItems]);
 
   return (
     <Wrapper>
       {/* 👦 캐릭터 영역 */}
       <CharacterCard>
-        <Avatar>
+        {/* 기본 캐릭터 */}
+        <Avatar $animate={animate}>
           {" "}
           <BaseCharacter>🧒</BaseCharacter>
+          {/* 장착된 아이템들 */}
           {equippedItems.hat && <Hat>🧢</Hat>}
           {equippedItems.top && <Top>👕</Top>}
           {equippedItems.shoes && <Shoes>👟</Shoes>}
@@ -58,8 +62,10 @@ const CharacterPage = () => {
                 key={item.id}
                 $locked={!owned}
                 onClick={() => {
-                  if (!owned) handleBuyItem(item.id, item.price);
-
+                  if (!owned) {
+                    createToast("먼저 아이템을 구매해주세요!");
+                    return;
+                  }
                   //이미 가지고 있으면 ->장착 /해제 토글
                   toggleEquip(item.slot, item.id);
                 }}
@@ -87,6 +93,19 @@ const CharacterPage = () => {
     </Wrapper>
   );
 };
+// 캐릭터가 통통 튀는 애니메이션
+const pop = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
 const Wrapper = styled.div`
   padding: 16px;
   display: flex;
@@ -105,10 +124,13 @@ const CharacterCard = styled.div`
   gap: 6px;
 `;
 
-const Avatar = styled.div`
+const Avatar = styled.div<{ $animate: boolean }>`
   font-size: 64px;
   position: relative;
   font-size: 72px;
+
+  /* 장착 시에만 애니메이션 실행 */
+  animation: ${({ $animate }) => ($animate ? pop : "none")} 0.4s ease;
 `;
 const BaseCharacter = styled.div``;
 
