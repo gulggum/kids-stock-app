@@ -54,7 +54,8 @@ const Card = styled.div`
     box-shadow 0.15s ease;
 
   &:active {
-    transform: scale(0.97);
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
   }
 `;
 

@@ -1,17 +1,19 @@
 // 캐릭터 페이지 -> 미니상점
 // 상점 페이지 -> 전체목록 + 설명
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useCoin } from "../context/CoinContext";
 import { characterItems } from "../data/characterItems";
 import { useToast } from "../context/ToastContext";
 import { useItem } from "../context/ItemContext";
+import { useState } from "react";
 
 const Shop = () => {
   const { coins } = useCoin();
   const { createToast } = useToast();
   const { buyItem, isOwned } = useItem();
-
+  const [sparkleItemId, setSparkleItemId] = useState<string | null>(null);
+  console.log("⭐", sparkleItemId);
   const handleBuyItem = (itemId: string, price: number) => {
     const result = buyItem(itemId, price);
     if (result === "ALREADY_OWNED") {
@@ -20,6 +22,10 @@ const Shop = () => {
       createToast("코인이 부족해요 🥲");
     } else if (result === "SUCCESS") {
       createToast("아이템을 얻었어요! 🎉");
+      setSparkleItemId(itemId); //반짝시작
+      setTimeout(() => {
+        setSparkleItemId(null);
+      }, 600);
     }
   };
 
@@ -38,6 +44,7 @@ const Shop = () => {
             <ItemCard
               key={item.id}
               $owned={owned}
+              $sparkle={sparkleItemId === item.id}
               onClick={() => handleBuyItem(item.id, item.price)}
             >
               <Emoji>{item.emoji}</Emoji>
@@ -51,6 +58,22 @@ const Shop = () => {
     </Wrapper>
   );
 };
+
+const sparkle = keyframes`
+  0% {
+    box-shadow: 0 0 0 rgba(255, 183, 3, 0);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 183, 3, 0.8);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(255, 183, 3, 0);
+    transform: scale(1);
+  }
+`;
+
 const Wrapper = styled.div`
   padding: 16px;
   display: flex;
@@ -76,7 +99,7 @@ const Grid = styled.div`
   gap: 12px;
 `;
 
-const ItemCard = styled.div<{ $owned?: boolean }>`
+const ItemCard = styled.div<{ $owned?: boolean; $sparkle?: boolean }>`
   background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 16px;
@@ -85,6 +108,7 @@ const ItemCard = styled.div<{ $owned?: boolean }>`
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  animation: ${({ $sparkle }) => ($sparkle ? sparkle : "none")} 0.6s ease;
   opacity: ${({ $owned }) => ($owned ? 0.6 : 1)};
   transition:
     transform 0.15s ease,

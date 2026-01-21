@@ -11,7 +11,7 @@ const HeaderNav = () => {
         <NavItem to="/">홈</NavItem>
         <NavItem to="/market">마켓</NavItem>
         <NavItem to="/portfolio">내 자산</NavItem>
-        <NavItem to="/portfolio">캐릭터</NavItem>
+        <NavItem to="/character">캐릭터</NavItem>
         <NavItem to="/community">커뮤니티</NavItem>
         <NavItem to="/shop">상점</NavItem>
       </Nav>
