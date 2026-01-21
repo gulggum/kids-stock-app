@@ -17,8 +17,16 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 
   //토스트 생성- 외부 컴포넌트에서 호출
   const createToast = (message: string) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message }]);
+    setToasts((prev) => {
+      // 이미 같은 메시지의 토스트가 있으면 추가 안 함
+      const alreadyExists = prev.some((toast) => toast.message === message);
+
+      if (alreadyExists) {
+        return prev;
+      }
+
+      return [...prev, { id: Date.now(), message }];
+    });
   };
 
   useEffect(() => {
