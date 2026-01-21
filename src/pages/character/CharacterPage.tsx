@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useCoin } from "../../context/CoinContext";
-
 import { characterItems } from "../../data/characterItems";
 import { useToast } from "../../context/ToastContext";
 import { useItem } from "../../context/ItemContext";
@@ -47,7 +46,6 @@ const CharacterPage = () => {
         <ItemGrid>
           {characterItems.map((item) => {
             const owned = isOwned(item.id);
-            const affordable = coins && coins >= item.price;
 
             return (
               <Item

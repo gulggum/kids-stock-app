@@ -25,15 +25,15 @@ const StockDetail = () => {
   }
   const company = companyMeta[id];
 
-  //차트 데이터의 시작값과 마지막 값을 비교해, 전체 흐름이 상승인지/하락인지 판단
+  //차트 데이터의 "시작값"과 "마지막 값"을 비교해, 전체 흐름이 상승인지/하락인지 판단
   const isChartUptrend = (data: { price: number }[]) => {
-    if (data.length < 2) return true;
-    return data[data.length - 1].price >= data[0].price;
+    if (data.length < 2) return true; //데이터1개이하면 비교기준x -> false(상승아님)
+    const first = data[0].price; //가장 과거 가격(차트시작 지점)
+    const last = data[data.length - 1].price; //가장 최근 가격(차트 마지막 지점)
+
+    return last > first;
   };
-  //차트 선 색 결정 함수
-  const getChartColor = (isUp: boolean, theme: any) => {
-    return isUp ? theme.colors.up : theme.colors.down;
-  };
+
   //차트 흐름에 따라 아이 눈높이 설명 문구 생성
   const getExplainTextByTrend = (isUp: boolean, companyName: string) => {
     return isUp
@@ -111,7 +111,7 @@ const StockDetail = () => {
       {/* 💡 설명 카드 */}
       <ExplainCard>
         <ExplainTitle>{explain?.title}</ExplainTitle>
-        <ExplainText>{explain?.text}</ExplainText>
+        <ExplainText>{explainText}</ExplainText>
       </ExplainCard>
     </Wrapper>
   );
