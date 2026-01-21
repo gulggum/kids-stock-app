@@ -1,25 +1,25 @@
 import styled from "styled-components";
 import { useCoin } from "../../context/CoinContext";
-import { useEffect, useState } from "react";
+
 import { characterItems } from "../../data/characterItems";
 import { useToast } from "../../context/ToastContext";
+import { useItem } from "../../context/ItemContext";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
-  const { coins, spendCoin } = useCoin(); //전역 코인상태 연결
-  //구매한 아이템 id 목록
-  const [ownedItems, setOwnedItems] = useState<string[]>([]);
+  const { coins } = useCoin(); //전역 코인 상태 연결
+  const { buyItem, isOwned } = useItem();
 
   //아이템 구매 시도
   const handleBuyItem = (itemId: string, price: number) => {
-    const success = spendCoin(price);
-    if (!success) {
+    const result = buyItem(itemId, price);
+    if (result === "ALREADY_OWNED") {
+      createToast("이미 가지고 있는 아이템이에요 😊");
+    } else if (result === "NOT_ENOUGH_COIN") {
       createToast("코인이 부족해요 🥲");
-      return;
+    } else if (result === "SUCCESS") {
+      createToast("아이템을 얻었어요! 🎉");
     }
-
-    setOwnedItems((prev) => [...prev, itemId]);
-    createToast("아이템을 얻었어요! 🎉");
   };
 
   return (
@@ -46,7 +46,7 @@ const CharacterPage = () => {
 
         <ItemGrid>
           {characterItems.map((item) => {
-            const owned = ownedItems.includes(item.id);
+            const owned = isOwned(item.id);
             const affordable = coins && coins >= item.price;
 
             return (

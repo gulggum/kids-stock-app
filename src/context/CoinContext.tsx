@@ -18,9 +18,18 @@ export const CoinProvider = ({ children }: { children: React.ReactNode }) => {
 
   //코인사용 , 코인이 부족하면 false 반환
   const spendCoin = (amount: number) => {
-    if (coins < amount) return false;
-    setCoins((prev) => prev - amount);
-    return true;
+    let success = false;
+    setCoins((prev) => {
+      if (prev < amount) {
+        success = false; //코인 부족(아무변화x)
+        return prev;
+      }
+
+      success = true; //사용 성공
+      return prev - amount;
+    });
+
+    return success;
   };
   return (
     <CoinContext.Provider value={{ coins, addCoin, spendCoin }}>
