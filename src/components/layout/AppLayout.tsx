@@ -2,12 +2,17 @@ import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
+import { useBadge } from "../../context/BedgeContext";
+import BadgePopup from "../common/BadgePopup";
 
 const AppLayout = () => {
+  const { popupBadge } = useBadge();
   return (
     <Layout>
       <HeaderNav />
       <Main>
+        {/* 🏅 배지 획득 팝업 */}
+        {popupBadge && <BadgePopup badgeId={popupBadge} />}
         <Outlet />
       </Main>
       <BottomNav />

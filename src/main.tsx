@@ -8,6 +8,7 @@ import { CoinProvider } from "./context/CoinContext.tsx";
 import { ToastProvider } from "./context/ToastContext.tsx";
 import { ItemProvider } from "./context/ItemContext.tsx";
 import { CharacterProvider } from "./context/CharacterContext.tsx";
+import { BadgeProvider } from "./context/BedgeContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -15,14 +16,16 @@ createRoot(document.getElementById("root")!).render(
     <AppThemeProvider>
       <ToastProvider>
         <CharacterProvider>
-          <CoinProvider>
-            <ItemProvider>
-              <PortfolioProvider>
-                <AppRouter />
-                <App />
-              </PortfolioProvider>
-            </ItemProvider>
-          </CoinProvider>
+          <BadgeProvider>
+            <CoinProvider>
+              <ItemProvider>
+                <PortfolioProvider>
+                  <AppRouter />
+                  <App />
+                </PortfolioProvider>
+              </ItemProvider>
+            </CoinProvider>
+          </BadgeProvider>
         </CharacterProvider>
       </ToastProvider>
     </AppThemeProvider>

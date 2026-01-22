@@ -34,7 +34,7 @@ export const PortfolioProvider = ({
     setItems((prev) => [...prev, item]);
     setLastBuyDate(today);
   };
-  console.log("도착 넘어옴!!", items);
+
   return (
     <PortfolioContext.Provider value={{ items, addItem, canBuyToday }}>
       {children}

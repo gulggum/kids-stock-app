@@ -6,12 +6,15 @@ import { useItem, type EquipSlot } from "../context/ItemContext";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useCharacter } from "../context/CharacterContext";
+import { useBadge } from "../context/BedgeContext";
+import { BADGES } from "../data/bades";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
   const { coins } = useCoin(); //전역 코인 상태 연결
   const { isOwned, equippedItems, toggleEquip } = useItem();
   const { character, addExp } = useCharacter();
+  const { earnedBadges } = useBadge();
   const navigate = useNavigate();
   const [animate, setAnimate] = useState(false); //착장애니메이션
   const [activeSlot, setActiveSlot] = useState<EquipSlot>("hat"); // 현재 선택된 슬롯 상태
@@ -89,7 +92,17 @@ const CharacterPage = () => {
           <span>🪙 보유 코인</span>
           <strong>{coins}</strong>
         </StatusRow>
-        <Badge>🎖️ 오늘의 한 번 완료</Badge>
+        <BadgeSection>
+          {earnedBadges.map((id) => {
+            const badge = BADGES[id];
+            return (
+              <Badge key={id}>
+                <span>{badge.emoji}</span>
+                <small>{badge.title}</small>
+              </Badge>
+            );
+          })}
+        </BadgeSection>
       </StatusCard>
 
       {/* 🧢 꾸미기 아이템 */}
@@ -299,13 +312,25 @@ const StatusRow = styled.div`
   font-size: 15px;
 `;
 
+const BadgeSection = styled.div`
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+`;
+
 const Badge = styled.div`
-  align-self: flex-start;
-  background: ${({ theme }) => theme.colors.accentPurple};
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.card};
+  font-size: 13px;
   font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  box-shadow: ${({ theme }) => theme.shadows.sm};
 `;
 
 /* 🧢 아이템 카드*/
