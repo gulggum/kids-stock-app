@@ -10,12 +10,14 @@ import StockChart from "../../components/stock/StockChart";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useCoin } from "../../context/CoinContext";
 import { useToast } from "../../context/ToastContext";
+import { useCharacter } from "../../context/CharacterContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem, canBuyToday } = usePortfolio();
   const { addCoin } = useCoin();
+  const { addExp } = useCharacter(); //경험치 획득
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
@@ -56,7 +58,9 @@ const StockDetail = () => {
       buyPrice: company.price,
     });
     addCoin(1); //오늘의 한 번 보상
+    addExp(10);
     createToast("오늘의 투자 완료! 코인 + 1 🪙");
+    createToast("오늘의 투자 완료! 경험치 + 10 ");
   };
 
   return (

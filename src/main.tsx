@@ -7,20 +7,23 @@ import { PortfolioProvider } from "./context/PortfolioContext.tsx";
 import { CoinProvider } from "./context/CoinContext.tsx";
 import { ToastProvider } from "./context/ToastContext.tsx";
 import { ItemProvider } from "./context/ItemContext.tsx";
+import { CharacterProvider } from "./context/CharacterContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {" "}
     <AppThemeProvider>
       <ToastProvider>
-        <CoinProvider>
-          <ItemProvider>
-            <PortfolioProvider>
-              <AppRouter />
-              <App />
-            </PortfolioProvider>
-          </ItemProvider>
-        </CoinProvider>
+        <CharacterProvider>
+          <CoinProvider>
+            <ItemProvider>
+              <PortfolioProvider>
+                <AppRouter />
+                <App />
+              </PortfolioProvider>
+            </ItemProvider>
+          </CoinProvider>
+        </CharacterProvider>
       </ToastProvider>
     </AppThemeProvider>
   </StrictMode>,
