@@ -3,29 +3,30 @@
 
 import styled, { keyframes } from "styled-components";
 import { useCoin } from "../context/CoinContext";
-import { characterItems } from "../data/characterItems";
+import { characterItems, type CharacterItem } from "../data/characterItems";
 import { useToast } from "../context/ToastContext";
 import { useItem } from "../context/ItemContext";
 import { useState } from "react";
+import { useCharacter } from "../context/CharacterContext";
 
 const Shop = () => {
   const { coins } = useCoin();
   const { createToast } = useToast();
   const { buyItem, isOwned, equippedItems } = useItem();
+  const { addExp } = useCharacter();
   const [sparkleItemId, setSparkleItemId] = useState<string | null>(null);
+  const [confirmItem, setConfirmItem] = useState<CharacterItem | null>(null);
 
   const handleBuyItem = (itemId: string, price: number) => {
     const result = buyItem(itemId, price);
     if (result === "ALREADY_OWNED") {
       createToast("이미 가지고 있는 아이템이에요 😊");
-      console.log("가지고있음!");
     } else if (result === "NOT_ENOUGH_COIN") {
       createToast("코인이 부족해요 🥲");
-      console.log("코인부족!");
     } else if (result === "SUCCESS") {
       createToast("아이템을 얻었어요! 🎉");
+      addExp(10); //경험치 10 지급
       setSparkleItemId(itemId); //반짝시작
-      console.log("얻었다!!");
       setTimeout(() => {
         setSparkleItemId(null);
       }, 600);
@@ -49,7 +50,13 @@ const Shop = () => {
               key={item.id}
               $owned={owned}
               $sparkle={sparkleItemId === item.id}
-              onClick={() => handleBuyItem(item.id, item.price)}
+              onClick={() => {
+                if (owned) {
+                  createToast("이미 가지고 있는 아이템이에요 😊");
+                  return;
+                }
+                setConfirmItem(item);
+              }}
             >
               <Emoji>{item.emoji}</Emoji>
               <Name>{item.name}</Name>
@@ -71,6 +78,35 @@ const Shop = () => {
           );
         })}
       </Grid>
+      {/* 🔔 구매 확인 모달 */}
+      {confirmItem && (
+        <ModalOverlay>
+          <Modal>
+            <ModalTitle>구매할까요?</ModalTitle>
+
+            <ModalItem>
+              {confirmItem.emoji} {confirmItem.name}
+            </ModalItem>
+
+            <ModalPrice>{confirmItem.price} 코인</ModalPrice>
+
+            <ModalButtons>
+              <CancelButton onClick={() => setConfirmItem(null)}>
+                아니오
+              </CancelButton>
+
+              <ConfirmButton
+                onClick={() => {
+                  handleBuyItem(confirmItem.id, confirmItem.price);
+                  setConfirmItem(null);
+                }}
+              >
+                네!
+              </ConfirmButton>
+            </ModalButtons>
+          </Modal>
+        </ModalOverlay>
+      )}
     </Wrapper>
   );
 };
@@ -160,6 +196,63 @@ const StatusText = styled.div`
   font-size: 12px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+//구매확인창 모달
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+`;
+
+const Modal = styled.div`
+  width: 280px;
+  padding: 20px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.surface};
+  text-align: center;
+
+  box-shadow: ${({ theme }) => theme.shadows.md};
+`;
+const ModalTitle = styled.div`
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 12px;
+`;
+const ModalItem = styled.div`
+  font-size: 20px;
+  margin-bottom: 8px;
+`;
+const ModalPrice = styled.div`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 16px;
+`;
+const ModalButtons = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const CancelButton = styled.button`
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: ${({ theme }) => theme.colors.border};
+  font-weight: 700;
+`;
+const ConfirmButton = styled.button`
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: ${({ theme }) => theme.colors.primary};
+  color: #fff;
+  font-weight: 700;
 `;
 
 export default Shop;

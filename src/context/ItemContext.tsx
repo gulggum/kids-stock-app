@@ -1,3 +1,4 @@
+// 캐릭터 아이템 관련
 //📦 보유 아이템 목록
 //🛒 아이템 구매 함수
 //🔍 이미 보유 여부 확인
@@ -38,10 +39,18 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
   const [ownedItems, setOwnedItems] = useState<string[]>(() => {
     //처음 렌더될 때 한번만 실행, 렌더링마다 localStorage 읽지않음
     const saved = localStorage.getItem(OWNED_KEY);
+    // 값이 없거나, 잘못된 값이면 기본값 반환
+    if (!saved || saved === "undefined") {
+      return [];
+    }
     return saved ? JSON.parse(saved) : [];
   });
   const [equippedItems, setEquippedItems] = useState<EquipSlots>(() => {
     const saved = localStorage.getItem(EQUIPPED_KEY);
+
+    if (!saved || saved === "undefined") {
+      return {};
+    }
     return saved ? JSON.parse(saved) : {};
   });
 

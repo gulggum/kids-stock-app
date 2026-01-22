@@ -4,7 +4,7 @@ import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 
 const PortfolioPage = () => {
   const { items } = usePortfolio();
-  console.log("😍", items);
+
   return (
     <Wrapper>
       {/*  상단 요약 카드 */}
