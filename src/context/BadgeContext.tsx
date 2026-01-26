@@ -1,13 +1,14 @@
 // 뱃지context
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { BadgeId } from "../data/bades";
+import type { BadgeId } from "../data/badges";
 
 type BadgeContextType = {
   earnedBadges: BadgeId[]; //획득한 뱃지 목록
   earnBadge: (badgeId: BadgeId) => void; //뱃지 획득
   hasBadge: (badgeId: BadgeId) => boolean; //이미 획득여부
   popupBadge: BadgeId | null;
+  closePopupBadge: () => void;
 };
 
 const BadgeContext = createContext<BadgeContextType>({} as BadgeContextType);
@@ -21,22 +22,28 @@ export const BadgeProvider = ({ children }: { children: React.ReactNode }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [popupBadge, setPopupBadge] = useState<BadgeId | null>(null);
+  // ⭐ 배지 팝업 큐
+  const [popupQueue, setPopupQueue] = useState<BadgeId[]>([]);
+
+  // 현재 보여줄 배지 (큐의 맨 앞)
+  const popupBadge = popupQueue.length > 0 ? popupQueue[0] : null;
 
   //뱃지 획득 처리
   const earnBadge = (id: BadgeId) => {
     setEarnedBadges((prev) => {
       if (prev.includes(id)) return prev; //중복 방지
-
-      //뱃지 팝업 표시 및 자동 닫기
-      setPopupBadge(id);
-      setTimeout(() => setPopupBadge(null), 2000);
-
       return [...prev, id];
     });
+    //큐에 추가(연속 팝업용)
+    setPopupQueue((prev) => [...prev, id]);
   };
   //이미 획득했는지 확인
   const hasBadge = (id: BadgeId) => earnedBadges.includes(id);
+
+  //팝업 닫기(ui에서 호출)
+  const closePopupBadge = () => {
+    setPopupQueue((prev) => prev.slice(1));
+  };
 
   //상태 변경시 localStorage 저장
   useEffect(() => {
@@ -45,7 +52,7 @@ export const BadgeProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <BadgeContext.Provider
-      value={{ earnedBadges, earnBadge, hasBadge, popupBadge }}
+      value={{ earnedBadges, earnBadge, hasBadge, popupBadge, closePopupBadge }}
     >
       {children}
     </BadgeContext.Provider>

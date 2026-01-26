@@ -11,7 +11,7 @@ import { useCoin } from "../../context/CoinContext";
 import { useCharacter } from "../../context/CharacterContext";
 import { useBadge } from "../../context/BadgeContext";
 import { useTrade } from "../../context/TradeContext";
-import { useToast } from "../../context/ToastContext";
+import ModalPopup from "../../components/common/ModalPopup";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,8 +20,8 @@ const StockDetail = () => {
   const { addExp } = useCharacter(); //경험치 획득
   const { earnBadge, hasBadge } = useBadge();
   const { buyStock, hasBoughtToday } = useTrade();
-  const { createToast } = useToast();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
+  const [showModal, setShowModal] = useState(false);
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
 
@@ -55,7 +55,7 @@ const StockDetail = () => {
 
   const handleBuy = () => {
     if (hasBoughtToday) {
-      createToast("오늘은 이미 주식을 샀어요!");
+      setShowModal(true);
       return;
     }
     const success = buyStock({
@@ -70,14 +70,12 @@ const StockDetail = () => {
     //첫 투자 뱃지
     if (!hasBadge("FIRST_BUY")) {
       earnBadge("FIRST_BUY");
-      console.log("뱃지획득");
     }
     //오늘의 한번 뱃지
     if (!hasBadge("DAILY_ONCE")) {
       earnBadge("DAILY_ONCE");
     }
   };
-  console.log("⭐", hasBoughtToday);
 
   return (
     <Wrapper>
@@ -124,9 +122,20 @@ const StockDetail = () => {
           하루에 한 번만 살 수 있어요 🙂 내일 다시 도전해보세요!
         </HintText>
       )}
-      <BuyButton disabled={hasBoughtToday} onClick={handleBuy}>
+      <BuyButton disabled={hasBoughtToday} onClick={() => setShowModal(true)}>
         {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
       </BuyButton>
+      {showModal && (
+        <ModalPopup
+          title="주식 구매"
+          message={`${company.name} 주식을 구매할까요?`}
+          confirmText="구매하기"
+          onConfirm={() => {
+            setShowModal(false);
+            handleBuy();
+          }}
+        />
+      )}
 
       {/* 💡 설명 카드 */}
       <ExplainCard>

@@ -3,16 +3,24 @@ import styled from "styled-components";
 import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
 import { useBadge } from "../../context/BadgeContext";
-import BadgePopup from "../common/BadgePopup";
+import ModalPopup from "../common/ModalPopup";
+import { BADGES } from "../../data/badges";
 
 const AppLayout = () => {
-  const { popupBadge } = useBadge();
+  const { popupBadge, closePopupBadge } = useBadge();
+  const badgeMeta = popupBadge ? BADGES[popupBadge] : null;
   return (
     <Layout>
       <HeaderNav />
       <Main>
         {/* 🏅 배지 획득 팝업 */}
-        {popupBadge && <BadgePopup badgeId={popupBadge} />}
+        {badgeMeta && (
+          <ModalPopup
+            title={`${badgeMeta.emoji} ${badgeMeta.title}`}
+            message={badgeMeta.description}
+            onConfirm={closePopupBadge}
+          />
+        )}
         <Outlet />
       </Main>
       <BottomNav />
