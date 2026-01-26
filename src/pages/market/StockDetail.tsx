@@ -7,18 +7,20 @@ import { useState } from "react";
 import { companyExplain } from "../../data/companyExplain";
 import { chartMock } from "../../data/chartMock";
 import StockChart from "../../components/stock/StockChart";
-import { usePortfolio } from "../../context/PortfolioContext";
 import { useCoin } from "../../context/CoinContext";
 import { useCharacter } from "../../context/CharacterContext";
-import { useBadge } from "../../context/BedgeContext";
+import { useBadge } from "../../context/BadgeContext";
+import { useTrade } from "../../context/TradeContext";
+import { useToast } from "../../context/ToastContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addItem, canBuyToday } = usePortfolio();
   const { addCoin } = useCoin();
   const { addExp } = useCharacter(); //경험치 획득
   const { earnBadge, hasBadge } = useBadge();
+  const { buyStock, hasBoughtToday } = useTrade();
+  const { createToast } = useToast();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
@@ -52,17 +54,22 @@ const StockDetail = () => {
   const explainText = getExplainTextByTrend(isUptrend, company.name);
 
   const handleBuy = () => {
-    addItem({
+    const success = buyStock({
       id: company.id,
       name: company.name,
-      quantity: 1, // ⭐ 지금은 항상 1주
-      buyPrice: company.price,
-    });
+      price: company.price,
+    }); //지금은 항상 1주);
+    if (!success) {
+      createToast("오늘은 이미 주식을 샀어요!");
+      return;
+    }
+
     addCoin(1); //오늘의 한 번 보상
     addExp(10);
     //첫 투자 뱃지
     if (!hasBadge("FIRST_BUY")) {
       earnBadge("FIRST_BUY");
+      console.log("뱃지획득");
     }
     //오늘의 한번 배뱃지
     if (!hasBadge("DAILY_ONCE")) {
@@ -110,13 +117,13 @@ const StockDetail = () => {
         </ChartPlaceholder>
       </ChartSection>
       {/* 🛒 구매 버튼 */}
-      {!canBuyToday && (
+      {!hasBoughtToday && (
         <HintText>
           하루에 한 번만 살 수 있어요 🙂 내일 다시 도전해보세요!
         </HintText>
       )}
-      <BuyButton onClick={handleBuy} disabled={!canBuyToday}>
-        {canBuyToday ? "이 주식 구매하기 🛒" : "오늘은 이미 구매했어요 🌙"}
+      <BuyButton disabled={hasBoughtToday()} onClick={handleBuy}>
+        {hasBoughtToday() ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
       </BuyButton>
 
       {/* 💡 설명 카드 */}

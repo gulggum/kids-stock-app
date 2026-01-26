@@ -1,19 +1,20 @@
 //총자산 요약 카드
 
 import styled from "styled-components";
-import { usePortfolio } from "../../context/PortfolioContext";
 import { companyMeta } from "../../data/companyMeta";
+import { usePortfolio } from "../../context/PortfolioContext";
+import { useTrade } from "../../context/TradeContext";
 
 const BASE_MONEY = 100000; //초기 사이버 머니(고정값)
 const PortfolioSummaryCard = () => {
-  const { items } = usePortfolio();
-  const { canBuyToday } = usePortfolio();
+  const { portfolio } = usePortfolio();
+  const { hasBoughtToday } = useTrade();
 
   //보유 종목 수
-  const stockCount = items.length;
+  const stockCount = portfolio.length;
 
   //현재 평가 금액
-  const evaluationAmount = items.reduce((total, item) => {
+  const evaluationAmount = portfolio.reduce((total, item) => {
     const currentPrice = companyMeta[item.id].price; //보유수량*현재가격
     return total + currentPrice * item.quantity; //모든주식 합산
   }, 0);
@@ -24,7 +25,7 @@ const PortfolioSummaryCard = () => {
   return (
     <Card>
       {/* 오늘의한번 뱃지🎖️*/}
-      {!canBuyToday && <Badge>오늘의 한 번 🎖️</Badge>}
+      {!hasBoughtToday && <Badge>오늘의 한 번 🎖️</Badge>}
       <Row>
         <Label>보유 종목</Label>
         <Value>{stockCount}개</Value>

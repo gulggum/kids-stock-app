@@ -22,7 +22,7 @@ export const BadgeProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const [popupBadge, setPopupBadge] = useState<BadgeId | null>(null);
-
+  console.log("⭐", popupBadge);
   //뱃지 획득 처리
   const earnBadge = (id: BadgeId) => {
     setEarnedBadges((prev) => {

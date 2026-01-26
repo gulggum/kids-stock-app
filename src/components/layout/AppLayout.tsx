@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
-import { useBadge } from "../../context/BedgeContext";
+import { useBadge } from "../../context/BadgeContext";
 import BadgePopup from "../common/BadgePopup";
 
 const AppLayout = () => {

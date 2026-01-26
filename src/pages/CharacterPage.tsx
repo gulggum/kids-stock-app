@@ -6,7 +6,7 @@ import { useItem, type EquipSlot } from "../context/ItemContext";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useCharacter } from "../context/CharacterContext";
-import { useBadge } from "../context/BedgeContext";
+import { useBadge } from "../context/BadgeContext";
 import { BADGES } from "../data/bades";
 
 const CharacterPage = () => {
