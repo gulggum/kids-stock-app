@@ -1,26 +1,33 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
 type ModalPopupProps = {
   title?: string; //상단제목(제외가능)
   message?: string; //본문 메세지
   confirmText?: string; //버튼 텍스트(기본:확인)
+  cancelText?: string;
   onConfirm: () => void; //확인 버튼 클릭시 실행
+  onCancel?: () => void; //취소 버튼 클릭시 실행
 };
 
 const ModalPopup = ({
   title,
   message,
   confirmText = "확인",
+  cancelText = "취소",
   onConfirm,
+  onCancel,
 }: ModalPopupProps) => {
   return (
     <Overlay>
       <Modal>
         {title && <Title>{title}</Title>}
-
-        <Message>{message}</Message>
-
-        <ConfirmButton onClick={onConfirm}>{confirmText}</ConfirmButton>
+        {message && <Message>{message}</Message>}
+        <ButtonGroup>
+          {onCancel && (
+            <CancelButton onClick={onCancel}>{cancelText}</CancelButton>
+          )}
+          <ConfirmButton onClick={onConfirm}>{confirmText}</ConfirmButton>
+        </ButtonGroup>
       </Modal>
     </Overlay>
   );
@@ -84,33 +91,52 @@ const Message = styled.div`
 `;
 
 const ConfirmButton = styled.button`
-  margin-top: 6px;
-
-  padding: 10px 20px;
-  width: 100%;
-
+  flex: 1;
+  padding: 12px 0;
   border-radius: ${({ theme }) => theme.radius.md};
   border: none;
 
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
+  background: ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+
+  transition: transform 0.15s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-1px);
+    box-shadow: ${({ theme }) => theme.shadows.md};
+  }
+  &:active {
+    transform: scale(0.97);
+    box-shadow: ${({ theme }) => theme.shadows.sm};
+  }
+`;
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+`;
+
+const CancelButton = styled.button`
+  flex: 1;
+  padding: 12px 0;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: none;
+
+  background: ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
 
   font-size: 14px;
   font-weight: 700;
-
   cursor: pointer;
-
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-
   &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.text};
     transform: translateY(-1px);
-    box-shadow: ${({ theme }) => theme.shadows.sm};
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: none;
   }
 `;

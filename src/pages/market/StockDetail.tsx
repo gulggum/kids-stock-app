@@ -11,7 +11,7 @@ import { useCoin } from "../../context/CoinContext";
 import { useCharacter } from "../../context/CharacterContext";
 import { useBadge } from "../../context/BadgeContext";
 import { useTrade } from "../../context/TradeContext";
-import ModalPopup from "../../components/common/ModalPopup";
+import { useModal } from "../../context/ModalContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,8 +20,8 @@ const StockDetail = () => {
   const { addExp } = useCharacter(); //경험치 획득
   const { earnBadge, hasBadge } = useBadge();
   const { buyStock, hasBoughtToday } = useTrade();
+  const { openModal } = useModal();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
-  const [showModal, setShowModal] = useState(false);
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
 
@@ -53,17 +53,8 @@ const StockDetail = () => {
   //설명 문구 생성
   const explainText = getExplainTextByTrend(isUptrend, company.name);
 
-  const handleBuy = () => {
-    if (hasBoughtToday) {
-      setShowModal(true);
-      return;
-    }
-    const success = buyStock({
-      id: company.id,
-      name: company.name,
-      price: company.price,
-    }); //지금은 항상 1주);
-    if (!success) return;
+  const handleBuyConfirm = () => {
+    buyStock(company);
 
     addCoin(1); //오늘의 한 번 보상
     addExp(10);
@@ -75,6 +66,24 @@ const StockDetail = () => {
     if (!hasBadge("DAILY_ONCE")) {
       earnBadge("DAILY_ONCE");
     }
+  };
+
+  const handleBuyClick = () => {
+    if (hasBoughtToday) {
+      openModal({
+        title: "오늘은 이미 구매했어요 🙂",
+        message: "하루에 한 번만 살 수 있어요.\n내일 다시 도전해보세요!",
+        confirmText: "알겠어요",
+      });
+      return;
+    }
+    openModal({
+      title: "구매할까요?",
+      message: `${company.name}\n${company.price}원`,
+      confirmText: "구매",
+      cancelText: "아니오",
+      onConfirm: handleBuyConfirm,
+    });
   };
 
   return (
@@ -119,23 +128,14 @@ const StockDetail = () => {
       {/* 🛒 구매 버튼 */}
       {hasBoughtToday && (
         <HintText>
-          하루에 한 번만 살 수 있어요 🙂 내일 다시 도전해보세요!
+          하루에 한 번만 구매 할 수 있어요 🙂
+          <br />
+          내일 다시 도전해보세요!
         </HintText>
       )}
-      <BuyButton disabled={hasBoughtToday} onClick={() => setShowModal(true)}>
+      <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
         {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
       </BuyButton>
-      {showModal && (
-        <ModalPopup
-          title="주식 구매"
-          message={`${company.name} 주식을 구매할까요?`}
-          confirmText="구매하기"
-          onConfirm={() => {
-            setShowModal(false);
-            handleBuy();
-          }}
-        />
-      )}
 
       {/* 💡 설명 카드 */}
       <ExplainCard>

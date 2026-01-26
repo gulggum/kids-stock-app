@@ -5,14 +5,29 @@ import BottomNav from "../navigation/BottomNav";
 import { useBadge } from "../../context/BadgeContext";
 import ModalPopup from "../common/ModalPopup";
 import { BADGES } from "../../data/badges";
+import { useModal } from "../../context/ModalContext";
 
 const AppLayout = () => {
   const { popupBadge, closePopupBadge } = useBadge();
   const badgeMeta = popupBadge ? BADGES[popupBadge] : null;
+  const { modal, closeModal } = useModal();
   return (
     <Layout>
       <HeaderNav />
       <Main>
+        {modal && (
+          <ModalPopup
+            {...modal}
+            onConfirm={() => {
+              modal.onConfirm?.();
+              closeModal();
+            }}
+            onCancel={() => {
+              modal.onCancel?.();
+              closeModal();
+            }}
+          />
+        )}
         {/* 🏅 배지 획득 팝업 */}
         {badgeMeta && (
           <ModalPopup

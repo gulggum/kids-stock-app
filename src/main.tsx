@@ -10,27 +10,30 @@ import { ItemProvider } from "./context/ItemContext.tsx";
 import { CharacterProvider } from "./context/CharacterContext.tsx";
 import { BadgeProvider } from "./context/BadgeContext.tsx";
 import { TradeProvider } from "./context/TradeContext.tsx";
+import { ModalProvider } from "./context/ModalContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {" "}
     <AppThemeProvider>
-      <ToastProvider>
-        <CoinProvider>
-          <TradeProvider>
-            <BadgeProvider>
-              <CharacterProvider>
-                <ItemProvider>
-                  <PortfolioProvider>
-                    <AppRouter />
-                    <App />
-                  </PortfolioProvider>
-                </ItemProvider>
-              </CharacterProvider>
-            </BadgeProvider>
-          </TradeProvider>
-        </CoinProvider>
-      </ToastProvider>
+      <ModalProvider>
+        <ToastProvider>
+          <CoinProvider>
+            <TradeProvider>
+              <BadgeProvider>
+                <CharacterProvider>
+                  <ItemProvider>
+                    <PortfolioProvider>
+                      <AppRouter />
+                      <App />
+                    </PortfolioProvider>
+                  </ItemProvider>
+                </CharacterProvider>
+              </BadgeProvider>
+            </TradeProvider>
+          </CoinProvider>
+        </ToastProvider>
+      </ModalProvider>
     </AppThemeProvider>
   </StrictMode>,
 );
