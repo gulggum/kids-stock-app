@@ -31,7 +31,6 @@ const Market = () => {
   const navigate = useNavigate();
   const handleCardClick = (id: number) => {
     navigate(`/market/${id}`);
-    console.log(id);
   };
   return (
     <Wrapper>

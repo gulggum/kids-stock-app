@@ -54,15 +54,16 @@ const StockDetail = () => {
   const explainText = getExplainTextByTrend(isUptrend, company.name);
 
   const handleBuy = () => {
+    if (hasBoughtToday) {
+      createToast("오늘은 이미 주식을 샀어요!");
+      return;
+    }
     const success = buyStock({
       id: company.id,
       name: company.name,
       price: company.price,
     }); //지금은 항상 1주);
-    if (!success) {
-      createToast("오늘은 이미 주식을 샀어요!");
-      return;
-    }
+    if (!success) return;
 
     addCoin(1); //오늘의 한 번 보상
     addExp(10);
@@ -71,11 +72,12 @@ const StockDetail = () => {
       earnBadge("FIRST_BUY");
       console.log("뱃지획득");
     }
-    //오늘의 한번 배뱃지
+    //오늘의 한번 뱃지
     if (!hasBadge("DAILY_ONCE")) {
       earnBadge("DAILY_ONCE");
     }
   };
+  console.log("⭐", hasBoughtToday);
 
   return (
     <Wrapper>
@@ -117,13 +119,13 @@ const StockDetail = () => {
         </ChartPlaceholder>
       </ChartSection>
       {/* 🛒 구매 버튼 */}
-      {!hasBoughtToday && (
+      {hasBoughtToday && (
         <HintText>
           하루에 한 번만 살 수 있어요 🙂 내일 다시 도전해보세요!
         </HintText>
       )}
-      <BuyButton disabled={hasBoughtToday()} onClick={handleBuy}>
-        {hasBoughtToday() ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
+      <BuyButton disabled={hasBoughtToday} onClick={handleBuy}>
+        {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
       </BuyButton>
 
       {/* 💡 설명 카드 */}

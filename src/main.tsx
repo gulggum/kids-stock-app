@@ -16,20 +16,20 @@ createRoot(document.getElementById("root")!).render(
     {" "}
     <AppThemeProvider>
       <ToastProvider>
-        <CharacterProvider>
-          <BadgeProvider>
-            <CoinProvider>
-              <ItemProvider>
-                <TradeProvider>
+        <CoinProvider>
+          <TradeProvider>
+            <BadgeProvider>
+              <CharacterProvider>
+                <ItemProvider>
                   <PortfolioProvider>
                     <AppRouter />
                     <App />
                   </PortfolioProvider>
-                </TradeProvider>
-              </ItemProvider>
-            </CoinProvider>
-          </BadgeProvider>
-        </CharacterProvider>
+                </ItemProvider>
+              </CharacterProvider>
+            </BadgeProvider>
+          </TradeProvider>
+        </CoinProvider>
       </ToastProvider>
     </AppThemeProvider>
   </StrictMode>,

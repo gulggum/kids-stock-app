@@ -1,7 +1,7 @@
 //거래 기록(원본 데이터)
 // 언제,어떤종목을,어떻게 거래했는지 전부 기록하는 곳(구매,매도,히스토리)
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type TradeType = "BUY" | "SELL";
 
@@ -19,7 +19,7 @@ type Trade = {
 type TradeContextType = {
   trades: Trade[]; // 전체 거래 내역
   buyStock: (stock: { id: string; name: string; price: number }) => boolean;
-  hasBoughtToday: () => boolean; // 오늘 이미 샀는지
+  hasBoughtToday: boolean; // 오늘 이미 샀는지
 };
 
 const TradeContext = createContext<TradeContextType>({} as TradeContextType);
@@ -33,21 +33,19 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   //오늘 구매했는지 확인
-  const hasBoughtToday = () => {
-    const today = new Date().toLocaleString();
+  const hasBoughtToday = useMemo(() => {
+    const today = new Date().toDateString();
 
     return trades.some(
       (trade) =>
         trade.type === "BUY" &&
         new Date(trade.createdAt).toDateString() === today,
     );
-  };
+  }, [trades]);
 
   //주식 구매
   const buyStock = (stock: { id: string; name: string; price: number }) => {
-    //하루 1회제한
-    if (hasBoughtToday()) return false;
-
+    if (hasBoughtToday) return false; //1회제한
     const newTrade: Trade = {
       id: crypto.randomUUID(),
       stockId: stock.id,
@@ -64,6 +62,14 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     localStorage.setItem(TRADE_KEY, JSON.stringify(trades));
   }, [trades]);
+
+  useEffect(() => {
+    console.log("📦 trades 변경됨:", trades);
+  }, [trades]);
+
+  useEffect(() => {
+    console.log("🟢 hasBoughtToday:", hasBoughtToday);
+  }, [hasBoughtToday]);
 
   return (
     <TradeContext.Provider value={{ trades, buyStock, hasBoughtToday }}>
