@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import { useCoin } from "../context/CoinContext";
+import { useCoin } from "../context/Coin&Money/CoinContext";
 import { characterItems } from "../data/characterItems";
 import { useToast } from "../context/ToastContext";
 import { useItem, type EquipSlot } from "../context/ItemContext";

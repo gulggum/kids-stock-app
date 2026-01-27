@@ -4,7 +4,7 @@
 //🔍 이미 보유 여부 확인
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { useCoin } from "./CoinContext";
+import { useCoin } from "./Coin&Money/CoinContext";
 
 // localStorage에 저장할 key 이름
 const OWNED_KEY = "owned_items";

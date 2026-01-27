@@ -1,7 +1,7 @@
 // 캐릭터 페이지 -> 미니상점
 // 상점 페이지 -> 전체목록 + 설명
 
-import { useCoin } from "../context/CoinContext";
+import { useCoin } from "../context/Coin&Money/CoinContext";
 import { characterItems, type CharacterItem } from "../data/characterItems";
 import { useToast } from "../context/ToastContext";
 import { useItem } from "../context/ItemContext";

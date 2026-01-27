@@ -7,11 +7,12 @@ import { useState } from "react";
 import { companyExplain } from "../../data/companyExplain";
 import { chartMock } from "../../data/chartMock";
 import StockChart from "../../components/stock/StockChart";
-import { useCoin } from "../../context/CoinContext";
+import { useCoin } from "../../context/Coin&Money/CoinContext";
 import { useCharacter } from "../../context/CharacterContext";
 import { useBadge } from "../../context/BadgeContext";
 import { useTrade } from "../../context/TradeContext";
 import { useModal } from "../../context/ModalContext";
+import { useMoney } from "../../context/Coin&Money/MoneyContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +22,7 @@ const StockDetail = () => {
   const { earnBadge, hasBadge } = useBadge();
   const { buyStock, hasBoughtToday } = useTrade();
   const { openModal } = useModal();
+  const { money } = useMoney();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const explain = companyExplain[Number(id)];
   const theme = useTheme(); //테마 가져오기
@@ -69,6 +71,18 @@ const StockDetail = () => {
   };
 
   const handleBuyClick = () => {
+    // ❗(머니 부족 로직) - 추후 on
+    /*
+if (money < company.price) {
+  openModal({
+    type: "INFO",
+    title: "돈이 조금 부족해요",
+    message: "퀘스트를 하면 돈을 더 모을 수 있어요!",
+    confirmText: "알겠어요",
+  });
+  return;
+}
+*/
     openModal({
       type: "CONFIRM",
       title: "구매할까요?",
@@ -83,6 +97,9 @@ const StockDetail = () => {
     <Wrapper>
       {/* 🔙 뒤로가기 */}
       <BackButton onClick={() => navigate(-1)}>← 돌아가기</BackButton>
+      <MoneyBar>
+        💰 내가 가진 돈 <strong>{money.toLocaleString()}</strong>
+      </MoneyBar>
       {/* 🏢 회사 정보 */}
       <Title>
         {company.character} {company.name}
@@ -118,6 +135,12 @@ const StockDetail = () => {
           />
         </ChartPlaceholder>
       </ChartSection>
+
+      {/* 💡 설명 카드 */}
+      <ExplainCard>
+        <ExplainTitle>{explain?.title}</ExplainTitle>
+        <ExplainText>{explainText}</ExplainText>
+      </ExplainCard>
       {/* 🛒 구매 버튼 */}
       {hasBoughtToday && (
         <HintText>
@@ -129,12 +152,6 @@ const StockDetail = () => {
       <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
         {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
       </BuyButton>
-
-      {/* 💡 설명 카드 */}
-      <ExplainCard>
-        <ExplainTitle>{explain?.title}</ExplainTitle>
-        <ExplainText>{explainText}</ExplainText>
-      </ExplainCard>
     </Wrapper>
   );
 };
@@ -280,5 +297,12 @@ const HintText = styled.div`
   font-size: 13px;
   color: ${({ theme }) => theme.colors.muted};
   text-align: center;
+`;
+
+const MoneyBar = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  padding: 12px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: 14px;
 `;
 export default StockDetail;
