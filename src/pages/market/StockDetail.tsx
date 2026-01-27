@@ -139,7 +139,7 @@ if (money < company.price) {
       <ContentSection>
         {" "}
         {/* 📊 차트 영역 */}
-        {activeTab === "CHART" && (
+        <ChartContent $active={activeTab === "CHART"}>
           <ChartSection>
             <ChartHeader>
               <ChartTitle>가격 변화</ChartTitle>
@@ -154,13 +154,14 @@ if (money < company.price) {
               />
             </ChartPlaceholder>
           </ChartSection>
-        )}
-        {activeTab === "MY_STOCK" && (
+        </ChartContent>
+        {/* 🧾 내 주식 탭 */}
+        <MyStockContent $active={activeTab === "MY_STOCK"}>
           <MyStockCard>
             ⭐ 이 회사 주식을 가지고 있어요!
             <SubText>지금은 가격의 변화를 지켜보는 단계예요 😊</SubText>
           </MyStockCard>
-        )}
+        </MyStockContent>
       </ContentSection>
 
       {/* 💡 설명 카드 */}
@@ -268,6 +269,22 @@ const TabButton = styled.button<{ $active: boolean }>`
   color: ${({ $active }) => ($active ? "#fff" : "inherit")};
 `;
 
+//탭 ui 공통 애니메이션 베이스
+const TabContentBase = styled.div<{ $active: boolean }>`
+  position: absolute;
+  inset: 16px;
+
+  opacity: ${({ $active }) => ($active ? 1 : 0)};
+  transform: ${({ $active }) =>
+    $active ? "translateX(0)" : "translateX(12px)"};
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+
+  pointer-events: ${({ $active }) => ($active ? "auto" : "none")};
+`;
+
 /* =========================
    탭 내용 고정 컨테이너
    ========================= */
@@ -276,13 +293,25 @@ const ContentSection = styled.div`
   padding: 16px;
   border-radius: ${({ theme }) => theme.radius.lg};
 
-  height: 300px;
+  height: 300px; /* 공간 고정 */
   position: relative;
+  overflow: hidden; /* 애니메이션 영역 밖 숨김 */
+`;
+const MyStockContent = styled(TabContentBase)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 `;
 
 /* =========================
    📊 차트 영역
    ========================= */
+const ChartContent = styled(TabContentBase)`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
 
 const ChartSection = styled.div`
   background: ${({ theme }) => theme.colors.surface};
@@ -333,6 +362,7 @@ const SubText = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
   font-weight: 500;
 `;
+
 /* =========================
    💡 설명 카드
    ========================= */
