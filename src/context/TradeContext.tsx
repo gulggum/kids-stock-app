@@ -20,6 +20,7 @@ type TradeContextType = {
   trades: Trade[]; // 전체 거래 내역
   buyStock: (stock: { id: string; name: string; price: number }) => boolean;
   hasBoughtToday: boolean; // 오늘 이미 샀는지
+  isHoldingStock: (id: string) => boolean;
 };
 
 const TradeContext = createContext<TradeContextType>({} as TradeContextType);
@@ -59,20 +60,20 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     setTrades((prev) => [...prev, newTrade]);
     return true; //구매성공
   };
+  //보유 여부 판단 - BUY 기록이 하나라도 있으면 보유 중으로 판단
+  const isHoldingStock = (companyId: string) => {
+    return trades.some(
+      (trade) => trade.type === "BUY" && trade.stockId === companyId,
+    );
+  };
   useEffect(() => {
     localStorage.setItem(TRADE_KEY, JSON.stringify(trades));
   }, [trades]);
 
-  useEffect(() => {
-    console.log("📦 trades 변경됨:", trades);
-  }, [trades]);
-
-  useEffect(() => {
-    console.log("🟢 hasBoughtToday:", hasBoughtToday);
-  }, [hasBoughtToday]);
-
   return (
-    <TradeContext.Provider value={{ trades, buyStock, hasBoughtToday }}>
+    <TradeContext.Provider
+      value={{ trades, buyStock, hasBoughtToday, isHoldingStock }}
+    >
       {children}
     </TradeContext.Provider>
   );

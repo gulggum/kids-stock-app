@@ -5,7 +5,7 @@ import { createContext, useContext, useState } from "react";
  * - 주식 가격/가치 개념을 위한 화폐
  * - 지금 단계에서는 부족해도 구매를 막지 않음
  */
-const DEV_START_MONEY = 10000; //코인테스트용 임시머니(개발용)
+const DEV_START_MONEY = 1000000; //코인테스트용 임시머니(개발용)
 
 export type MoneyContextType = {
   money: number;

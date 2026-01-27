@@ -21,9 +21,9 @@ const StockDetail = () => {
   const { addCoin } = useCoin();
   const { addExp } = useCharacter(); //경험치 획득
   const { earnBadge, hasBadge } = useBadge();
-  const { buyStock, hasBoughtToday } = useTrade();
+  const { buyStock, hasBoughtToday, isHoldingStock } = useTrade();
   const { openModal } = useModal();
-  const { money } = useMoney();
+  const { money, spendMoney } = useMoney();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const [activeTab, setActiveTab] = useState<"CHART" | "MY_STOCK">("CHART");
   const explain = companyExplain[Number(id)];
@@ -43,23 +43,35 @@ const StockDetail = () => {
   };
 
   //차트 흐름에 따라 아이 눈높이 설명 문구 생성
-  const getExplainTextByTrend = (isUp: boolean, companyName: string) => {
-    return isUp
-      ? `${companyName}를 좋아하는 사람이 늘어나서, 회사의 가치가 조금 올라간 것 같아요.`
-      : `${companyName}를 찾는 사람이 잠시 줄어서, 가격이 내려갔을 수도 있어요.`;
+  const getExplainTextByTrend = (
+    isUp: boolean,
+    companyName: string,
+    isHolding: boolean,
+  ) => {
+    if (isUp) {
+      return isHolding //("올랐고 + 내가 보유"):("올랐고 + 내가 미보유")
+        ? `${companyName}를 좋아하는 사람이 늘어나서, 내가 산 주식의 가치가 조금 올라간 것 같아요! 😊`
+        : `${companyName}를 찾는 사람이 많아져서, 회사의 가치가 올라간 것 같아요.`;
+    }
+    return isHolding //("내려갔고 + 내가 보유"):("내려갔고 + 내가 미보유")
+      ? `${companyName}에 대한 관심이 잠시 줄어서, 내가 가진 주식의 가격이 내려갔을 수도 있어요.`
+      : `${companyName}를 찾는 사람이 줄어서, 가격이 내려갔을 수도 있어요.`;
   };
-
+  const isHolding = isHoldingStock(company.id);
   //선택된 기간의 차트 데이터
   const chartData = chartMock[company.id][period];
   //상승,하락 판단
   const isUptrend = isChartUptrend(chartData);
   //설명 문구 생성
-  const explainText = getExplainTextByTrend(isUptrend, company.name);
+  const explainText = getExplainTextByTrend(isUptrend, company.name, isHolding);
 
   const handleBuyConfirm = () => {
-    buyStock(company);
+    spendMoney(company.price); //머니 차감, 현재는 돈 부족해도 구매 막지않고, 돈쓰면 줄어든다는 경험만 제공
 
-    addCoin(1); //오늘의 한 번 보상
+    buyStock(company); //주식 구매 처리 (보유 상태 기록)
+
+    //오늘의 보상
+    addCoin(1);
     addExp(10);
     //첫 투자 뱃지
     if (!hasBadge("FIRST_BUY")) {
@@ -72,8 +84,7 @@ const StockDetail = () => {
   };
 
   const handleBuyClick = () => {
-    // ❗(머니 부족 로직) - 추후 on
-    /*
+    /*  // ❗(머니 부족 로직) - 추후 on  
 if (money < company.price) {
   openModal({
     type: "INFO",
@@ -82,7 +93,7 @@ if (money < company.price) {
     confirmText: "알겠어요",
   });
   return;
-}
+    }
 */
     openModal({
       type: "CONFIRM",
@@ -94,92 +105,107 @@ if (money < company.price) {
     });
   };
 
+  //
+
   return (
     <Wrapper>
-      {/* 🔙 뒤로가기 */}
-      <BackButton onClick={() => navigate(-1)}>← 돌아가기</BackButton>
-      <MoneyBar>
-        💰 내가 가진 돈 <strong>{money.toLocaleString()}</strong>
-      </MoneyBar>
-      {/* 🏢 회사 정보 */}
-      <Title>
-        {company.character} {company.name}
-      </Title>
-      <Description>{company.description}</Description>
-      <InfoBox>
-        <strong>분야</strong>
-        <div>{company.category}</div>
-      </InfoBox>
-      {/* 💰 가격 정보 영역 */}
-      <PriceSection>
-        <PriceInfo>
-          <PriceLabel>현재 가격</PriceLabel>
-          <PriceValue>{company.price.toLocaleString()}원</PriceValue>
-        </PriceInfo>
+      <StickyHeader>
+        {/* 🔙 뒤로가기 */}
+        <BackButton onClick={() => navigate(-1)}>← 돌아가기</BackButton>
+        <MoneyBar>
+          <MoneyLabel>💰 내가 가진 돈</MoneyLabel>
+          <MoneyAmount>{money.toLocaleString()}</MoneyAmount>
+        </MoneyBar>
+      </StickyHeader>
+      <Content>
+        {/* 🏢 회사 정보 */}
+        <Title>
+          {company.character} {company.name}
+        </Title>
+        <Description>{company.description}</Description>
+        <InfoBox>
+          <strong>분야</strong>
+          <div>{company.category}</div>
+        </InfoBox>
+        {/* 💰 가격 정보 영역 */}
+        <PriceSection>
+          <PriceInfo>
+            <PriceLabel>현재 가격</PriceLabel>
+            <PriceValue>{company.price.toLocaleString()}원</PriceValue>
+          </PriceInfo>
 
-        <ChangeRate $positive={company.changeRate >= 0}>
-          {company.changeRate >= 0 ? "▲" : "▼"} {Math.abs(company.changeRate)}%
-        </ChangeRate>
-      </PriceSection>
-      {/* 탭 버튼 영역 */}
-      <TabHeader>
-        <TabButton
-          $active={activeTab === "CHART"}
-          onClick={() => setActiveTab("CHART")}
-        >
-          📊 차트
-        </TabButton>
-        <TabButton
-          $active={activeTab === "MY_STOCK"}
-          onClick={() => setActiveTab("MY_STOCK")}
-        >
-          🧾 내 주식
-        </TabButton>
-      </TabHeader>
-      <ContentSection>
-        {" "}
-        {/* 📊 차트 영역 */}
-        <ChartContent $active={activeTab === "CHART"}>
-          <ChartSection>
-            <ChartHeader>
-              <ChartTitle>가격 변화</ChartTitle>
-              <ChartPeriodToggle value={period} onChange={setPeriod} />
-            </ChartHeader>
+          <ChangeRate $positive={company.changeRate >= 0}>
+            {company.changeRate >= 0 ? "▲" : "▼"} {Math.abs(company.changeRate)}
+            %
+          </ChangeRate>
+        </PriceSection>
+        {/* 탭 버튼 영역 */}
+        <TabHeader>
+          <TabButton
+            $active={activeTab === "CHART"}
+            onClick={() => setActiveTab("CHART")}
+          >
+            📊 차트
+          </TabButton>
+          <TabButton
+            $active={activeTab === "MY_STOCK"}
+            onClick={() => setActiveTab("MY_STOCK")}
+          >
+            🧾 내 주식
+          </TabButton>
+        </TabHeader>
+        <ContentSection>
+          {" "}
+          {/* 📊 차트 영역 */}
+          <ChartContent $active={activeTab === "CHART"}>
+            <ChartSection>
+              <ChartHeader>
+                <ChartTitle>가격 변화</ChartTitle>
+                <ChartPeriodToggle value={period} onChange={setPeriod} />
+              </ChartHeader>
 
-            {/* 차트 컴포넌트 자리 */}
-            <ChartPlaceholder>
-              <StockChart
-                data={chartData}
-                strokeColor={isUptrend ? theme.colors.up : theme.colors.down}
-              />
-            </ChartPlaceholder>
-          </ChartSection>
-        </ChartContent>
-        {/* 🧾 내 주식 탭 */}
-        <MyStockContent $active={activeTab === "MY_STOCK"}>
-          <MyStockCard>
-            ⭐ 이 회사 주식을 가지고 있어요!
-            <SubText>지금은 가격의 변화를 지켜보는 단계예요 😊</SubText>
-          </MyStockCard>
-        </MyStockContent>
-      </ContentSection>
+              {/* 차트 컴포넌트 자리 */}
+              <ChartPlaceholder>
+                <StockChart
+                  data={chartData}
+                  strokeColor={isUptrend ? theme.colors.up : theme.colors.down}
+                />
+              </ChartPlaceholder>
+            </ChartSection>
+          </ChartContent>
+          {/* 🧾 내 주식 탭 */}
+          <MyStockContent $active={activeTab === "MY_STOCK"}>
+            {isHoldingStock(company.id) ? (
+              <MyStockCard>
+                ⭐ 이 회사 주식을 가지고 있어요!
+                <SubText>지금은 가격의 변화를 지켜보는 단계예요 😊</SubText>
+              </MyStockCard>
+            ) : (
+              <MyStockCard>
+                아직 이 회사 주식은 없어요 🙂
+                <SubText>관심이 생기면 한 번 사볼 수 있어요!</SubText>
+              </MyStockCard>
+            )}
+          </MyStockContent>
+        </ContentSection>
 
-      {/* 💡 설명 카드 */}
-      <ExplainCard>
-        <ExplainTitle>{explain?.title}</ExplainTitle>
-        <ExplainText>{explainText}</ExplainText>
-      </ExplainCard>
-      {/* 🛒 구매 버튼 */}
-      {hasBoughtToday && (
-        <HintText>
-          하루에 한 번만 구매 할 수 있어요 🙂
-          <br />
-          내일 다시 도전해보세요!
-        </HintText>
-      )}
-      <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
-        {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
-      </BuyButton>
+        {/* 💡 설명 카드 */}
+        <ExplainCard>
+          <ExplainTitle>{explain?.title}</ExplainTitle>
+          <ExplainText>{explainText}</ExplainText>
+        </ExplainCard>
+        {/* 🛒 구매 버튼 */}
+        {hasBoughtToday && (
+          <HintText>
+            하루에 한 번만 구매 할 수 있어요 🙂
+            <br />
+            내일 다시 도전해보세요!
+          </HintText>
+        )}
+        <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
+          {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
+        </BuyButton>
+      </Content>
     </Wrapper>
   );
 };
@@ -187,15 +213,60 @@ if (money < company.price) {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+//헤더 고정영역
+const StickyHeader = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  background: ${({ theme }) => theme.colors.background};
+  padding: 12px 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  /* 아래 콘텐츠와 구분감 */
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`;
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 `;
 
 const BackButton = styled.button`
   align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: ${({ theme }) => theme.radius.md};
   border: none;
-  background: none;
+
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.text};
+
   font-size: 14px;
+  font-weight: 700;
+
   cursor: pointer;
+
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.card};
+    transform: translateX(-2px); /* ← 느낌 */
+  }
+
+  &:active {
+    transform: translateX(0) scale(0.97);
+    box-shadow: none;
+  }
 `;
 
 const Title = styled.h2`
@@ -411,14 +482,36 @@ const HintText = styled.div`
 `;
 
 const MoneyBar = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: 12px;
-  font-size: 14px;
-  margin-bottom: 8px;
-
   display: flex;
+  align-items: center;
   justify-content: space-between;
+
+  padding: 10px 14px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.colors.surface},
+    ${({ theme }) => theme.colors.card}
+  );
+
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  font-size: 14px;
+  font-weight: 700;
+`;
+const MoneyLabel = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+const MoneyAmount = styled.strong`
+  font-size: 18px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 export default StockDetail;
