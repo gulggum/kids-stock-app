@@ -1,6 +1,9 @@
 import { createContext, useContext, useState } from "react";
 
+export type ModalType = "CONFIRM" | "INFO";
+
 type ModalState = {
+  type: ModalType;
   title?: string;
   message?: string;
   confirmText?: string;
@@ -10,9 +13,9 @@ type ModalState = {
 };
 
 type ModalContextType = {
+  modal: ModalState | null;
   openModal: (modal: ModalState) => void;
   closeModal: () => void;
-  modal: ModalState | null;
 };
 
 const ModalContext = createContext<ModalContextType>({} as ModalContextType);

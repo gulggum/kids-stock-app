@@ -60,6 +60,7 @@ const Shop = () => {
                   return;
                 }
                 openModal({
+                  type: "CONFIRM",
                   title: `${item.name}를 구매 할까요?`,
                   message: `${item.emoji} ${item.name} : \n ${item.price} 코인`,
                   confirmText: "네!",

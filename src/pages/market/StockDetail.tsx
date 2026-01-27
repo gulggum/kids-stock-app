@@ -69,15 +69,8 @@ const StockDetail = () => {
   };
 
   const handleBuyClick = () => {
-    if (hasBoughtToday) {
-      openModal({
-        title: "오늘은 이미 구매했어요 🙂",
-        message: "하루에 한 번만 살 수 있어요.\n내일 다시 도전해보세요!",
-        confirmText: "알겠어요",
-      });
-      return;
-    }
     openModal({
+      type: "CONFIRM",
       title: "구매할까요?",
       message: `${company.name}\n${company.price}원`,
       confirmText: "구매",
