@@ -1,9 +1,9 @@
 import { useParams } from "react-router";
 import { useNavigate } from "react-router";
-import styled, { useTheme } from "styled-components";
+import styled, { keyframes, useTheme } from "styled-components";
 import { companyMeta } from "../../data/companyMeta";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { companyExplain } from "../../data/companyExplain";
 import { chartMock } from "../../data/chartMock";
 import StockChart from "../../components/stock/StockChart";
@@ -13,6 +13,7 @@ import { useBadge } from "../../context/BadgeContext";
 import { useTrade } from "../../context/TradeContext";
 import { useModal } from "../../context/ModalContext";
 import { useMoney } from "../../context/Coin&Money/MoneyContext";
+import { playMoneySound } from "../../components/common/sounds";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +27,11 @@ const StockDetail = () => {
   const { money, spendMoney } = useMoney();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const [activeTab, setActiveTab] = useState<"CHART" | "MY_STOCK">("CHART");
+  const [animateMoney, setAnimateMoney] = useState(false); //moneyBar 애니메이션효과
+  const [showMoneyEffect, setShowMoneyEffect] = useState(false); //구매시 -금액 보이는 애니메이션효과
+
+  const prevMoneyRef = useRef(money); //이전 money 기억
+
   const explain = companyExplain[Number(id)];
 
   if (!id || !companyMeta[id]) {
@@ -68,7 +74,14 @@ const StockDetail = () => {
   const handleBuyConfirm = () => {
     spendMoney(company.price); //머니 차감, 현재는 돈 부족해도 구매 막지않고, 돈쓰면 줄어든다는 경험만 제공
 
-    buyStock(company); //주식 구매 처리 (보유 상태 기록)
+    playMoneySound(); //구매시 사운드효과
+
+    // 💰 이펙트 ON
+    setShowMoneyEffect(true);
+    setTimeout(() => setShowMoneyEffect(false), 900);
+
+    //주식 구매 처리 (보유 상태 기록)
+    buyStock(company);
 
     //오늘의 보상
     addCoin(1);
@@ -105,14 +118,27 @@ if (money < company.price) {
     });
   };
 
-  //
+  useEffect(() => {
+    // 💸 돈이 줄어들었을 때만 애니메이션
+    if (money < prevMoneyRef.current) {
+      setAnimateMoney(true);
+
+      const timer = setTimeout(() => {
+        setAnimateMoney(false);
+      }, 180); // 애니메이션 길이
+
+      return () => clearTimeout(timer);
+    }
+
+    prevMoneyRef.current = money;
+  }, [money]);
 
   return (
     <Wrapper>
       <StickyHeader>
         {/* 🔙 뒤로가기 */}
         <BackButton onClick={() => navigate(-1)}>← 돌아가기</BackButton>
-        <MoneyBar>
+        <MoneyBar className={animateMoney ? "decrease" : ""}>
           <MoneyLabel>💰 내가 가진 돈</MoneyLabel>
           <MoneyAmount>{money.toLocaleString()}</MoneyAmount>
         </MoneyBar>
@@ -202,13 +228,47 @@ if (money < company.price) {
             내일 다시 도전해보세요!
           </HintText>
         )}
-        <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
-          {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
-        </BuyButton>
+        <BuyButtonWrapper>
+          <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
+            {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
+          </BuyButton>
+          {showMoneyEffect && (
+            <MoneyEffect>💰 -{company.price.toLocaleString()}</MoneyEffect>
+          )}
+        </BuyButtonWrapper>
       </Content>
     </Wrapper>
   );
 };
+const floatUp = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.9);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-24px) scale(1.05);
+  }
+`;
+
+const MoneyEffect = styled.div`
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  transform: translateX(-50%);
+
+  font-size: 16px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+
+  pointer-events: none;
+
+  animation: ${floatUp} 0.9s ease-out;
+`;
 
 const Wrapper = styled.div`
   display: flex;
@@ -457,7 +517,17 @@ const ExplainText = styled.p`
   line-height: 1.4;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
+
+/* =========================
+   구매 버튼
+   ========================= */
+
+const BuyButtonWrapper = styled.div`
+  position: relative;
+  margin-top: 16px;
+`;
 const BuyButton = styled.button<{ disabled?: boolean }>`
+  width: 100%;
   margin-top: 12px;
   padding: 14px;
   border: none;
@@ -499,6 +569,12 @@ const MoneyBar = styled.div`
 
   font-size: 14px;
   font-weight: 700;
+
+  transition: transform 0.18s ease;
+
+  &.decrease {
+    transform: scale(0.95);
+  }
 `;
 const MoneyLabel = styled.span`
   display: flex;

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useCharacter } from "../context/CharacterContext";
 import styled, { keyframes } from "styled-components";
 import { useModal } from "../context/ModalContext";
+import { playCoinSound } from "../components/common/sounds";
 
 const Shop = () => {
   const { coins } = useCoin();
@@ -28,6 +29,7 @@ const Shop = () => {
     } else if (result === "NOT_ENOUGH_COIN") {
       createToast("코인이 부족해요 🥲");
     } else if (result === "SUCCESS") {
+      playCoinSound();
       createToast("아이템을 얻었어요! 🎉");
       addExp(10); //경험치 10 지급
       setSparkleItemId(itemId); //반짝시작
