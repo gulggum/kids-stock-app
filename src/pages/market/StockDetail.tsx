@@ -17,6 +17,7 @@ import { useMoney } from "../../context/Coin&Money/MoneyContext";
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const theme = useTheme(); //테마 가져오기
   const { addCoin } = useCoin();
   const { addExp } = useCharacter(); //경험치 획득
   const { earnBadge, hasBadge } = useBadge();
@@ -24,8 +25,8 @@ const StockDetail = () => {
   const { openModal } = useModal();
   const { money } = useMoney();
   const [period, setPeriod] = useState<"7d" | "30d">("7d");
+  const [activeTab, setActiveTab] = useState<"CHART" | "MY_STOCK">("CHART");
   const explain = companyExplain[Number(id)];
-  const theme = useTheme(); //테마 가져오기
 
   if (!id || !companyMeta[id]) {
     return <div>회사를 찾을 수 없어요 🥲</div>;
@@ -120,21 +121,47 @@ if (money < company.price) {
           {company.changeRate >= 0 ? "▲" : "▼"} {Math.abs(company.changeRate)}%
         </ChangeRate>
       </PriceSection>
-      {/* 📊 차트 영역 */}
-      <ChartSection>
-        <ChartHeader>
-          <ChartTitle>가격 변화</ChartTitle>
-          <ChartPeriodToggle value={period} onChange={setPeriod} />
-        </ChartHeader>
+      {/* 탭 버튼 영역 */}
+      <TabHeader>
+        <TabButton
+          $active={activeTab === "CHART"}
+          onClick={() => setActiveTab("CHART")}
+        >
+          📊 차트
+        </TabButton>
+        <TabButton
+          $active={activeTab === "MY_STOCK"}
+          onClick={() => setActiveTab("MY_STOCK")}
+        >
+          🧾 내 주식
+        </TabButton>
+      </TabHeader>
+      <ContentSection>
+        {" "}
+        {/* 📊 차트 영역 */}
+        {activeTab === "CHART" && (
+          <ChartSection>
+            <ChartHeader>
+              <ChartTitle>가격 변화</ChartTitle>
+              <ChartPeriodToggle value={period} onChange={setPeriod} />
+            </ChartHeader>
 
-        {/* 차트 컴포넌트 자리 */}
-        <ChartPlaceholder>
-          <StockChart
-            data={chartData}
-            strokeColor={isUptrend ? theme.colors.up : theme.colors.down}
-          />
-        </ChartPlaceholder>
-      </ChartSection>
+            {/* 차트 컴포넌트 자리 */}
+            <ChartPlaceholder>
+              <StockChart
+                data={chartData}
+                strokeColor={isUptrend ? theme.colors.up : theme.colors.down}
+              />
+            </ChartPlaceholder>
+          </ChartSection>
+        )}
+        {activeTab === "MY_STOCK" && (
+          <MyStockCard>
+            ⭐ 이 회사 주식을 가지고 있어요!
+            <SubText>지금은 가격의 변화를 지켜보는 단계예요 😊</SubText>
+          </MyStockCard>
+        )}
+      </ContentSection>
 
       {/* 💡 설명 카드 */}
       <ExplainCard>
@@ -216,6 +243,42 @@ const ChangeRate = styled.div<{ $positive: boolean }>`
   color: ${({ theme, $positive }) =>
     $positive ? theme.colors.up : theme.colors.down};
 `;
+/* =========================
+   탭 버튼 영역
+   ========================= */
+const TabHeader = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+`;
+
+const TabButton = styled.button<{ $active: boolean }>`
+  flex: 1;
+  padding: 10px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: none;
+
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.primary : theme.colors.surface};
+
+  color: ${({ $active }) => ($active ? "#fff" : "inherit")};
+`;
+
+/* =========================
+   탭 내용 고정 컨테이너
+   ========================= */
+const ContentSection = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  padding: 16px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+
+  height: 300px;
+  position: relative;
+`;
 
 /* =========================
    📊 차트 영역
@@ -251,7 +314,25 @@ const ChartPlaceholder = styled.div`
   color: ${({ theme }) => theme.colors.muted};
   font-size: 14px;
 `;
+/* =========================
+    내 주식 영역
+   ========================= */
+const MyStockCard = styled.div`
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.surface};
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+`;
 
+const SubText = styled.div`
+  margin-top: 8px;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 500;
+`;
 /* =========================
    💡 설명 카드
    ========================= */
@@ -301,8 +382,13 @@ const HintText = styled.div`
 
 const MoneyBar = styled.div`
   background: ${({ theme }) => theme.colors.surface};
-  padding: 12px;
   border-radius: ${({ theme }) => theme.radius.md};
+  padding: 12px;
   font-size: 14px;
+  margin-bottom: 8px;
+
+  display: flex;
+  justify-content: space-between;
 `;
+
 export default StockDetail;
