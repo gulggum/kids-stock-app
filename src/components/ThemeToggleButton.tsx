@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useAppTheme } from "../../theme/ThemeProvider";
+import { useAppTheme } from "../theme/ThemeProvider";
 
 const ToggleWrapper = styled.button`
   display: flex;

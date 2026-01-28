@@ -3,7 +3,7 @@ import styled from "styled-components";
 import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
 import { useBadge } from "../../context/BadgeContext";
-import ModalPopup from "../common/ModalPopup";
+import ModalPopup from "../ModalPopup";
 import { BADGES } from "../../data/badges";
 import { useModal } from "../../context/ModalContext";
 

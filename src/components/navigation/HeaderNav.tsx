@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ThemeToggleButton from "../common/ThemeToggleButton";
+import ThemeToggleButton from "../ThemeToggleButton";
 import { NavLink } from "react-router-dom";
 
 // 🖥 PC용

@@ -13,7 +13,7 @@ import { useBadge } from "../../context/BadgeContext";
 import { useTrade } from "../../context/TradeContext";
 import { useModal } from "../../context/ModalContext";
 import { useMoney } from "../../context/Coin&Money/MoneyContext";
-import { playMoneySound } from "../../components/common/sounds";
+import { playMoneySound } from "../../components/utils/sounds";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();

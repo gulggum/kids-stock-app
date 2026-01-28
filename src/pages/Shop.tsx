@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useCharacter } from "../context/CharacterContext";
 import styled, { keyframes } from "styled-components";
 import { useModal } from "../context/ModalContext";
-import { playCoinSound } from "../components/common/sounds";
+import { playCoinSound } from "../components/utils/sounds";
 
 const Shop = () => {
   const { coins } = useCoin();
