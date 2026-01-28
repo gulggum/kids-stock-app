@@ -13,7 +13,7 @@ import AttendanceCalendar from "../components/AttendanceCalendar";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { checkToday } = useAttendance();
+  const { checkToday, streak } = useAttendance();
 
   const handleReadNews = (stockId: string) => {
     //뉴스 1개라도 읽으면 출석 처리
@@ -21,7 +21,7 @@ const Home = () => {
     //관련 주식 상세로 이동
     navigate(`/stock/${stockId}`);
   };
-  console.log(checkToday);
+
   return (
     <Wrapper>
       {/* 📰 오늘의 뉴스 */}
@@ -47,6 +47,13 @@ const Home = () => {
       {/* 📅 출석 상태 */}
       <Section>
         <SectionTitle>📅 오늘의 출석</SectionTitle>
+        <AttendanceBox>
+          {" "}
+          <span>오늘의 출석</span>
+          <StreakText>
+            🔥 <StreakNumber>{streak}</StreakNumber>일 연속
+          </StreakText>
+        </AttendanceBox>
         <AttendanceCalendar />
       </Section>
     </Wrapper>
@@ -84,5 +91,37 @@ const Card = styled.div`
     color: ${({ theme }) => theme.colors.textSecondary};
   }
 `;
+const AttendanceBox = styled.div`
+  padding: 14px 16px;
+  border-radius: ${({ theme }) => theme.radius.lg};
 
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.colors.card},
+    ${({ theme }) => theme.colors.surface}
+  );
+
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 14px;
+  font-weight: 700;
+`;
+
+const StreakText = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 15px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+const StreakNumber = styled.strong`
+  font-size: 18px;
+  font-weight: 900;
+`;
 export default Home;

@@ -22,7 +22,7 @@ const AttendanceCalendar = () => {
     <Calendar>
       {Array.from({ length: daysInMonth }, (_, i) => {
         const date = getDateKey(new Date(year, month, i + 1));
-        console.log("date", date, "checkedDates", checkedDates);
+
         const checked = checkedDates.includes(date);
 
         return (
