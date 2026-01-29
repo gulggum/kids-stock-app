@@ -13,6 +13,7 @@ import { TradeProvider } from "./context/TradeContext.tsx";
 import { ModalProvider } from "./context/ModalContext.tsx";
 import { MoneyProvider } from "./context/Coin&Money/MoneyContext.tsx";
 import { AttendanceProvider } from "./context/AttendanceContext.tsx";
+import { MissionProvider } from "./context/MissionContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -20,24 +21,26 @@ createRoot(document.getElementById("root")!).render(
     <AppThemeProvider>
       <ModalProvider>
         <ToastProvider>
-          <AttendanceProvider>
-            <CoinProvider>
-              <MoneyProvider>
-                <TradeProvider>
-                  <BadgeProvider>
-                    <CharacterProvider>
-                      <ItemProvider>
-                        <PortfolioProvider>
-                          <AppRouter />
-                          <App />
-                        </PortfolioProvider>
-                      </ItemProvider>
-                    </CharacterProvider>
-                  </BadgeProvider>
-                </TradeProvider>
-              </MoneyProvider>
-            </CoinProvider>
-          </AttendanceProvider>
+          <CoinProvider>
+            <AttendanceProvider>
+              <MissionProvider>
+                <MoneyProvider>
+                  <TradeProvider>
+                    <BadgeProvider>
+                      <CharacterProvider>
+                        <ItemProvider>
+                          <PortfolioProvider>
+                            <AppRouter />
+                            <App />
+                          </PortfolioProvider>
+                        </ItemProvider>
+                      </CharacterProvider>
+                    </BadgeProvider>
+                  </TradeProvider>
+                </MoneyProvider>
+              </MissionProvider>
+            </AttendanceProvider>
+          </CoinProvider>
         </ToastProvider>
       </ModalProvider>
     </AppThemeProvider>
