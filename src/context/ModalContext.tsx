@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 
 export type ModalType = "CONFIRM" | "INFO";
@@ -10,6 +11,7 @@ type ModalState = {
   cancelText?: string;
   onConfirm?: () => void;
   onCancel?: () => void;
+  customContent?: ReactNode; //옵션선택
 };
 
 type ModalContextType = {

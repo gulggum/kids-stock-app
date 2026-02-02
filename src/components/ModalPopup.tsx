@@ -7,6 +7,7 @@ type ModalPopupProps = {
   cancelText?: string;
   onConfirm: () => void; //확인 버튼 클릭시 실행
   onCancel?: () => void; //취소 버튼 클릭시 실행
+  customContent?: React.ReactNode; //옵션선택
 };
 
 const ModalPopup = ({
@@ -16,12 +17,18 @@ const ModalPopup = ({
   cancelText = "취소",
   onConfirm,
   onCancel,
+  customContent,
 }: ModalPopupProps) => {
   return (
     <Overlay>
       <Modal>
         {title && <Title>{title}</Title>}
         {message && <Message>{message}</Message>}
+
+        {/* 선택옵션 */}
+        {customContent && (
+          <CustomContentWrapper>{customContent}</CustomContentWrapper>
+        )}
         <ButtonGroup>
           {onCancel && (
             <CancelButton onClick={onCancel}>{cancelText}</CancelButton>
@@ -139,4 +146,8 @@ const CancelButton = styled.button`
     color: ${({ theme }) => theme.colors.text};
     transform: translateY(-1px);
   }
+`;
+const CustomContentWrapper = styled.div`
+  margin: 12px 0 4px;
+  width: 100%;
 `;
