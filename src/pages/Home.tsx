@@ -6,8 +6,8 @@ import { useMission } from "../context/MissionContext";
 import { newsQuizzes, type NewsQuiz } from "../data/newsQuiz";
 import { useCoin } from "../context/Coin&Money/CoinContext";
 import { useState } from "react";
-import NewsQuizModal from "../components/NewsQuizModal";
-import NewsDetailModal from "../components/NewsDetailModal";
+import NewsQuizModal from "../components/news/NewsQuizModal";
+import NewsDetailModal from "../components/news/NewsDetailModal";
 import { useModal } from "../context/ModalContext";
 
 /**
@@ -15,6 +15,9 @@ import { useModal } from "../context/ModalContext";
  * - 뉴스 확인
  * - 출석 체크
  * - 오늘 할 일 안내
+ * 
+ * 코인: 아이템 구매용, 머니: 주식 투자용, 점수: 활동 성실도 표시용
+
  */
 
 const Home = () => {
