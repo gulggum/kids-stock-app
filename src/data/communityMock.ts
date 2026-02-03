@@ -1,3 +1,5 @@
+import type { BadgeId } from "./badges";
+
 /**
  * 커뮤니티에 노출될 유저 정보 (더미)
  * - 실제 유저 데이터가 아니라 UI용 mock
@@ -9,6 +11,7 @@ export type CommunityUser = {
   levelTitle: string;
   emoji: string; // 캐릭터 느낌
   status: string; // 선택형 한마디
+  badges: BadgeId[];
 };
 
 export const communityMock: CommunityUser[] = [
@@ -19,6 +22,7 @@ export const communityMock: CommunityUser[] = [
     levelTitle: "🦊 침착한 투자자",
     emoji: "🦊",
     status: "🔥 오늘도 기록했어요!",
+    badges: ["FIRST_BUY", "DAILY_ONCE"] as BadgeId[],
   },
   {
     id: 2,
@@ -27,6 +31,7 @@ export const communityMock: CommunityUser[] = [
     levelTitle: "🌱 새싹 투자자",
     emoji: "🌱",
     status: "😬 처음이라 조금 떨려요",
+    badges: ["FIRST_BUY", "DAILY_ONCE", "WEEK_3"] as BadgeId[],
   },
   {
     id: 3,
@@ -35,5 +40,6 @@ export const communityMock: CommunityUser[] = [
     levelTitle: "🦁 시장을 아는 아이",
     emoji: "🦁",
     status: "🏆 출석 7일 성공!",
+    badges: ["FIRST_BUY"] as BadgeId[],
   },
 ];

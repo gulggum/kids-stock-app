@@ -4,6 +4,7 @@ import CommunityCard from "../components/community/communityCard";
 import { useModal } from "../context/ModalContext";
 import { useState } from "react";
 import SelectStatusModal from "../components/community/SelectStatusModal";
+import type { BadgeId } from "../data/badges";
 
 /**
  * 커뮤니티 메인 화면
@@ -14,7 +15,7 @@ const Community = () => {
 
   // 실제 커뮤니티에 표시되는 상태
   const [myStatus, setMyStatus] = useState("😄 오늘도 참여했어요!");
-  console.log("여기요!", myStatus);
+
   return (
     <Wrapper>
       <Title>📢 오늘의 투자 광장</Title>
@@ -29,6 +30,7 @@ const Community = () => {
           levelTitle: "🐣 도전하는 투자자",
           emoji: "🐣",
           status: myStatus,
+          badges: ["FIRST_BUY"] as BadgeId[],
         }}
       />
 
