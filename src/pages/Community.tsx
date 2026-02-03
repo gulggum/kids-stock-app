@@ -30,7 +30,13 @@ const Community = () => {
           levelTitle: "🐣 도전하는 투자자",
           emoji: "🐣",
           status: myStatus,
-          badges: ["FIRST_BUY"] as BadgeId[],
+          badges: [
+            "FIRST_BUY",
+            "DAILY_ONCE",
+            "WEEK_3",
+            "QUIZ_MASTER",
+            "LEVEL_10",
+          ] as BadgeId[],
         }}
       />
 
@@ -69,9 +75,6 @@ const Community = () => {
           <CommunityCard key={user.id} user={user} />
         ))}
       </List>
-
-      {/* 다음 단계용 버튼 */}
-      <SelectButton>나도 한마디 선택하기 ✨</SelectButton>
     </Wrapper>
   );
 };

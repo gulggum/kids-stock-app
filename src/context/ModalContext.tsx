@@ -1,3 +1,5 @@
+//열고닫는 UI 제어 담당(뱃지 전체 보기,퀴즈 결과 팝업,확인용 안내등..)
+
 import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 

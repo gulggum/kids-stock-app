@@ -1,13 +1,26 @@
 import styled from "styled-components";
 import { type CommunityUser } from "../../data/communityMock";
 import { getLevelTitle } from "../utils/getLevelTitle";
+import { BADGES } from "../../data/badges";
+import { useModal } from "../../context/ModalContext";
+import BadgeListModal from "./BadgeListModal";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
  * - 말 없이도 "누가 활동 중인지" 보여주는 용도
  */
 const CommunityCard = ({ user }: { user: CommunityUser }) => {
+  const { openModal } = useModal();
+
   const levelTitle = getLevelTitle(user.level);
+  const openBadgeModal = () => {
+    openModal({
+      type: "INFO",
+      title: "🏅 획득한 뱃지",
+      customContent: <BadgeListModal badges={user.badges} />,
+      confirmText: "닫기",
+    });
+  };
 
   return (
     <Card>
@@ -22,6 +35,7 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
       <BadgeRow>
         {user.badges.slice(0, 3).map((badgeId) => {
           const badge = BADGES[badgeId];
+
           return (
             <BadgeIcon key={badgeId} title={badge.title}>
               {badge.emoji}
@@ -30,7 +44,7 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
         })}
 
         {user.badges.length > 3 && (
-          <MoreBadgeButton onClick={() => openBadgeModal(user.badges)}>
+          <MoreBadgeButton onClick={() => openBadgeModal()}>
             +{user.badges.length - 3}
           </MoreBadgeButton>
         )}

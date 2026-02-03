@@ -1,4 +1,4 @@
-// 뱃지context
+// 뱃지context - 데이터/규칙(뱃지 획득 팝업)
 
 import { createContext, useContext, useEffect, useState } from "react";
 import type { BadgeId } from "../data/badges";
@@ -22,7 +22,7 @@ export const BadgeProvider = ({ children }: { children: React.ReactNode }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // ⭐ 배지 팝업 큐
+  // ⭐ 배지 팝업 큐(연속 팝업용)
   const [popupQueue, setPopupQueue] = useState<BadgeId[]>([]);
 
   // 현재 보여줄 배지 (큐의 맨 앞)
