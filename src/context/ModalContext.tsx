@@ -14,6 +14,7 @@ type ModalState = {
   onConfirm?: () => void;
   onCancel?: () => void;
   customContent?: ReactNode; //옵션선택
+  hideActions?: boolean; //customContent가 있으면 ModalPopup의 하단 버튼 숨기기위함
 };
 
 type ModalContextType = {

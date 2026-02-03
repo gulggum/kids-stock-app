@@ -8,6 +8,7 @@ type ModalPopupProps = {
   onConfirm: () => void; //확인 버튼 클릭시 실행
   onCancel?: () => void; //취소 버튼 클릭시 실행
   customContent?: React.ReactNode; //옵션선택
+  hideActions?: boolean; //customContent가 있으면 ModalPopup의 하단 버튼 숨기기위함
 };
 
 const ModalPopup = ({
@@ -18,6 +19,7 @@ const ModalPopup = ({
   onConfirm,
   onCancel,
   customContent,
+  hideActions,
 }: ModalPopupProps) => {
   return (
     <Overlay>
@@ -29,12 +31,14 @@ const ModalPopup = ({
         {customContent && (
           <CustomContentWrapper>{customContent}</CustomContentWrapper>
         )}
-        <ButtonGroup>
-          {onCancel && (
-            <CancelButton onClick={onCancel}>{cancelText}</CancelButton>
-          )}
-          <ConfirmButton onClick={onConfirm}>{confirmText}</ConfirmButton>
-        </ButtonGroup>
+        {!hideActions && (
+          <ButtonGroup>
+            {onCancel && (
+              <CancelButton onClick={onCancel}>{cancelText}</CancelButton>
+            )}
+            <ConfirmButton onClick={onConfirm}>{confirmText}</ConfirmButton>
+          </ButtonGroup>
+        )}
       </Modal>
     </Overlay>
   );
