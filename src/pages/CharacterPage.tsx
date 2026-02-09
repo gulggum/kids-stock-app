@@ -13,7 +13,7 @@ const CharacterPage = () => {
   const { createToast } = useToast();
   const { coins } = useCoin(); //전역 코인 상태 연결
   const { isOwned, equippedItems, toggleEquip } = useItem();
-  const { character, addExp } = useCharacter();
+  const { character } = useCharacter();
   const { earnedBadges } = useBadge();
   const navigate = useNavigate();
   const [animate, setAnimate] = useState(false); //착장애니메이션
@@ -139,7 +139,6 @@ const CharacterPage = () => {
                     }
                     //이미 가지고 있으면 ->장착 /해제 토글
                     toggleEquip(item.slot, item.id);
-                    addExp(3);
                   }}
                 >
                   <ItemEmoji>{item.emoji}</ItemEmoji>

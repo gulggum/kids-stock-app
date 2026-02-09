@@ -13,7 +13,7 @@ import { TradeProvider } from "./context/TradeContext.tsx";
 import { ModalProvider } from "./context/ModalContext.tsx";
 import { MoneyProvider } from "./context/Coin&Money/MoneyContext.tsx";
 import { AttendanceProvider } from "./context/AttendanceContext.tsx";
-import { MissionProvider } from "./context/MissionContext.tsx";
+import { ScoreProvider } from "./context/ScoreContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -23,7 +23,7 @@ createRoot(document.getElementById("root")!).render(
         <ToastProvider>
           <CoinProvider>
             <AttendanceProvider>
-              <MissionProvider>
+              <ScoreProvider>
                 <MoneyProvider>
                   <TradeProvider>
                     <BadgeProvider>
@@ -38,7 +38,7 @@ createRoot(document.getElementById("root")!).render(
                     </BadgeProvider>
                   </TradeProvider>
                 </MoneyProvider>
-              </MissionProvider>
+              </ScoreProvider>
             </AttendanceProvider>
           </CoinProvider>
         </ToastProvider>
