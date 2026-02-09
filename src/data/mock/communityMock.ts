@@ -1,4 +1,4 @@
-import type { BadgeId } from "./badges";
+import type { BadgeId } from "../static/badges";
 
 /**
  * 커뮤니티에 노출될 유저 정보 (더미)

@@ -2,7 +2,10 @@
 // 상점 페이지 -> 전체목록 + 설명
 
 import { useCoin } from "../context/Coin&Money/CoinContext";
-import { characterItems, type CharacterItem } from "../data/characterItems";
+import {
+  characterItems,
+  type CharacterItem,
+} from "../data/static/characterItems";
 import { useToast } from "../context/ToastContext";
 import { useItem } from "../context/ItemContext";
 import { useState } from "react";

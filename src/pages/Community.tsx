@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { communityMock } from "../data/communityMock";
+import { communityMock } from "../data/mock/communityMock";
 import CommunityCard from "../components/community/communityCard";
 import { useModal } from "../context/ModalContext";
 import { useEffect, useState } from "react";

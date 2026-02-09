@@ -14,9 +14,7 @@ const EQUIPPED_KEY = "equipped_items";
 export type EquipSlot = "hat" | "top" | "shoes";
 
 //아이템 장작 슬롯
-export type EquipSlots = {
-  [key in EquipSlot]?: string;
-};
+export type EquipSlots = Record<EquipSlot, string | null>;
 
 //아이템 구매결과 별 토스트메세지
 type BuyItemResult = "SUCCESS" | "ALREADY_OWNED" | "NOT_ENOUGH_COIN";
