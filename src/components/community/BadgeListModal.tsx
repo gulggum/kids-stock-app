@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BADGES, type BadgeId } from "../../data/badges";
+import { BADGES, type BadgeId } from "../../data/static/badges";
 
 /**
  * 🏅 뱃지 전체 목록 모달용 컴포넌트

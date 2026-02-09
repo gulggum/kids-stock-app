@@ -1,6 +1,6 @@
 // 레벨 → 칭호 계산 함수
 
-import { LEVEL_TITLES } from "../../data/levelTitles";
+import { LEVEL_TITLES } from "../../data/rules/levelTitles";
 
 /**
  * 현재 레벨에 맞는 칭호 반환

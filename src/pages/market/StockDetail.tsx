@@ -1,11 +1,11 @@
 import { useParams } from "react-router";
 import { useNavigate } from "react-router";
 import styled, { keyframes, useTheme } from "styled-components";
-import { companyMeta } from "../../data/companyMeta";
+import { companyMeta } from "../../data/static/companyMeta";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
 import { useEffect, useRef, useState } from "react";
-import { companyExplain } from "../../data/companyExplain";
-import { chartMock } from "../../data/chartMock";
+import { companyExplain } from "../../data/static/companyExplain";
+import { chartMock } from "../../data/mock/chartMock";
 import StockChart from "../../components/stock/StockChart";
 import { useCoin } from "../../context/Coin&Money/CoinContext";
 import { useCharacter } from "../../context/CharacterContext";

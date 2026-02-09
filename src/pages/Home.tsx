@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { useAttendance } from "../context/AttendanceContext";
-import { missedNews, todayNews, type HomeNews } from "../data/homeNews";
+import { missedNews, todayNews, type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useMission } from "../context/MissionContext";
-import { newsQuizzes, type NewsQuiz } from "../data/newsQuiz";
+import { newsQuizzes, type NewsQuiz } from "../data/mock/newsQuiz";
 import { useCoin } from "../context/Coin&Money/CoinContext";
 import { useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";

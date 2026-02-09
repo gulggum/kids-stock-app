@@ -1,7 +1,7 @@
 //총자산 요약 카드
 
 import styled from "styled-components";
-import { companyMeta } from "../../data/companyMeta";
+import { companyMeta } from "../../data/static/companyMeta";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useTrade } from "../../context/TradeContext";
 

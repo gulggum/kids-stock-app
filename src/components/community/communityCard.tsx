@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { type CommunityUser } from "../../data/communityMock";
 import { getLevelTitle } from "../utils/getLevelTitle";
-import { BADGES } from "../../data/badges";
+import { BADGES } from "../../data/static/badges";
 import { useModal } from "../../context/ModalContext";
 import BadgeListModal from "./BadgeListModal";
 

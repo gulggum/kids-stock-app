@@ -4,7 +4,7 @@ import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
 import { useBadge } from "../../context/BadgeContext";
 import ModalPopup from "../ModalPopup";
-import { BADGES } from "../../data/badges";
+import { BADGES } from "../../data/static/badges";
 import { useModal } from "../../context/ModalContext";
 
 const AppLayout = () => {

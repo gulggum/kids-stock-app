@@ -4,7 +4,7 @@ import CommunityCard from "../components/community/communityCard";
 import { useModal } from "../context/ModalContext";
 import { useEffect, useState } from "react";
 import SelectStatusModal from "../components/community/SelectStatusModal";
-import type { BadgeId } from "../data/badges";
+import type { BadgeId } from "../data/static/badges";
 import { useRef } from "react";
 
 /**

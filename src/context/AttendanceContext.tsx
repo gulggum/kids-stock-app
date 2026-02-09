@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useCoin } from "./Coin&Money/CoinContext";
 import { getDateKey } from "../components/utils/date";
 import { useBadge } from "./BadgeContext";
-import { ATTENDANCE_BADGE_RULES } from "../data/badges";
+import { ATTENDANCE_BADGE_RULES } from "../data/static/badges";
 
 /**
  * 📅 출석 상태 관리

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useCharacter } from "../context/CharacterContext";
 import { useBadge } from "../context/BadgeContext";
-import { BADGES } from "../data/badges";
+import { BADGES } from "../data/static/badges";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
