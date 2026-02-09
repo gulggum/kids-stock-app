@@ -23,8 +23,12 @@ const AppLayout = () => {
               closeModal();
             }}
             onCancel={() => {
-              modal.onCancel?.();
-              closeModal();
+              modal.type === "CONFIRM"
+                ? () => {
+                    modal.onCancel?.();
+                    closeModal();
+                  }
+                : undefined;
             }}
           />
         )}

@@ -1,6 +1,8 @@
 import styled from "styled-components";
+import type { ModalType } from "../context/ModalContext";
 
 type ModalPopupProps = {
+  type?: ModalType;
   title?: string; //상단제목(제외가능)
   message?: string; //본문 메세지
   confirmText?: string; //버튼 텍스트(기본:확인)
@@ -12,6 +14,7 @@ type ModalPopupProps = {
 };
 
 const ModalPopup = ({
+  type,
   title,
   message,
   confirmText = "확인",
@@ -33,7 +36,7 @@ const ModalPopup = ({
         )}
         {!hideActions && (
           <ButtonGroup>
-            {onCancel && (
+            {type === "CONFIRM" && onCancel && (
               <CancelButton onClick={onCancel}>{cancelText}</CancelButton>
             )}
             <ConfirmButton onClick={onConfirm}>{confirmText}</ConfirmButton>
