@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useCoin } from "./Coin&Money/CoinContext";
 import { getDateKey } from "../components/utils/date";
 
@@ -6,6 +6,13 @@ import { getDateKey } from "../components/utils/date";
  * 📅 출석 상태 관리
  * - 날짜 기준으로 출석 체크
  */
+
+const ATTENDANCE_KEY = "attendance";
+
+type AttendanceStorage = {
+  checkedDates: string[]; //출석한 날짜 목록
+  streak: number; //연속 출석 일수
+};
 
 type AttendanceContextType = {
   checkedDates: string[];
@@ -24,11 +31,21 @@ export const AttendanceProvider = ({
   children: React.ReactNode;
 }) => {
   const today = getDateKey();
-  const { addCoin } = useCoin();
-  const [checkedDates, setCheckedDates] = useState<string[]>([]);
-  const [streak, setStreak] = useState(0);
 
-  //연속 출석 계산
+  const { addCoin } = useCoin();
+
+  //출석한 날짜 목록 상태, 초기값은 localstorage에서 불러옴
+  const [checkedDates, setCheckedDates] = useState<string[]>(() => {
+    const saved = localStorage.getItem(ATTENDANCE_KEY);
+    return saved ? JSON.parse(saved).checkedDates : [];
+  });
+  //연속 출석 일수 상태(로컬스토리지 기준)
+  const [streak, setStreak] = useState(() => {
+    const saved = localStorage.getItem(ATTENDANCE_KEY);
+    return saved ? JSON.parse(saved).streak : 0;
+  });
+
+  //어제 날짜 key계산( 연속 출석 판단용 )
   const getYesterdayKey = () => {
     const d = new Date();
     d.setDate(d.getDate() - 1);
@@ -37,27 +54,39 @@ export const AttendanceProvider = ({
 
   // 오늘 출석 체크
   const checkToday = () => {
-    if (checkedDates.includes(today)) return;
+    if (checkedDates.includes(today)) return; //이미 출석했으면 리턴
 
+    //출석날짜 추가
     setCheckedDates((prev) => [...prev, today]);
 
-    // 🔥 연속 출석 계산
     const yesterday = getYesterdayKey();
-    if (checkedDates.includes(yesterday)) {
-      setStreak((prev) => prev + 1);
-    } else {
-      setStreak(1);
-    }
 
-    addCoin(1); //출석보상
+    //연속 출석 계산 (어제 출석했으면 +1, 아니면 1부터 다시 )
+    setStreak((prev: any) => {
+      const nextStreak = checkedDates.includes(yesterday) ? prev + 1 : 1;
 
-    // 🎁 연속 출석 보너스
-    if ((streak + 1) % 7 === 0) {
-      addCoin(3); // 7일마다 보너스
-    }
+      addCoin(1); //기본 출석보상
+
+      // 🎁 7일 연속 출석 보너스
+      if (streak % 7 === 0) {
+        addCoin(3);
+      }
+
+      return nextStreak;
+    });
   };
 
+  //오늘 출석여부 -> UI에서 버튼 비활성화, 체크표시용
   const isCheckedToday = checkedDates.includes(today);
+
+  //로컬 저장
+  useEffect(() => {
+    const data: AttendanceStorage = {
+      checkedDates,
+      streak,
+    };
+    localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(data));
+  }, [checkedDates, streak]);
 
   return (
     <AttendanceContext.Provider

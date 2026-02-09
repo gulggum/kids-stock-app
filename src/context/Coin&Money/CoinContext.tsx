@@ -1,5 +1,6 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
+const COIN_KEY = "coin";
 const DEV_START_COIN = 9999; //코인테스트용 임시코인(개발용)
 
 export type CoinContextType = {
@@ -11,7 +12,11 @@ export type CoinContextType = {
 const CoinContext = createContext<CoinContextType>({} as CoinContextType); //무조건 Provider 안에서만 사용하겠다
 
 export const CoinProvider = ({ children }: { children: React.ReactNode }) => {
-  const [coins, setCoins] = useState<number>(DEV_START_COIN); //코인테스트용(개발용)
+  const [coins, setCoins] = useState<number>(() => {
+    const saved = localStorage.getItem(COIN_KEY);
+    return saved ? Number(saved) : DEV_START_COIN;
+  }); //코인테스트용(개발용)
+
   // const [coins, setCoins] = useState(0);추후변경
 
   //코인지급 , 기본값은 1코인(오늘의 한번 보상용)
@@ -34,6 +39,11 @@ export const CoinProvider = ({ children }: { children: React.ReactNode }) => {
 
     return success;
   };
+
+  useEffect(() => {
+    localStorage.setItem(COIN_KEY, String(coins));
+  }, [coins]);
+
   return (
     <CoinContext.Provider value={{ coins, addCoin, spendCoin }}>
       {children}
