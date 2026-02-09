@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCoin } from "./Coin&Money/CoinContext";
 import { getDateKey } from "../components/utils/date";
+import { useBadge } from "./BadgeContext";
+import { ATTENDANCE_BADGE_RULES } from "../data/badges";
 
 /**
  * 📅 출석 상태 관리
@@ -33,6 +35,7 @@ export const AttendanceProvider = ({
   const today = getDateKey();
 
   const { addCoin } = useCoin();
+  const { earnBadge, hasBadge } = useBadge();
 
   //출석한 날짜 목록 상태, 초기값은 localstorage에서 불러옴
   const [checkedDates, setCheckedDates] = useState<string[]>(() => {
@@ -71,6 +74,13 @@ export const AttendanceProvider = ({
       if (streak % 7 === 0) {
         addCoin(3);
       }
+
+      //출석뱃지 자동지급( 조건에 맞는 streak도달시, 이미 획득한 뱃지는 제외)
+      ATTENDANCE_BADGE_RULES.forEach(({ days, badgeId }) => {
+        if (nextStreak === days && !hasBadge(badgeId)) {
+          earnBadge(badgeId);
+        }
+      });
 
       return nextStreak;
     });
