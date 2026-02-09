@@ -14,6 +14,7 @@ import { ModalProvider } from "./context/ModalContext.tsx";
 import { MoneyProvider } from "./context/Coin&Money/MoneyContext.tsx";
 import { AttendanceProvider } from "./context/AttendanceContext.tsx";
 import { ScoreProvider } from "./context/ScoreContext.tsx";
+import { QuizProgressProvider } from "./context/QuizProgressContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -25,18 +26,20 @@ createRoot(document.getElementById("root")!).render(
             <AttendanceProvider>
               <ScoreProvider>
                 <MoneyProvider>
-                  <TradeProvider>
-                    <BadgeProvider>
-                      <CharacterProvider>
-                        <ItemProvider>
-                          <PortfolioProvider>
-                            <AppRouter />
-                            <App />
-                          </PortfolioProvider>
-                        </ItemProvider>
-                      </CharacterProvider>
-                    </BadgeProvider>
-                  </TradeProvider>
+                  <QuizProgressProvider>
+                    <TradeProvider>
+                      <BadgeProvider>
+                        <CharacterProvider>
+                          <ItemProvider>
+                            <PortfolioProvider>
+                              <AppRouter />
+                              <App />
+                            </PortfolioProvider>
+                          </ItemProvider>
+                        </CharacterProvider>
+                      </BadgeProvider>
+                    </TradeProvider>
+                  </QuizProgressProvider>
                 </MoneyProvider>
               </ScoreProvider>
             </AttendanceProvider>

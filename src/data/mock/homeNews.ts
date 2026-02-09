@@ -20,13 +20,13 @@ export const todayNews: HomeNews = {
 
 export const missedNews: HomeNews[] = [
   {
-    id: "n1",
+    id: "miss_1",
     title: "밤사이 있었던 일",
     summary: "전기차를 찾는 사람이 많아져서, 자동차 회사 주가가 움직였어요.",
     stockId: "0",
   },
   {
-    id: "n2",
+    id: "miss_2",
     title: "요즘 이런 회사가 있어요",
     summary: "게임을 만드는 회사가 인기를 얻으면서 관심을 받고 있어요.",
     stockId: "0",

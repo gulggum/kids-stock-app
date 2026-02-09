@@ -10,6 +10,7 @@ import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
 import { useModal } from "../context/ModalContext";
 import { playCoinSound } from "../components/utils/sounds";
+import { useQuizProgress } from "../context/QuizProgressContext";
 
 /**
  * 🏠 홈 화면
@@ -26,6 +27,7 @@ const Home = () => {
   const { score, addScore } = useScore();
   const { addCoin } = useCoin();
   const { openModal } = useModal();
+  const { isSolved, markSolved } = useQuizProgress();
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<NewsQuiz | null>(null);
   const handleNewsClick = (news: HomeNews) => {
@@ -37,12 +39,35 @@ const Home = () => {
   };
 
   const handleGoQuiz = (news: HomeNews) => {
-    const quiz = newsQuizzes.find((q) => q.newsId === news.id);
-    if (quiz) {
-      setActiveQuiz(quiz);
+    const quiz = newsQuizzes.find((q) => q.newsId === news.id); //이 뉴스와 일치하는 id의 퀴즈 가져오기
+    console.log(quiz);
+    if (!quiz) {
+      openModal({
+        type: "INFO",
+        title: "퀴즈 준비 중!",
+        message: "이 뉴스에는 아직 퀴즈가 없어요 🙂",
+        confirmText: "확인",
+      });
+      return;
     }
+
+    //중복 보상 차단
+    if (isSolved(quiz.newsId)) {
+      openModal({
+        type: "INFO",
+        title: "앗 이미 풀었어!",
+        message: "다른 뉴스 봐볼까~? ",
+        confirmText: "확인",
+      });
+      return;
+    }
+    //아직 안 풀었으면 퀴즈 열기
+    setActiveQuiz(quiz);
   };
-  const handleQuizCorrect = () => {
+  const handleQuizCorrect = (quizId: string) => {
+    //퀴즈 푼 기록
+    markSolved(quizId);
+
     //정답 결과 팝업
     openModal({
       type: "INFO",
@@ -75,7 +100,7 @@ const Home = () => {
       <Section>
         <SectionTitle>🌙 자면서 놓친 뉴스</SectionTitle>
         {missedNews.map((news) => (
-          <Card key={news.id} onClick={() => handleNewsClick(todayNews)}>
+          <Card key={news.id} onClick={() => handleNewsClick(news)}>
             <strong>{news.title}</strong>
             <p>{news.summary}</p>
           </Card>
@@ -112,7 +137,7 @@ const Home = () => {
         <NewsQuizModal
           quiz={activeQuiz}
           onClose={() => setActiveQuiz(null)}
-          onCorrect={handleQuizCorrect}
+          onCorrect={() => handleQuizCorrect(activeQuiz.newsId)}
         />
       )}
     </Wrapper>
