@@ -4,7 +4,6 @@ import { missedNews, todayNews, type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useScore } from "../context/ScoreContext";
 import { newsQuizzes, type NewsQuiz } from "../data/mock/newsQuiz";
-import { useCoin } from "../context/Coin&Money/CoinContext";
 import { useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
@@ -24,8 +23,7 @@ import { useQuizProgress } from "../context/QuizProgressContext";
 
 const Home = () => {
   const { checkToday, streak } = useAttendance();
-  const { score, addScore } = useScore();
-  const { addCoin } = useCoin();
+  const { score } = useScore();
   const { openModal } = useModal();
   const { isSolved, markSolved } = useQuizProgress();
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
@@ -64,9 +62,9 @@ const Home = () => {
     //아직 안 풀었으면 퀴즈 열기
     setActiveQuiz(quiz);
   };
-  const handleQuizCorrect = (quizId: string) => {
+  const handleQuizCorrect = (newsId: string) => {
     //퀴즈 푼 기록
-    markSolved(quizId);
+    markSolved(newsId); //기록 + 보상
 
     //정답 결과 팝업
     openModal({
@@ -75,9 +73,6 @@ const Home = () => {
       message: "좀 더 스마트해진 느낌?!\n코인 +1 🪙",
       confirmText: "확인",
     });
-    //퀴즈맞추면 보상지급
-    addCoin(1);
-    addScore(2);
     playCoinSound();
   };
 

@@ -16,6 +16,7 @@ export const EXP_REWARD = {
 };
 
 export const SCORE_REWARD = {
-  QUIZ: 2, // 오늘 첫 퀴즈
-  INVEST: 3, // 오늘 첫 투자
+  QUIZ_CORRECT: 2,
+  BUY_STOCK: 1,
+  ATTEND_TODAY: 1,
 };

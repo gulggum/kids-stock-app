@@ -22,28 +22,28 @@ createRoot(document.getElementById("root")!).render(
     <AppThemeProvider>
       <ModalProvider>
         <ToastProvider>
-          <CoinProvider>
-            <AttendanceProvider>
-              <ScoreProvider>
-                <MoneyProvider>
-                  <QuizProgressProvider>
-                    <TradeProvider>
-                      <BadgeProvider>
-                        <CharacterProvider>
+          <CharacterProvider>
+            <CoinProvider>
+              <AttendanceProvider>
+                <ScoreProvider>
+                  <MoneyProvider>
+                    <QuizProgressProvider>
+                      <TradeProvider>
+                        <BadgeProvider>
                           <ItemProvider>
                             <PortfolioProvider>
                               <AppRouter />
                               <App />
                             </PortfolioProvider>
                           </ItemProvider>
-                        </CharacterProvider>
-                      </BadgeProvider>
-                    </TradeProvider>
-                  </QuizProgressProvider>
-                </MoneyProvider>
-              </ScoreProvider>
-            </AttendanceProvider>
-          </CoinProvider>
+                        </BadgeProvider>
+                      </TradeProvider>
+                    </QuizProgressProvider>
+                  </MoneyProvider>
+                </ScoreProvider>
+              </AttendanceProvider>
+            </CoinProvider>
+          </CharacterProvider>
         </ToastProvider>
       </ModalProvider>
     </AppThemeProvider>
