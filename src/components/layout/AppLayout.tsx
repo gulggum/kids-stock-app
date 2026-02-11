@@ -22,14 +22,14 @@ const AppLayout = () => {
               modal.onConfirm?.();
               closeModal();
             }}
-            onCancel={() => {
+            onCancel={
               modal.type === "CONFIRM"
                 ? () => {
                     modal.onCancel?.();
                     closeModal();
                   }
-                : undefined;
-            }}
+                : undefined //✔ CONFIRM일 때만 취소버튼 생김
+            }
           />
         )}
         {/* 🏅 배지 획득 팝업 */}
