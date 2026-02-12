@@ -1,6 +1,6 @@
 //캐릭터아이템 mock 데이터(추후 변경예정)
 
-import type { EquipSlot } from "../../context/ItemContext";
+import type { EquipSlot } from "../../context/UserContext/ItemContext";
 
 export type CharacterItem = {
   id: string;

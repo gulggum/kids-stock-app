@@ -1,5 +1,5 @@
-import coinSound from "../../assets/sounds/coin.mp3";
-import moneySound from "../../assets/sounds/money.mp3";
+import coinSound from "../assets/sounds/coin.mp3";
+import moneySound from "../assets/sounds/money.mp3";
 
 const DEFAULT_VOLUME = 0.5;
 

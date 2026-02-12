@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useAttendance } from "../context/AttendanceContext";
-import { getDateKey } from "./utils/date";
+import { getDateKey } from "../utils/date";
 
 /**
  * 📅 월간 출석 달력

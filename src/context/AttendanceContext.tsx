@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useCoin } from "./Coin&Money/CoinContext";
-import { getDateKey } from "../components/utils/date";
-import { useBadge } from "./BadgeContext";
+import { useCoin } from "./WalletContext/CoinContext";
+import { getDateKey } from "../utils/date";
+import { useBadge } from "./UserContext/BadgeContext";
 import { ATTENDANCE_BADGE_RULES } from "../data/static/badges";
 
 /**

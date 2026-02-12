@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { communityMock } from "../data/mock/communityMock";
 import CommunityCard from "../components/community/communityCard";
-import { useModal } from "../context/ModalContext";
+import { useModal } from "../context/UIContext/ModalContext";
 import { useEffect, useState } from "react";
 import SelectStatusModal from "../components/community/SelectStatusModal";
 import type { BadgeId } from "../data/static/badges";

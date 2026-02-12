@@ -2,10 +2,10 @@ import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
-import { useBadge } from "../../context/BadgeContext";
+import { useBadge } from "../../context/UserContext/BadgeContext";
 import ModalPopup from "../ModalPopup";
 import { BADGES } from "../../data/static/badges";
-import { useModal } from "../../context/ModalContext";
+import { useModal } from "../../context/UIContext/ModalContext";
 
 const AppLayout = () => {
   const { popupBadge, closePopupBadge } = useBadge();

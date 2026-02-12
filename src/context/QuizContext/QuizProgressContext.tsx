@@ -6,13 +6,13 @@
 
 import { createContext, useContext, useState } from "react";
 import { useScore } from "./ScoreContext";
-import { useCoin } from "./Coin&Money/CoinContext";
-import { useCharacter } from "./CharacterContext";
+import { useCoin } from "../WalletContext/CoinContext";
+import { useCharacter } from "../UserContext/CharacterContext";
 import {
   COIN_REWARD,
   EXP_REWARD,
   SCORE_REWARD,
-} from "../data/rules/rewardRules";
+} from "../../data/rules/rewardRules";
 
 type QuizProgressContextType = {
   solvedQuizIds: string[];
@@ -49,6 +49,8 @@ export const QuizProgressProvider = ({
     addCoin(COIN_REWARD.QUIZ_CORRECT);
     addExp(EXP_REWARD.QUIZ_CORRECT);
     addScore(SCORE_REWARD.QUIZ_CORRECT);
+
+    return true;
   };
 
   return (

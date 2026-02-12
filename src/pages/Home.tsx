@@ -2,14 +2,14 @@ import styled from "styled-components";
 import { useAttendance } from "../context/AttendanceContext";
 import { missedNews, todayNews, type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
-import { useScore } from "../context/ScoreContext";
+import { useScore } from "../context/QuizContext/ScoreContext";
 import { newsQuizzes, type NewsQuiz } from "../data/mock/newsQuiz";
 import { useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
-import { useModal } from "../context/ModalContext";
-import { playCoinSound } from "../components/utils/sounds";
-import { useQuizProgress } from "../context/QuizProgressContext";
+import { useModal } from "../context/UIContext/ModalContext";
+import { playCoinSound } from "../utils/sounds";
+import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
 
 /**
  * 🏠 홈 화면

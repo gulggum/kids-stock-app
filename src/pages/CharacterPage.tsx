@@ -1,12 +1,12 @@
 import styled, { keyframes } from "styled-components";
-import { useCoin } from "../context/Coin&Money/CoinContext";
+import { useCoin } from "../context/WalletContext/CoinContext";
 import { characterItems } from "../data/static/characterItems";
-import { useToast } from "../context/ToastContext";
-import { useItem, type EquipSlot } from "../context/ItemContext";
+import { useToast } from "../context/UIContext/ToastContext";
+import { useItem, type EquipSlot } from "../context/UserContext/ItemContext";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { useCharacter } from "../context/CharacterContext";
-import { useBadge } from "../context/BadgeContext";
+import { useCharacter } from "../context/UserContext/CharacterContext";
+import { useBadge } from "../context/UserContext/BadgeContext";
 import { BADGES } from "../data/static/badges";
 
 const CharacterPage = () => {

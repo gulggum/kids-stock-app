@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import type { ModalType } from "../context/ModalContext";
+import type { ModalType } from "../context/UIContext/ModalContext";
 
 type ModalPopupProps = {
   type?: ModalType;

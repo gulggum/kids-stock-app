@@ -7,13 +7,13 @@ import { useEffect, useRef, useState } from "react";
 import { companyExplain } from "../../data/static/companyExplain";
 import { chartMock } from "../../data/mock/chartMock";
 import StockChart from "../../components/stock/StockChart";
-import { useCoin } from "../../context/Coin&Money/CoinContext";
-import { useCharacter } from "../../context/CharacterContext";
-import { useBadge } from "../../context/BadgeContext";
+import { useCoin } from "../../context/WalletContext/CoinContext";
+import { useCharacter } from "../../context/UserContext/CharacterContext";
+import { useBadge } from "../../context/UserContext/BadgeContext";
 import { useTrade } from "../../context/TradeContext";
-import { useModal } from "../../context/ModalContext";
-import { useMoney } from "../../context/Coin&Money/MoneyContext";
-import { playMoneySound } from "../../components/utils/sounds";
+import { useModal } from "../../context/UIContext/ModalContext";
+import { useMoney } from "../../context/WalletContext/MoneyContext";
+import { playMoneySound } from "../../utils/sounds";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();

@@ -1,7 +1,12 @@
+import { Providers } from "./providers";
+import { AppRouter } from "./router/router";
+
 function App() {
   return (
     <>
-      <div>StockKids</div>
+      <Providers>
+        <AppRouter />
+      </Providers>
     </>
   );
 }

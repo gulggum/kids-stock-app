@@ -1,7 +1,7 @@
 // 뱃지context - 데이터/규칙(뱃지 획득 팝업)
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { BadgeId } from "../data/static/badges";
+import type { BadgeId } from "../../data/static/badges";
 
 type BadgeContextType = {
   earnedBadges: BadgeId[]; //획득한 뱃지 목록
