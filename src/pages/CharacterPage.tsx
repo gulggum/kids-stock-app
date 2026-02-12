@@ -8,12 +8,13 @@ import { useNavigate } from "react-router";
 import { useCharacter } from "../context/UserContext/CharacterContext";
 import { useBadge } from "../context/UserContext/BadgeContext";
 import { BADGES } from "../data/static/badges";
+import { LEVEL_RULES } from "../data/rules/levelTitles";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
   const { coins } = useCoin(); //전역 코인 상태 연결
   const { isOwned, equippedItems, toggleEquip } = useItem();
-  const { character } = useCharacter();
+  const { character, currentTitle } = useCharacter();
   const { earnedBadges } = useBadge();
   const navigate = useNavigate();
   const [animate, setAnimate] = useState(false); //착장애니메이션
@@ -21,6 +22,37 @@ const CharacterPage = () => {
   const [levelUp, setLevelUp] = useState(false);
 
   const prevLevel = useRef(character.level); //이전 레벨 기억용(리렌더링 방지)
+
+  //--------LEVEL RULE 관련 함수---------
+
+  // 현재 레벨 룰
+  const currentLevelRule = LEVEL_RULES.find(
+    (rule) => rule.level === character.level,
+  );
+
+  // 다음 레벨 룰
+  const nextLevelRule = LEVEL_RULES.find(
+    (rule) => rule.level === character.level + 1,
+  );
+
+  // 현재 레벨 시작 exp
+  const currentRequiredExp = currentLevelRule?.requiredExp ?? 0;
+
+  // 다음 레벨 exp
+  const nextRequiredExp = nextLevelRule?.requiredExp ?? currentRequiredExp;
+
+  // 현재 레벨 구간 내 exp
+  const currentLevelExp = character.exp - currentRequiredExp;
+
+  // 레벨 구간 필요 exp
+  const neededExp = nextRequiredExp - currentRequiredExp;
+
+  // 진행률 %
+  const progressPercent = nextLevelRule
+    ? (currentLevelExp / neededExp) * 100
+    : 100;
+
+  //--------LEVEL RULE 관련 함수---------
 
   useEffect(() => {
     // 장착 상태가 바뀔 때마다 애니메이션 ON
@@ -53,7 +85,6 @@ const CharacterPage = () => {
   const equippedSetIds = Object.values(equippedItems)
     .map((itemId) => characterItems.find((item) => item.id === itemId)?.setId)
     .filter(Boolean);
-
   // 같은 setId가 3개 이상이면 세트 완성
   const hasSchoolSet =
     equippedSetIds.filter((id) => id === "school").length >= 3;
@@ -74,14 +105,21 @@ const CharacterPage = () => {
           </Avatar>
         </CharacterArea>
 
-        <Name>초보 투자자</Name>
+        <Name>{currentTitle}</Name>
         <Level>
           {" "}
           <LevelText>⭐ Lv.{character.level}</LevelText>
           <ExpBar>
-            <ExpFill $value={character.exp} />
+            <ExpFill $value={progressPercent} />
           </ExpBar>
-          <ExpText>{character.exp} / 100 EXP</ExpText>
+          {nextLevelRule ? (
+            <ExpText>
+              {currentLevelExp} / {neededExp} EXP
+              {"  "} (다음 레벨까지 {nextRequiredExp - character.exp} EXP)
+            </ExpText>
+          ) : (
+            <ExpText>최고 레벨 🎉</ExpText>
+          )}
         </Level>
         {hasSchoolSet && <SetBonus>🎁 학교 세트 효과 발동!</SetBonus>}
       </CharacterCard>

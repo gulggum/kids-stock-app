@@ -30,6 +30,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    //토스트가 하나라도 있으면 1.5초 뒤에 맨 앞 토스트 제거 ( 큐 구조)
     if (toasts.length === 0) return;
 
     const timer = setTimeout(() => setToasts((prev) => prev.slice(1)), 1500);

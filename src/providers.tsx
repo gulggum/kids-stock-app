@@ -6,21 +6,27 @@ import { AttendanceProvider } from "./context/AttendanceContext";
 import { QuizProvider } from "./context/QuizContext/QuizProvider";
 import { PortfolioProvider } from "./context/PortfolioContext";
 import { TradeProvider } from "./context/TradeContext";
+import { RewardProvider } from "./context/RewardContext";
+import { ScoreProvider } from "./context/ScoreContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <AppThemeProvider>
       <UIProvider>
         <WalletProvider>
-          <UserProgressProvider>
-            <AttendanceProvider>
-              <QuizProvider>
-                <TradeProvider>
-                  <PortfolioProvider>{children}</PortfolioProvider>
-                </TradeProvider>
-              </QuizProvider>
-            </AttendanceProvider>
-          </UserProgressProvider>
+          <ScoreProvider>
+            <UserProgressProvider>
+              <RewardProvider>
+                <QuizProvider>
+                  <AttendanceProvider>
+                    <TradeProvider>
+                      <PortfolioProvider>{children}</PortfolioProvider>
+                    </TradeProvider>
+                  </AttendanceProvider>
+                </QuizProvider>
+              </RewardProvider>
+            </UserProgressProvider>
+          </ScoreProvider>
         </WalletProvider>
       </UIProvider>
     </AppThemeProvider>

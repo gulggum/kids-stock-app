@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { type CommunityUser } from "../../data/mock/communityMock";
-import { getLevelTitle } from "../../utils/getLevelTitle";
+import { LEVEL_RULES } from "../../data/rules/levelTitles";
 import { BADGES } from "../../data/static/badges";
 import { useModal } from "../../context/UIContext/ModalContext";
 import BadgeListModal from "./BadgeListModal";
@@ -12,7 +12,10 @@ import BadgeListModal from "./BadgeListModal";
 const CommunityCard = ({ user }: { user: CommunityUser }) => {
   const { openModal } = useModal();
 
-  const levelTitle = getLevelTitle(user.level);
+  const levelTitle =
+    LEVEL_RULES.slice()
+      .reverse()
+      .find((rule) => user.level >= rule.level)?.title ?? "🐣 투자 새싹";
   const openBadgeModal = () => {
     openModal({
       type: "INFO",

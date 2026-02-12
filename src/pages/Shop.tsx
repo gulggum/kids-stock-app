@@ -9,18 +9,17 @@ import {
 import { useToast } from "../context/UIContext/ToastContext";
 import { useItem } from "../context/UserContext/ItemContext";
 import { useState } from "react";
-import { useCharacter } from "../context/UserContext/CharacterContext";
 import styled, { keyframes } from "styled-components";
 import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
-import { EXP_REWARD } from "../data/rules/rewardRules";
+import { useReward } from "../context/RewardContext";
 
 const Shop = () => {
   const { coins } = useCoin();
   const { createToast } = useToast();
   const { buyItem, isOwned, equippedItems } = useItem();
-  const { addExp } = useCharacter();
   const { openModal } = useModal();
+  const { giveReward } = useReward();
   const [sparkleItemId, setSparkleItemId] = useState<string | null>(null);
 
   const handleBuyConfirm = (item: CharacterItem) => {
@@ -35,7 +34,7 @@ const Shop = () => {
     } else if (result === "SUCCESS") {
       playCoinSound();
       createToast("아이템을 얻었어요! 🎉");
-      addExp(EXP_REWARD.ITEM_PURCHASE);
+      giveReward("ITEM_PURCHASE");
       setSparkleItemId(itemId); //반짝시작
       setTimeout(() => {
         setSparkleItemId(null);

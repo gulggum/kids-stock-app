@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useAttendance } from "../context/AttendanceContext";
 import { missedNews, todayNews, type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
-import { useScore } from "../context/QuizContext/ScoreContext";
+import { useScore } from "../context/ScoreContext";
 import { newsQuizzes, type NewsQuiz } from "../data/mock/newsQuiz";
 import { useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
@@ -70,7 +70,7 @@ const Home = () => {
     openModal({
       type: "INFO",
       title: "🎉 오~ 맞췄어!",
-      message: "좀 더 스마트해진 느낌?!\n코인 +1 🪙",
+      message: "보상을 획득했어요! 🪙✨",
       confirmText: "확인",
     });
     playCoinSound();

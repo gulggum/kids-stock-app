@@ -1,11 +1,17 @@
 /**
- * 🎮 키즈스톡 통합 보상 규칙
- * - 이벤트 중심 구조
+ * 🎁 키즈스톡 통합 보상 규칙
+ * - 이벤트 기준으로 보상 정의
  * - RewardContext에서 이 객체만 참조
- * - 밸런스 1차 설계 버전
  */
 
-export const REWARD_RULES = {
+export type RewardRule = {
+  coin?: number;
+  exp?: number;
+  score?: number;
+  money?: number;
+};
+
+export const REWARD_RULES: Record<string, RewardRule> = {
   // ----------------------
   // 📘 퀴즈
   // ----------------------
@@ -106,4 +112,10 @@ export const REWARD_RULES = {
   LEVEL_UP: {
     coin: 5,
   },
-};
+} satisfies Record<string, RewardRule>;
+
+/**
+ * 🔥 RewardType 자동 추론
+ * "QUIZ_CORRECT" | "ATTENDANCE_DAILY" | ...
+ */
+export type RewardType = keyof typeof REWARD_RULES; //오타방지

@@ -3,6 +3,7 @@ import { useCoin } from "./WalletContext/CoinContext";
 import { getDateKey } from "../utils/date";
 import { useBadge } from "./UserContext/BadgeContext";
 import { ATTENDANCE_BADGE_RULES } from "../data/static/badges";
+import { useReward } from "./RewardContext";
 
 /**
  * 📅 출석 상태 관리
@@ -34,7 +35,7 @@ export const AttendanceProvider = ({
 }) => {
   const today = getDateKey();
 
-  const { addCoin } = useCoin();
+  const { giveReward } = useReward(); //중앙보상
   const { earnBadge, hasBadge } = useBadge();
 
   //출석한 날짜 목록 상태, 초기값은 localstorage에서 불러옴
@@ -68,11 +69,11 @@ export const AttendanceProvider = ({
     setStreak((prev: any) => {
       const nextStreak = checkedDates.includes(yesterday) ? prev + 1 : 1;
 
-      addCoin(1); //기본 출석보상
+      giveReward("ATTENDANCE_DAILY"); //기본 출석보상
 
       // 🎁 7일 연속 출석 보너스
       if (streak % 7 === 0) {
-        addCoin(3);
+        giveReward("ATTENDANCE_STREAK_7");
       }
 
       //출석뱃지 자동지급( 조건에 맞는 streak도달시, 이미 획득한 뱃지는 제외)
