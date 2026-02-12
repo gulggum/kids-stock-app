@@ -1,22 +1,109 @@
 /**
- * 🎁 키즈스톡 보상 규칙
- * - 언제 코인/경험치/점수를 주는지 정의
- * - 컴포넌트에서는 "얼마 줄지" 고민하지 않는다
+ * 🎮 키즈스톡 통합 보상 규칙
+ * - 이벤트 중심 구조
+ * - RewardContext에서 이 객체만 참조
+ * - 밸런스 1차 설계 버전
  */
 
-export const COIN_REWARD = {
-  QUIZ_CORRECT: 1, // 퀴즈 최초 정답
-  ATTENDANCE: 1, // 하루 출석
-};
+export const REWARD_RULES = {
+  // ----------------------
+  // 📘 퀴즈
+  // ----------------------
+  QUIZ_CORRECT: {
+    coin: 1,
+    exp: 10,
+    score: 3,
+  },
 
-export const EXP_REWARD = {
-  FIRST_INVEST: 20, // 첫 투자
-  QUIZ_CORRECT: 10, // 퀴즈 최초 정답
-  ITEM_PURCHASE: 10, // 아이템 구매
-};
+  QUIZ_STREAK_3: {
+    coin: 3,
+    exp: 20,
+    score: 10,
+  },
 
-export const SCORE_REWARD = {
-  QUIZ_CORRECT: 2,
-  BUY_STOCK: 1,
-  ATTEND_TODAY: 1,
+  // ----------------------
+  // 📅 출석
+  // ----------------------
+  ATTENDANCE_DAILY: {
+    coin: 1,
+    exp: 5,
+    score: 1,
+  },
+
+  ATTENDANCE_STREAK_7: {
+    coin: 5,
+    exp: 30,
+  },
+
+  // ----------------------
+  // 📈 투자 행동
+  // ----------------------
+  FIRST_INVEST: {
+    exp: 30,
+    score: 5,
+  },
+
+  BUY_STOCK: {
+    exp: 5,
+    score: 2,
+  },
+
+  SELL_STOCK: {
+    exp: 5,
+  },
+
+  TRADE_10: {
+    coin: 5,
+    exp: 40,
+  },
+
+  // ----------------------
+  // 💰 수익 관련
+  // ----------------------
+  PROFIT_5_PERCENT: {
+    coin: 3,
+    exp: 30,
+    score: 20,
+  },
+
+  PROFIT_10_PERCENT: {
+    coin: 10,
+    exp: 70,
+    score: 50,
+  },
+
+  ASSET_120: {
+    coin: 5,
+    exp: 40,
+  },
+
+  ASSET_150: {
+    coin: 15,
+    exp: 100,
+  },
+
+  // ----------------------
+  // 📉 실패도 보상
+  // ----------------------
+  FIRST_LOSS: {
+    exp: 20,
+  },
+
+  BANKRUPT: {
+    exp: 80,
+  },
+
+  // ----------------------
+  // 🎒 소비
+  // ----------------------
+  ITEM_PURCHASE: {
+    exp: 15,
+  },
+
+  // ----------------------
+  // 🏆 레벨업
+  // ----------------------
+  LEVEL_UP: {
+    coin: 5,
+  },
 };
