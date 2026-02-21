@@ -8,6 +8,7 @@ import { PortfolioProvider } from "./context/PortfolioContext";
 import { TradeProvider } from "./context/TradeContext";
 import { RewardProvider } from "./context/RewardContext";
 import { ScoreProvider } from "./context/ScoreContext";
+import { AchievementProvider } from "./context/AchievementContext/AchievementContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -20,7 +21,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                 <QuizProvider>
                   <AttendanceProvider>
                     <TradeProvider>
-                      <PortfolioProvider>{children}</PortfolioProvider>
+                      <AchievementProvider>
+                        <PortfolioProvider>{children}</PortfolioProvider>
+                      </AchievementProvider>
                     </TradeProvider>
                   </AttendanceProvider>
                 </QuizProvider>

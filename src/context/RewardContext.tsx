@@ -13,7 +13,11 @@
 // ------------------------------------------------------
 
 import { createContext, useContext } from "react";
-import { REWARD_RULES, type RewardType } from "../data/rules/rewardRules";
+import {
+  REWARD_RULES,
+  type RewardType,
+  type RewardRule,
+} from "../data/rules/rewardRules";
 
 // 기존 Context들 import
 import { useCoin } from "./WalletContext/CoinContext";
@@ -23,6 +27,7 @@ import type { ReactNode } from "react";
 
 type RewardContextType = {
   giveReward: (rewardType: RewardType) => void;
+  giveCustomReward: (reward: RewardRule) => void;
 };
 
 const RewardContext = createContext<RewardContextType | null>(null);
@@ -46,25 +51,23 @@ export const RewardProvider = ({ children }: { children: ReactNode }) => {
     // 정의되지 않은 보상 방어 코드
     if (!rule) return;
 
-    // 각 자원별 보상 실행
-    if (rule.coin !== undefined) {
-      addCoin(rule.coin);
-    }
+    applyReward(rule);
+  };
 
-    if (rule.score !== undefined) {
-      addScore(rule.score);
-    }
+  // 🔹 업적 전용 보상 (직접 reward 객체 전달)
+  const giveCustomReward = (reward: RewardRule) => {
+    applyReward(reward);
+  };
 
-    if (rule.exp !== undefined) {
-      addExp(rule.exp);
-    }
-
-    // 향후 확장 가능:
-    // if (rule.money) addMoney(rule.money);
+  // 🔥 실제 보상 실행 로직 통합
+  const applyReward = (reward: RewardRule) => {
+    if (reward.coin !== undefined) addCoin(reward.coin);
+    if (reward.score !== undefined) addScore(reward.score);
+    if (reward.exp !== undefined) addExp(reward.exp);
   };
 
   return (
-    <RewardContext.Provider value={{ giveReward }}>
+    <RewardContext.Provider value={{ giveReward, giveCustomReward }}>
       {children}
     </RewardContext.Provider>
   );

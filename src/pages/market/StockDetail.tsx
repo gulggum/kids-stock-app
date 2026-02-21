@@ -7,21 +7,17 @@ import { useEffect, useRef, useState } from "react";
 import { companyExplain } from "../../data/static/companyExplain";
 import { chartMock } from "../../data/mock/chartMock";
 import StockChart from "../../components/stock/StockChart";
-import { useCoin } from "../../context/WalletContext/CoinContext";
-import { useCharacter } from "../../context/UserContext/CharacterContext";
-import { useBadge } from "../../context/UserContext/BadgeContext";
 import { useTrade } from "../../context/TradeContext";
 import { useModal } from "../../context/UIContext/ModalContext";
 import { useMoney } from "../../context/WalletContext/MoneyContext";
 import { playMoneySound } from "../../utils/sounds";
+import { useReward } from "../../context/RewardContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const theme = useTheme(); //테마 가져오기
-  const { addCoin } = useCoin();
-  const { addExp } = useCharacter(); //경험치 획득
-  const { earnBadge, hasBadge } = useBadge();
+  const theme = useTheme(); //테마 가져오기/경험치 획득
+  const { giveReward } = useReward();
   const { buyStock, hasBoughtToday, isHoldingStock } = useTrade();
   const { openModal } = useModal();
   const { money, spendMoney } = useMoney();
@@ -83,17 +79,7 @@ const StockDetail = () => {
     //주식 구매 처리 (보유 상태 기록)
     buyStock(company);
 
-    //오늘의 보상
-    addCoin(1);
-    addExp(10);
-    //첫 투자 뱃지
-    if (!hasBadge("FIRST_BUY")) {
-      earnBadge("FIRST_BUY");
-    }
-    //오늘의 한번 뱃지
-    if (!hasBadge("DAILY_ONCE")) {
-      earnBadge("DAILY_ONCE");
-    }
+    giveReward("BUY_STOCK");
   };
 
   const handleBuyClick = () => {

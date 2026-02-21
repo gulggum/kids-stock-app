@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { type CommunityUser } from "../../data/mock/communityMock";
 import { LEVEL_RULES } from "../../data/rules/levelTitles";
-import { BADGES } from "../../data/static/badges";
 import { useModal } from "../../context/UIContext/ModalContext";
 import BadgeListModal from "./BadgeListModal";
+import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -37,11 +37,12 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
       <LevelTitle>{levelTitle}</LevelTitle>
       <BadgeRow>
         {user.badges.slice(0, 3).map((badgeId) => {
-          const badge = BADGES[badgeId];
+          const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
 
+          if (!achievement) return null;
           return (
-            <BadgeIcon key={badgeId} title={badge.title}>
-              {badge.emoji}
+            <BadgeIcon key={badgeId} title={achievement.badge.title}>
+              {achievement.badge.emoji}
             </BadgeIcon>
           );
         })}

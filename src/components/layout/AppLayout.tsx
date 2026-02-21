@@ -2,14 +2,16 @@ import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
-import { useBadge } from "../../context/UserContext/BadgeContext";
 import ModalPopup from "../ModalPopup";
-import { BADGES } from "../../data/static/badges";
 import { useModal } from "../../context/UIContext/ModalContext";
+import { useAchievement } from "../../context/AchievementContext/AchievementContext";
+import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 
 const AppLayout = () => {
-  const { popupBadge, closePopupBadge } = useBadge();
-  const badgeMeta = popupBadge ? BADGES[popupBadge] : null;
+  const { popupAchievement, closePopupAchievement } = useAchievement();
+  const achievementMeta = popupAchievement
+    ? ACHIEVEMENTS.find((a) => a.id === popupAchievement)
+    : null;
   const { modal, closeModal } = useModal();
   return (
     <Layout>
@@ -33,11 +35,11 @@ const AppLayout = () => {
           />
         )}
         {/* 🏅 배지 획득 팝업 */}
-        {badgeMeta && (
+        {achievementMeta && (
           <ModalPopup
-            title={`${badgeMeta.emoji} ${badgeMeta.title}`}
-            message={badgeMeta.description}
-            onConfirm={closePopupBadge}
+            title={`${achievementMeta.badge.emoji} ${achievementMeta.badge.title}`}
+            message={achievementMeta.badge.description}
+            onConfirm={closePopupAchievement}
           />
         )}
         <Outlet />

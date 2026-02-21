@@ -12,6 +12,7 @@
 
 import { useContext, createContext, useMemo } from "react";
 import { useTrade } from "./TradeContext";
+import { companyMeta } from "../data/static/companyMeta";
 
 type PortfolioItem = {
   id: string; //회사id
@@ -22,6 +23,7 @@ type PortfolioItem = {
 
 type PortfolioContextType = {
   portfolio: PortfolioItem[];
+  totalAsset: number; //총자산
 };
 
 const PortfolioContext = createContext<PortfolioContextType>(
@@ -69,8 +71,20 @@ export const PortfolioProvider = ({
     return Array.from(map.values());
   }, [trades]); // ⭐ trades가 바뀔 때만 재계산
 
+  // 2️⃣ totalAsset 계산 (portfolio 기반)
+  const totalAsset = useMemo(() => {
+    const BASE_MONEY = 100000;
+
+    const evaluationAmount = portfolio.reduce((total, item) => {
+      const currentPrice = companyMeta[item.id].price;
+      return total + currentPrice * item.quantity;
+    }, 0);
+
+    return BASE_MONEY + evaluationAmount;
+  }, [portfolio]);
+
   return (
-    <PortfolioContext.Provider value={{ portfolio }}>
+    <PortfolioContext.Provider value={{ portfolio, totalAsset }}>
       {children}
     </PortfolioContext.Provider>
   );

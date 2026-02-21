@@ -6,16 +6,16 @@ import { useItem, type EquipSlot } from "../context/UserContext/ItemContext";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useCharacter } from "../context/UserContext/CharacterContext";
-import { useBadge } from "../context/UserContext/BadgeContext";
-import { BADGES } from "../data/static/badges";
 import { LEVEL_RULES } from "../data/rules/levelTitles";
+import { useAchievement } from "../context/AchievementContext/AchievementContext";
+import { ACHIEVEMENTS } from "../data/rules/achievementRules";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
   const { coins } = useCoin(); //전역 코인 상태 연결
   const { isOwned, equippedItems, toggleEquip } = useItem();
   const { character, currentTitle } = useCharacter();
-  const { earnedBadges } = useBadge();
+  const { achieved } = useAchievement();
   const navigate = useNavigate();
   const [animate, setAnimate] = useState(false); //착장애니메이션
   const [activeSlot, setActiveSlot] = useState<EquipSlot>("hat"); // 현재 선택된 슬롯 상태
@@ -131,12 +131,14 @@ const CharacterPage = () => {
           <strong>{coins}</strong>
         </StatusRow>
         <BadgeSection>
-          {earnedBadges.map((id) => {
-            const badge = BADGES[id];
+          {achieved.map((id: string) => {
+            const achievement = ACHIEVEMENTS.find((a) => a.id === id);
+            if (!achievement) return null;
+
             return (
               <Badge key={id}>
-                <span>{badge.emoji}</span>
-                <small>{badge.title}</small>
+                <span>{achievement.badge.emoji}</span>
+                <small>{achievement.badge.title}</small>
               </Badge>
             );
           })}

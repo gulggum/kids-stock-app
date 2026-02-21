@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BADGES, type BadgeId } from "../../data/static/badges";
+import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 
 /**
  * 🏅 뱃지 전체 목록 모달용 컴포넌트
@@ -8,7 +8,7 @@ import { BADGES, type BadgeId } from "../../data/static/badges";
  * - 뱃지 개수 많아질 수 있으므로 스크롤 적용
  */
 type BadgeListModalProps = {
-  badges: BadgeId[]; // 해당 유저가 획득한 뱃지 ID 목록
+  badges: string[]; // 해당 유저가 획득한 뱃지 ID 목록
 };
 
 const BadgeListModal = ({ badges }: BadgeListModalProps) => {
@@ -20,13 +20,14 @@ const BadgeListModal = ({ badges }: BadgeListModalProps) => {
     <ScrollContainer>
       <Grid>
         {badges.map((badgeId) => {
-          const badge = BADGES[badgeId];
+          const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
 
+          if (!achievement) return null;
           return (
             <BadgeItem key={badgeId}>
-              <Emoji>{badge.emoji}</Emoji>
-              <Title>{badge.title}</Title>
-              <Description>{badge.description}</Description>
+              <Emoji>{achievement.badge.emoji}</Emoji>
+              <Title>{achievement.badge.title}</Title>
+              <Description>{achievement.badge.description}</Description>
             </BadgeItem>
           );
         })}
