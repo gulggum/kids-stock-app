@@ -3,7 +3,7 @@ import { type CommunityUser } from "../../data/mock/communityMock";
 import { useModal } from "../../context/UIContext/ModalContext";
 import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
-import { getLevelMeta } from "../../utils/getLevelTier";
+import { getLevelTier } from "../../utils/getLevelTier";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -11,7 +11,7 @@ import { getLevelMeta } from "../../utils/getLevelTier";
  */
 const CommunityCard = ({ user }: { user: CommunityUser }) => {
   const { openModal } = useModal();
-  const { title: levelTitle, tier } = getLevelMeta(user.level);
+  const { title: levelTitle, tier } = getLevelTier(user.level);
 
   const openBadgeModal = () => {
     openModal({
