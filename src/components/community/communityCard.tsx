@@ -1,9 +1,9 @@
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { type CommunityUser } from "../../data/mock/communityMock";
-import { LEVEL_RULES } from "../../data/rules/levelTitles";
 import { useModal } from "../../context/UIContext/ModalContext";
 import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
+import { getLevelMeta } from "../../utils/getLevelTier";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -11,11 +11,8 @@ import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
  */
 const CommunityCard = ({ user }: { user: CommunityUser }) => {
   const { openModal } = useModal();
+  const { title: levelTitle, tier } = getLevelMeta(user.level);
 
-  const levelTitle =
-    LEVEL_RULES.slice()
-      .reverse()
-      .find((rule) => user.level >= rule.level)?.title ?? "🐣 투자 새싹";
   const openBadgeModal = () => {
     openModal({
       type: "INFO",
@@ -25,34 +22,17 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
     });
   };
 
-  const achievedAchievements = user.badges
-    .map((badgeId) => ACHIEVEMENTS.find((a) => a.id === badgeId))
-    .filter(Boolean);
-
-  // 등급 우선순위
-  const tierPriority = {
-    LEGEND: 3,
-    RARE: 2,
-    COMMON: 1,
-  };
-
-  const highestTier =
-    achievedAchievements.length > 0
-      ? achievedAchievements.sort(
-          (a, b) => tierPriority[b!.tier] - tierPriority[a!.tier],
-        )[0]!.tier
-      : "COMMON";
-
   return (
-    <Card>
+    <Card $tier={tier}>
       <Top>
         <Emoji>{user.emoji}</Emoji>
         <Info>
           <Name>{user.nickname}</Name>
-          <Level>{user.levelTitle}</Level>
+          <Level>Lv. {user.level}</Level>
         </Info>
+        <LevelTitle>{levelTitle}</LevelTitle>
       </Top>
-      <LevelTitle tier={highestTier}>{levelTitle}</LevelTitle>
+
       <BadgeRow>
         {user.badges.slice(0, 3).map((badgeId) => {
           const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
@@ -81,7 +61,23 @@ export default CommunityCard;
 
 /* ================= 스타일 ================= */
 
-const Card = styled.div<{ $isMe?: boolean; $isHighLevel?: boolean }>`
+const goldShine = keyframes`
+  0% {
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 1);
+  }
+  100% {
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+  }
+`;
+
+const Card = styled.div<{
+  $isMe?: boolean;
+  $isHighLevel?: boolean;
+  $tier?: "COMMON" | "RARE" | "EPIC" | "LEGEND";
+}>`
   background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 14px;
@@ -89,6 +85,8 @@ const Card = styled.div<{ $isMe?: boolean; $isHighLevel?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  border: 2px solid transparent;
 
   /* ⭐ 내 카드 강조 */
   ${({ $isMe, theme }) =>
@@ -102,11 +100,15 @@ const Card = styled.div<{ $isMe?: boolean; $isHighLevel?: boolean }>`
       );
     `}
 
-  /* 🏆 고레벨 유저 은근 과시 */
-  ${({ $isHighLevel, theme }) =>
-    $isHighLevel &&
-    `
-      box-shadow: 0 0 0 2px ${theme.colors.down};
+  /* 👑 LEGEND 황금 카드 */
+  ${({ $tier }) =>
+    $tier === "LEGEND" &&
+    css`
+      background: linear-gradient(135deg, #fff8dc, #ffe066, #ffd700);
+
+      border: 2px solid #ffb703;
+
+      animation: ${goldShine} 2.5s infinite;
     `}
 `;
 const Top = styled.div`
@@ -158,32 +160,17 @@ const Status = styled.div`
     transform: rotate(45deg);
   }
 `;
-const LevelTitle = styled.div<{ tier: "COMMON" | "RARE" | "LEGEND" }>`
-  display: inline-block;
+const LevelTitle = styled.div`
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-
   padding: 6px 12px;
   border-radius: 999px;
-
-  background: ${({ tier, theme }) =>
-    tier === "LEGEND"
-      ? theme.colors.accentPurple + "30"
-      : tier === "RARE"
-        ? theme.colors.accentBlue + "25"
-        : theme.colors.border};
-
-  color: ${({ tier, theme }) =>
-    tier === "LEGEND"
-      ? theme.colors.accentPurple
-      : tier === "RARE"
-        ? theme.colors.accentBlue
-        : theme.colors.textSecondary};
-
-  box-shadow: ${({ tier }) =>
-    tier === "LEGEND" ? "0 0 10px rgba(180,140,242,0.6)" : "none"};
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 800;
+  margin-left: auto;
+
+  background: ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 const BadgeRow = styled.div`
   margin-top: 6px;
