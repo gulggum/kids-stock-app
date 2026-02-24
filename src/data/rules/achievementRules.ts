@@ -15,7 +15,7 @@ export type AchievementState = {
 
 export type Achievement = {
   id: string;
-
+  tier: "COMMON" | "RARE" | "LEGEND";
   // 🎖 뱃지 메타 정보
   badge: {
     title: string;
@@ -41,6 +41,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
   {
     id: "FIRST_BUY",
+    tier: "COMMON",
     badge: {
       title: "첫 투자",
       description: "처음으로 주식을 샀어요!",
@@ -52,6 +53,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
   {
     id: "TRADE_10",
+    tier: "RARE",
     badge: {
       title: "10번 거래 달성",
       description: "주식을 10번 거래했어요!",
@@ -67,6 +69,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
   {
     id: "ASSET_120",
+    tier: "RARE",
     badge: {
       title: "120만원 돌파",
       description: "총 자산이 120만원을 넘었어요!",
@@ -82,6 +85,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
   {
     id: "LEVEL_10",
+    tier: "RARE",
     badge: {
       title: "레벨 10 달성",
       description: "투자 레벨이 10이 되었어요!",
@@ -97,6 +101,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
   {
     id: "ATTEND_7_DAYS",
+    tier: "COMMON",
     badge: {
       title: "일주일 개근",
       description: "7일 연속 출석 성공!",
@@ -108,6 +113,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
   {
     id: "ATTEND_30_DAYS",
+    tier: "LEGEND",
     badge: {
       title: "한 달 개근",
       description: "30일 연속 출석!",

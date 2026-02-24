@@ -25,6 +25,24 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
     });
   };
 
+  const achievedAchievements = user.badges
+    .map((badgeId) => ACHIEVEMENTS.find((a) => a.id === badgeId))
+    .filter(Boolean);
+
+  // 등급 우선순위
+  const tierPriority = {
+    LEGEND: 3,
+    RARE: 2,
+    COMMON: 1,
+  };
+
+  const highestTier =
+    achievedAchievements.length > 0
+      ? achievedAchievements.sort(
+          (a, b) => tierPriority[b!.tier] - tierPriority[a!.tier],
+        )[0]!.tier
+      : "COMMON";
+
   return (
     <Card>
       <Top>
@@ -34,7 +52,7 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
           <Level>{user.levelTitle}</Level>
         </Info>
       </Top>
-      <LevelTitle>{levelTitle}</LevelTitle>
+      <LevelTitle tier={highestTier}>{levelTitle}</LevelTitle>
       <BadgeRow>
         {user.badges.slice(0, 3).map((badgeId) => {
           const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
@@ -140,22 +158,32 @@ const Status = styled.div`
     transform: rotate(45deg);
   }
 `;
-const LevelTitle = styled.div`
-  margin-top: 4px;
-  padding: 4px 10px;
+const LevelTitle = styled.div<{ tier: "COMMON" | "RARE" | "LEGEND" }>`
+  display: inline-block;
+  align-items: center;
+  gap: 6px;
 
-  border-radius: 999px; /* 뱃지 느낌 */
-  background: ${({ theme }) => theme.colors.accentPurple};
+  padding: 6px 12px;
+  border-radius: 999px;
 
+  background: ${({ tier, theme }) =>
+    tier === "LEGEND"
+      ? theme.colors.accentPurple + "30"
+      : tier === "RARE"
+        ? theme.colors.accentBlue + "25"
+        : theme.colors.border};
+
+  color: ${({ tier, theme }) =>
+    tier === "LEGEND"
+      ? theme.colors.accentPurple
+      : tier === "RARE"
+        ? theme.colors.accentBlue
+        : theme.colors.textSecondary};
+
+  box-shadow: ${({ tier }) =>
+    tier === "LEGEND" ? "0 0 10px rgba(180,140,242,0.6)" : "none"};
   font-size: 12px;
   font-weight: 800;
-  color: ${({ theme }) => theme.colors.text};
-
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-
-  white-space: nowrap;
 `;
 const BadgeRow = styled.div`
   margin-top: 6px;
