@@ -9,29 +9,32 @@ import { TradeProvider } from "./context/TradeContext";
 import { RewardProvider } from "./context/RewardContext";
 import { ScoreProvider } from "./context/ScoreContext";
 import { AchievementProvider } from "./context/AchievementContext/AchievementContext";
+import { AuthProvider } from "./context/AuthContext";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <AppThemeProvider>
-      <UIProvider>
-        <WalletProvider>
-          <ScoreProvider>
-            <UserProgressProvider>
-              <RewardProvider>
-                <QuizProvider>
-                  <AttendanceProvider>
-                    <TradeProvider>
-                      <AchievementProvider>
-                        <PortfolioProvider>{children}</PortfolioProvider>
-                      </AchievementProvider>
-                    </TradeProvider>
-                  </AttendanceProvider>
-                </QuizProvider>
-              </RewardProvider>
-            </UserProgressProvider>
-          </ScoreProvider>
-        </WalletProvider>
-      </UIProvider>
+      <AuthProvider>
+        <UIProvider>
+          <WalletProvider>
+            <ScoreProvider>
+              <UserProgressProvider>
+                <RewardProvider>
+                  <QuizProvider>
+                    <AttendanceProvider>
+                      <TradeProvider>
+                        <AchievementProvider>
+                          <PortfolioProvider>{children}</PortfolioProvider>
+                        </AchievementProvider>
+                      </TradeProvider>
+                    </AttendanceProvider>
+                  </QuizProvider>
+                </RewardProvider>
+              </UserProgressProvider>
+            </ScoreProvider>
+          </WalletProvider>
+        </UIProvider>
+      </AuthProvider>
     </AppThemeProvider>
   );
 };

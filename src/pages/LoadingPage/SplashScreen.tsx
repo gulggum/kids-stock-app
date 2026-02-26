@@ -1,23 +1,16 @@
 import styled, { keyframes } from "styled-components";
 import logo from "../../assets/images/logo.png";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 const SplashScreen = () => {
-  const navigate = useNavigate();
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/login");
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
   return (
     <Container>
       <Logo src={logo} alt="KidsStock Logo" />
     </Container>
   );
 };
+
+export default SplashScreen;
+
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -43,5 +36,3 @@ const Logo = styled.img`
   max-width: 900px;
   animation: ${fadeIn} 0.8s ease-in-out;
 `;
-
-export default SplashScreen;

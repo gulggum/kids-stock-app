@@ -7,24 +7,23 @@ import Shop from "../pages/Shop";
 import StockDetail from "../pages/market/StockDetail";
 import PortfolioPage from "../pages/PortfolioPage";
 import CharacterPage from "../pages/CharacterPage";
-import SplashScreen from "../pages/LoadingPage/SplashScreen";
 import LoginPage from "../pages/LoginPage";
+import ProtectedRoute from "./ProtectedRoute";
+import NotFoundPage from "../pages/NotFoundPage";
 
 export const router = createBrowserRouter([
-  // 1️⃣ 스플래시 (첫 진입)
-  {
-    path: "*",
-    element: <SplashScreen />,
-  },
-
   // 2️⃣ 로그인
   {
     path: "/login",
     element: <LoginPage />,
   },
   {
-    path: "/app",
-    element: <AppLayout />,
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <Home /> },
       { path: "market", element: <Market /> },
@@ -37,6 +36,11 @@ export const router = createBrowserRouter([
         element: <CharacterPage />,
       },
     ],
+  },
+  // 404 없는 경로시
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 

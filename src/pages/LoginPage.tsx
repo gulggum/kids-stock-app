@@ -1,7 +1,17 @@
 import styled from "styled-components";
 import logo from "../assets/images/logo.png";
+import { useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleLogin = () => {
+    login(); // localStorage 저장
+    navigate("/"); // 홈으로 이동
+  };
+
   return (
     <Container>
       <Card>
@@ -9,7 +19,7 @@ const LoginPage = () => {
         <Title>로그인</Title>
         <Input type="text" placeholder="아이디를 입력하세요" />
         <Input type="password" placeholder="비밀번호를 입력하세요" />
-        <Button>로그인</Button>
+        <Button onClick={handleLogin}>로그인</Button>
       </Card>
     </Container>
   );
