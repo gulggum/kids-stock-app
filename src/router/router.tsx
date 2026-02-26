@@ -7,10 +7,23 @@ import Shop from "../pages/Shop";
 import StockDetail from "../pages/market/StockDetail";
 import PortfolioPage from "../pages/PortfolioPage";
 import CharacterPage from "../pages/CharacterPage";
+import SplashScreen from "../pages/LoadingPage/SplashScreen";
+import LoginPage from "../pages/LoginPage";
 
 export const router = createBrowserRouter([
+  // 1️⃣ 스플래시 (첫 진입)
   {
-    path: "/",
+    path: "*",
+    element: <SplashScreen />,
+  },
+
+  // 2️⃣ 로그인
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/app",
     element: <AppLayout />,
     children: [
       { index: true, element: <Home /> },

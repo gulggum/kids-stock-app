@@ -1,7 +1,17 @@
 import styled, { keyframes } from "styled-components";
 import logo from "../../assets/images/logo.png";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SplashScreen = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/login");
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
   return (
     <Container>
       <Logo src={logo} alt="KidsStock Logo" />
