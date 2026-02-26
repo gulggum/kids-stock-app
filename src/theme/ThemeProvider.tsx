@@ -26,7 +26,9 @@ declare module "styled-components" {
       border: string;
 
       accentBlue: string;
+      accentGreen: string;
       accentPurple: string;
+      accentPink: string;
 
       up: string;
       down: string;
@@ -56,36 +58,50 @@ declare module "styled-components" {
 export const kidTheme: DefaultTheme = {
   name: "kid",
   colors: {
-    primary: "#FFB703", // 메인 노랑
-    secondary: "#FB8500", // 오렌지
+    // 🌟 메인 브랜드 컬러 (로고 K 블루)
+    primary: "#2E8EDB",
 
-    background: "#FFF6E5", // 따뜻한 배경
-    surface: "#FFFFFF",
-    card: "#FFE8C7",
-    border: "#F3D9A6",
+    // 🟠 보조 (로고 오렌지)
+    secondary: "#F39C12",
 
-    accentBlue: "#8ECAE6",
-    accentPurple: "#B48CF2",
+    // 💛 메인 배경 (로고 노랑 톤)
+    background: "#FFD60A",
 
+    // 카드 & 레이어
+    surface: "#FFF9DB",
+    card: "#FFEAA7",
+    border: "#E6C84F",
+
+    // 🎨 로고 컬러 확장
+    accentBlue: "#3B82F6",
+    accentGreen: "#6BCB3D",
+    accentPurple: "#9B59B6",
+    accentPink: "#FF8FA3",
+
+    // 📈 주식 컬러 (아이들 친화적으로 너무 강하지 않게)
     up: "#4CAF50",
-    down: "#E76F51",
+    down: "#E74C3C",
 
-    text: "#3A2E2E",
-    textSecondary: "#6B5E57",
-    muted: "#9A8F87",
+    // ✏️ 텍스트 (로고 아웃라인 네이비 기반)
+    text: "#1F3A5F",
+    textSecondary: "#2C4A73",
+    muted: "#5F7FA6",
   },
+
   fonts: {
     base: "'Noto Sans KR', 'Segoe UI', Roboto, sans-serif",
     title: "'Fredoka', 'Noto Sans KR', sans-serif",
   },
+
   radius: {
-    sm: "12px",
-    md: "18px",
-    lg: "24px",
+    sm: "14px",
+    md: "20px",
+    lg: "28px",
   },
+
   shadows: {
-    sm: "0 8px 20px rgba(0,0,0,0.08)",
-    md: "0 12px 30px rgba(0,0,0,0.12)",
+    sm: "0 8px 20px rgba(31,58,95,0.12)",
+    md: "0 14px 35px rgba(31,58,95,0.18)",
   },
 };
 
@@ -94,27 +110,42 @@ export const kidTheme: DefaultTheme = {
 export const cleanTheme: DefaultTheme = {
   name: "clean",
   colors: {
-    primary: "#2563EB",
-    secondary: "#60A5FA",
+    // 🔵 신뢰 중심 딥 블루 (브랜드 연결)
+    primary: "#1D4ED8",
+    secondary: "#3B82F6",
 
-    background: "#F8FAFF",
+    // 🤍 차분한 배경
+    background: "#F5F7FB",
     surface: "#FFFFFF",
     card: "#FFFFFF",
-    border: "#E5E7EB",
+    border: "#E2E8F0",
 
-    accentBlue: "#60A5FA",
-    accentPurple: "#A78BFA",
+    // 🎨 브랜드 연결 포인트
+    accentBlue: "#2563EB",
+    accentPurple: "#7C3AED",
+    accentGreen: "#16A34A", // ✔ 추가 (신뢰감 있는 그린)
+    accentPink: "#EC4899",
 
-    up: "#16A34A",
-    down: "#DC2626",
+    // 📈 주식 컬러 (조금 더 전문적)
+    up: "#15803D",
+    down: "#B91C1C",
 
-    text: "#0F172A",
-    textSecondary: "#475569",
-    muted: "#94A3B8",
+    // 🖋 텍스트 (조금 더 묵직하게)
+    text: "#0B1F3A",
+    textSecondary: "#334155",
+    muted: "#64748B",
   },
+
   fonts: kidTheme.fonts,
-  radius: kidTheme.radius,
-  shadows: kidTheme.shadows,
+  radius: {
+    sm: "10px",
+    md: "14px",
+    lg: "18px",
+  },
+  shadows: {
+    sm: "0 4px 12px rgba(15,23,42,0.06)",
+    md: "0 8px 24px rgba(15,23,42,0.10)",
+  },
 };
 
 // -----------------------------
