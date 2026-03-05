@@ -4,6 +4,7 @@ import { useModal } from "../../context/UIContext/ModalContext";
 import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { getLevelTier } from "../../utils/getLevelTier";
+import { isUserOnline } from "../../utils/isUserOnline";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -21,11 +22,16 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
       confirmText: "닫기",
     });
   };
+  //온라인 여부
+  const online = isUserOnline(user.lastActive);
 
   return (
     <Card $tier={tier}>
       <Top>
-        <Emoji>{user.emoji}</Emoji>
+        <Emoji>
+          {user.emoji}
+          {online && <ActiveDot />}
+        </Emoji>
         <Info>
           <Name>{user.nickname}</Name>
           <Level>Lv. {user.level}</Level>
@@ -75,18 +81,28 @@ const goldShine = keyframes`
 
 const Card = styled.div<{
   $isMe?: boolean;
-  $isHighLevel?: boolean;
   $tier?: "COMMON" | "RARE" | "EPIC" | "LEGEND";
 }>`
   background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.radius.lg};
-  padding: 14px;
+  padding: 16px;
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 
-  border: 2px solid transparent;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+
+  /* ⭐ 카드 입체감 */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+
+  transition: all 0.18s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+  }
 
   /* ⭐ 내 카드 강조 */
   ${({ $isMe, theme }) =>
@@ -95,7 +111,7 @@ const Card = styled.div<{
       border: 2px solid ${theme.colors.primary};
       background: linear-gradient(
         180deg,
-        ${theme.colors.primary},
+        ${theme.colors.primary}10,
         ${theme.colors.surface}
       );
     `}
@@ -105,20 +121,49 @@ const Card = styled.div<{
     $tier === "LEGEND" &&
     css`
       background: linear-gradient(135deg, #fff8dc, #ffe066, #ffd700);
-
       border: 2px solid #ffb703;
-
       animation: ${goldShine} 2.5s infinite;
     `}
 `;
 const Top = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 `;
 
 const Emoji = styled.div`
-  font-size: 30px;
+  font-size: 28px;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: ${({ theme }) => theme.colors.background};
+
+  position: relative;
+`;
+
+const ActiveDot = styled.div`
+  position: absolute;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background: #2ecc71;
+
+  right: -2px;
+  bottom: -2px;
+
+  border: 2px solid white;
+
+  box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.surface};
 `;
 
 const Info = styled.div`
@@ -143,20 +188,28 @@ const Status = styled.div`
 
   background: ${({ theme }) => theme.colors.background};
   padding: 10px 12px;
-  border-radius: 14px;
+
+  border-radius: 12px;
 
   position: relative;
+
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
   /* 말풍선 꼬리 */
   &::before {
     content: "";
     position: absolute;
     top: -6px;
-    left: 14px;
+    left: 16px;
 
     width: 10px;
     height: 10px;
+
     background: ${({ theme }) => theme.colors.background};
+
+    border-left: 1px solid ${({ theme }) => theme.colors.border};
+    border-top: 1px solid ${({ theme }) => theme.colors.border};
+
     transform: rotate(45deg);
   }
 `;
@@ -173,7 +226,8 @@ const LevelTitle = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 const BadgeRow = styled.div`
-  margin-top: 6px;
+  margin-top: 4px;
+
   display: flex;
   align-items: center;
   gap: 6px;
@@ -184,12 +238,15 @@ const BadgeIcon = styled.div`
   height: 28px;
   border-radius: 50%;
 
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.background};
+
   display: flex;
   align-items: center;
   justify-content: center;
 
   font-size: 16px;
+
+  /* border: 1px solid ${({ theme }) => theme.colors.border}; */
 `;
 
 const MoreBadgeButton = styled.button`

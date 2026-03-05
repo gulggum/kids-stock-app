@@ -12,6 +12,7 @@ export type CommunityUser = {
   emoji: string; // 캐릭터 느낌
   status: string; // 선택형 한마디
   score: number;
+  lastActive: number;
   badges: string[];
 };
 
@@ -24,6 +25,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🦊",
     status: "🔥 오늘도 기록했어요!",
     score: 120,
+    lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY"],
   },
   {
@@ -34,6 +36,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🌱",
     status: "😬 처음이라 조금 떨려요",
     score: 105,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS"],
   },
   {
@@ -44,6 +47,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🦁",
     status: "🏆 출석 7일 성공!",
     score: 50,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY"],
   },
   {
@@ -54,6 +58,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🐰",
     status: "📊 오늘은 차트 분석!",
     score: 98,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS"],
   },
   {
@@ -64,6 +69,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🐯",
     status: "💰 수익률 상승중!",
     score: 134,
+    lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "ASSET_120"],
   },
   {
@@ -74,6 +80,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🐹",
     status: "📚 뉴스 읽는 중!",
     score: 76,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY"],
   },
   {
@@ -84,6 +91,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🦉",
     status: "📈 오늘은 상승장!",
     score: 150,
+    lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS", "TRADE_10"],
   },
   {
@@ -94,6 +102,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🐣",
     status: "🙂 한 주 샀어요!",
     score: 45,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY"],
   },
   {
@@ -104,6 +113,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🦅",
     status: "🚀 수익률 10% 달성!",
     score: 210,
+    lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "ASSET_120", "LEVEL_10", "TRADE_10"],
   },
   {
@@ -114,6 +124,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🌼",
     status: "🌱 조금씩 배워요",
     score: 33,
+    lastActive: Date.now() - 1000 * 60 * 10,
     badges: [],
   },
   {
@@ -124,6 +135,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🦊",
     status: "🧠 뉴스 퀴즈 성공!",
     score: 111,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ASSET_120"],
   },
   {
@@ -134,6 +146,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🐻",
     status: "📅 출석 완료!",
     score: 67,
+    lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "TRADE_10"],
   },
   {
@@ -144,6 +157,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🦁",
     status: "🔥 오늘도 거래 성공!",
     score: 175,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "LEVEL_10"],
   },
   {
@@ -154,6 +168,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🌷",
     status: "🙂 아직 배우는 중",
     score: 22,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: [],
   },
   {
@@ -164,6 +179,7 @@ export const communityMock: CommunityUser[] = [
     emoji: "🐺",
     status: "📊 오늘은 하락장 분석!",
     score: 140,
+    lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS"],
   },
 ];

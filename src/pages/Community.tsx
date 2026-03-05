@@ -76,6 +76,7 @@ const Community = () => {
   const rankingList =
     rankingType === "SCORE" ? scoreRanking : achievementRanking;
 
+  //내랭킹으로 자동으로 search
   useEffect(() => {
     const target = myCardEndRef.current;
 
@@ -113,6 +114,7 @@ const Community = () => {
             emoji: "🐣",
             status: myStatus,
             score,
+            lastActive: Date.now() - 1000 * 60 * 2,
             badges: achieved,
           }}
         />
