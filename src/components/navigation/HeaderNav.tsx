@@ -21,14 +21,20 @@ const HeaderNav = () => {
 };
 
 const HeaderWrapper = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
+
   background: ${({ theme }) => theme.colors.surface};
   box-shadow: ${({ theme }) => theme.shadows.sm};
+
   @media (max-width: 768px) {
-    display: none; // 모바일에서는 숨김
+    display: none; //모바일에선 숨김
   }
 `;
 

@@ -21,14 +21,17 @@ const Community = () => {
   const { score } = useScore();
   //"내 카드의 끝"을 감지하는 더미 div
   const myCardEndRef = useRef<HTMLDivElement | null>(null);
-  // 실제 커뮤니티에 표시되는 상태
-  const [myStatus, setMyStatus] = useState("😄 오늘도 참여했어요!");
-
   const [showSticky, setShowSticky] = useState(false);
+  // 실제 커뮤니티에 표시되는 상태
+  const [myStatus, setMyStatus] = useState(() => {
+    const saved = localStorage.getItem("myStatus");
+    return saved ?? "😄 오늘도 참여했어요!";
+  });
 
-  const [rankingType, setRankingType] = useState<"SCORE" | "ACHIEVEMENT">(
-    "SCORE",
-  );
+  useEffect(() => {
+    localStorage.setItem("myStatus", myStatus);
+  }, [myStatus]);
+
   // 🔥 내 유저 데이터 구성
   const myUser = {
     id: 0,
@@ -41,6 +44,26 @@ const Community = () => {
 
   // 🔥 전체 유저 리스트 (내 정보 + mock)
   const allUsers = [myUser, ...communityMock];
+
+  const myRankRef = useRef<HTMLDivElement | null>(null);
+
+  const [rankingType, setRankingType] = useState<"SCORE" | "ACHIEVEMENT">(
+    "SCORE",
+  );
+
+  useEffect(() => {
+    const myIndex = rankingList.findIndex((u) => u.id === myUser.id);
+
+    if (myIndex > 2) {
+      setTimeout(() => {
+        myRankRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 200);
+    }
+  }, [rankingType]);
+
   //점수 기준 정렬
   const scoreRanking = [...allUsers].sort(
     (a, b) => (b.score ?? 0) - (a.score ?? 0),
@@ -55,11 +78,11 @@ const Community = () => {
 
   useEffect(() => {
     const target = myCardEndRef.current;
+
     if (!target) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // 내 카드가 화면에 안 보이면 sticky 표시
         setShowSticky(!entry.isIntersecting);
       },
       {
@@ -67,7 +90,9 @@ const Community = () => {
       },
     );
 
-    observer.observe(target);
+    if (myCardEndRef.current) {
+      observer.observe(myCardEndRef.current);
+    }
 
     return () => observer.disconnect();
   }, []);
@@ -87,7 +112,7 @@ const Community = () => {
             levelTitle: "",
             emoji: "🐣",
             status: myStatus,
-            score: 120,
+            score,
             badges: achieved,
           }}
         />
@@ -185,10 +210,14 @@ const Community = () => {
         <RankingList>
           {rankingList.slice(3).map((user, index) => {
             const actualRank = index + 4;
-            const isMe = user.id === 0;
+            const isMe = user.id === myUser.id;
 
             return (
-              <RankingRow key={user.id} $isMe={isMe}>
+              <RankingRow
+                key={user.id}
+                ref={isMe ? myRankRef : null}
+                $isMe={isMe}
+              >
                 <RankNumber>{actualRank}</RankNumber>
 
                 <UserInfo>
@@ -252,6 +281,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding-bottom: 80px;
 `;
 
 const Title = styled.h2`
@@ -316,13 +346,13 @@ const SelectButton = styled.button`
 
 //스크롤시 고정될 내 상태 요약
 const StickyMyStatus = styled.div`
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 20;
 
-  width: 100%;
-  margin: 0 -16px -16px 0; /* 패딩 상쇄 */
-  padding: 12px 0;
+  padding: 12px 16px;
 
   background: ${({ theme }) => theme.colors.background};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
@@ -347,6 +377,10 @@ const StickyMyStatus = styled.div`
       transform: translateY(0);
       opacity: 1;
     }
+  }
+
+  @media (min-width: 769px) {
+    top: 66px; // PC에서는 헤더 아래
   }
 `;
 
