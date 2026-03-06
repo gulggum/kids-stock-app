@@ -177,6 +177,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     const geminiData = await geminiRes.json();
+    console.log("GEMINI RAW RESPONSE:", geminiData);
 
     // Gemini 응답에서 텍스트 추출
     const raw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
