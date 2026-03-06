@@ -33,11 +33,10 @@ const Home = () => {
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading, isError } = useNewsQuery();
 
-  console.log("newsQuery", { data, isLoading, isError });
+  console.log("query result", data);
 
   const todayNews = data?.news.filter((n) => n.type === "today") ?? []; // 첫 번째 뉴스 = 오늘의 뉴스
   const missedNews = data?.news.filter((n) => n.type === "missed") ?? []; // 나머지 = 놓친 뉴스
-  const quizzes = data?.quizzes ?? [];
 
   const handleNewsClick = (news: HomeNews) => {
     setActiveNews(news);
@@ -87,22 +86,6 @@ const Home = () => {
     playCoinSound();
   };
 
-  // ⏳ 로딩 상태
-  if (isLoading)
-    return (
-      <Wrapper>
-        <LoadingText>📰 오늘의 뉴스 불러오는 중...</LoadingText>
-      </Wrapper>
-    );
-
-  // ❌ 에러 상태
-  if (isError)
-    return (
-      <Wrapper>
-        <LoadingText>뉴스를 불러오지 못했어요 😢</LoadingText>
-      </Wrapper>
-    );
-
   return (
     <Wrapper>
       <Section>
@@ -112,23 +95,29 @@ const Home = () => {
       {/* 📰 오늘의 뉴스 */}
       <Section>
         <SectionTitle>📰 오늘의 뉴스</SectionTitle>
-        {todayNews.map((news) => (
-          <Card key={news.id} onClick={() => handleNewsClick(news)}>
-            <strong>{news.title}</strong>
-            <p>{news.summary}</p>
-          </Card>
-        ))}
+        {isLoading && <LoadingText>뉴스 불러오는 중...</LoadingText>}
+        {isError && <LoadingText>뉴스를 불러오지 못했어요 😢</LoadingText>}
+        {!isLoading &&
+          todayNews.map((news) => (
+            <Card key={news.id} onClick={() => handleNewsClick(news)}>
+              <strong>{news.title}</strong>
+              <p>{news.summary}</p>
+            </Card>
+          ))}
       </Section>
 
       {/* 🌙 놓친 뉴스 */}
       <Section>
         <SectionTitle>🌙 자면서 놓친 뉴스</SectionTitle>
-        {missedNews.map((news) => (
-          <Card key={news.id} onClick={() => handleNewsClick(news)}>
-            <strong>{news.title}</strong>
-            <p>{news.summary}</p>
-          </Card>
-        ))}
+        {isLoading && <LoadingText>뉴스 불러오는 중...</LoadingText>}
+        {isError && <LoadingText>뉴스를 불러오지 못했어요 😢</LoadingText>}
+        {!isLoading &&
+          missedNews.map((news) => (
+            <Card key={news.id} onClick={() => handleNewsClick(news)}>
+              <strong>{news.title}</strong>
+              <p>{news.summary}</p>
+            </Card>
+          ))}
       </Section>
 
       {/* 📅 출석 상태 */}

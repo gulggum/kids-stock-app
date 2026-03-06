@@ -4,6 +4,10 @@
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
+//메모리 캐시 변수
+let cachedNews: any = null;
+let cachedDate: string | null = null;
+
 // Gemini에게 보낼 프롬프트 생성
 const buildPrompt = (articles: { title: string; description: string }[]) => {
   const articleText = articles
@@ -50,6 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // 개발 중에는 mock 데이터 바로 반환 (API 호출 안 함!)
+  // 서버 mock
   if (process.env.NODE_ENV === "development") {
     return res.status(200).json({
       news: [
@@ -137,7 +142,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       date: new Date().toISOString().slice(0, 10),
     });
   }
+  const today = new Date().toISOString().slice(0, 10);
 
+  if (cachedNews && cachedDate === today) {
+    return res.status(200).json(cachedNews);
+  }
   try {
     // ① NewsAPI에서 최신 주식/경제 뉴스 가져오기
     const newsRes = await fetch(
@@ -176,11 +185,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    // ③ 날짜 태그 추가 (하루 캐싱 판단용)
-    const today = new Date().toISOString().slice(0, 10); // "2025-03-06"
-    return res.status(200).json({ ...parsed, date: today });
+    parsed.news = parsed.news.map((news: any, i: number) => ({
+      ...news,
+      type: i < 3 ? "today" : "missed",
+    }));
+
+    const result = { ...parsed, date: today };
+
+    cachedNews = result;
+    cachedDate = today;
+
+    console.log("newsData", newsData);
+    console.log("geminiData", geminiData);
+    console.log("RAW GEMINI", geminiData);
+    console.log("NEWS KEY", process.env.NEWS_API_KEY);
+    console.log("GEMINI KEY", process.env.GEMINI_API_KEY);
+
+    return res.status(200).json(result);
   } catch (err) {
-    console.error("뉴스 API 에러:", err);
-    return res.status(500).json({ error: "서버 에러", detail: String(err) });
+    return res.status(500).json({ error: "서버 에러" });
   }
 }

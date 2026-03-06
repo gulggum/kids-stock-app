@@ -13,12 +13,38 @@ type NewsResponse = {
   date: string; // "2025-03-06"
 };
 
+//API 호출하는 함수
 const fetchTodayNews = async (): Promise<NewsResponse> => {
-  const res = await fetch("/api/news"); // Vercel 서버리스 함수 호출
-  if (!res.ok) throw new Error("뉴스 불러오기 실패");
-  return res.json();
+  //프론트 mock
+  // if (import.meta.env.DEV) {
+  //   return {
+  //     news: [
+  //       {
+  //         id: "news_0",
+  //         title: "테스트 뉴스",
+  //         summary: "개발용 뉴스입니다",
+  //         stockId: "0",
+  //         type: "today",
+  //       },
+  //     ],
+  //     quizzes: [],
+  //     date: new Date().toISOString().slice(0, 10),
+  //   };
+  // }
+
+  const res = await fetch("https://kids-stock-app.vercel.app/api/news");
+
+  if (!res.ok) {
+    throw new Error("뉴스 불러오기 실패");
+  }
+
+  const data = await res.json();
+  console.log("API RESULT", data);
+
+  return data;
 };
 
+//react query 훅
 export const useNewsQuery = () => {
   const today = new Date().toISOString().slice(0, 10);
 
