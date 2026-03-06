@@ -195,14 +195,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     cachedNews = result;
     cachedDate = today;
 
-    console.log("newsData", newsData);
-    console.log("geminiData", geminiData);
-    console.log("RAW GEMINI", geminiData);
-    console.log("NEWS KEY", process.env.NEWS_API_KEY);
-    console.log("GEMINI KEY", process.env.GEMINI_API_KEY);
-
     return res.status(200).json(result);
   } catch (err) {
-    return res.status(500).json({ error: "서버 에러" });
+    console.error("SERVER ERROR:", err);
+    return res.status(500).json({
+      error: "서버 에러",
+      detail: String(err),
+    });
   }
 }

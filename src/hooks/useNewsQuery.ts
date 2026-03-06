@@ -32,16 +32,14 @@ const fetchTodayNews = async (): Promise<NewsResponse> => {
   //   };
   // }
 
+  console.log("fetchTodayNews 실행");
+
   const res = await fetch("https://kids-stock-app.vercel.app/api/news");
 
-  if (!res.ok) {
-    throw new Error("뉴스 불러오기 실패");
-  }
+  const text = await res.text();
+  console.log("RAW RESPONSE", text);
 
-  const data = await res.json();
-  console.log("API RESULT", data);
-
-  return data;
+  return JSON.parse(text);
 };
 
 //react query 훅
