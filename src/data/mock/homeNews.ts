@@ -9,26 +9,5 @@ export type HomeNews = {
   title: string;
   summary: string;
   stockId: string; //연결될 주식
+  type: "today" | "missed";
 };
-
-export const todayNews: HomeNews = {
-  id: "today",
-  title: "오늘의 뉴스",
-  summary: "AI를 쓰는 회사가 늘어나면서, 관련 주식이 요즘 주목받고 있어요.",
-  stockId: "0",
-};
-
-export const missedNews: HomeNews[] = [
-  {
-    id: "miss_1",
-    title: "밤사이 있었던 일",
-    summary: "전기차를 찾는 사람이 많아져서, 자동차 회사 주가가 움직였어요.",
-    stockId: "0",
-  },
-  {
-    id: "miss_2",
-    title: "요즘 이런 회사가 있어요",
-    summary: "게임을 만드는 회사가 인기를 얻으면서 관심을 받고 있어요.",
-    stockId: "0",
-  },
-];

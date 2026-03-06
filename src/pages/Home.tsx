@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useAttendance } from "../context/AttendanceContext";
-import { missedNews, todayNews, type HomeNews } from "../data/mock/homeNews";
+import { type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useScore } from "../context/ScoreContext";
 import { newsQuizzes, type NewsQuiz } from "../data/mock/newsQuiz";
@@ -10,10 +10,11 @@ import NewsDetailModal from "../components/news/NewsDetailModal";
 import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
 import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
+import { useNewsQuery } from "../hooks/useNewsQuery";
 
 /**
  * 🏠 홈 화면
- * - 뉴스 확인
+ * - 뉴스 확인(useNewsQuery로 실제 데이터 사용)
  * - 출석 체크
  * - 오늘 할 일 안내
  * 
@@ -28,6 +29,16 @@ const Home = () => {
   const { isSolved, markSolved } = useQuizProgress();
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<NewsQuiz | null>(null);
+
+  // ✅ 실제 API 데이터 (하루 1번만 호출)
+  const { data, isLoading, isError } = useNewsQuery();
+
+  console.log("newsQuery", { data, isLoading, isError });
+
+  const todayNews = data?.news.filter((n) => n.type === "today") ?? []; // 첫 번째 뉴스 = 오늘의 뉴스
+  const missedNews = data?.news.filter((n) => n.type === "missed") ?? []; // 나머지 = 놓친 뉴스
+  const quizzes = data?.quizzes ?? [];
+
   const handleNewsClick = (news: HomeNews) => {
     setActiveNews(news);
   };
@@ -76,6 +87,22 @@ const Home = () => {
     playCoinSound();
   };
 
+  // ⏳ 로딩 상태
+  if (isLoading)
+    return (
+      <Wrapper>
+        <LoadingText>📰 오늘의 뉴스 불러오는 중...</LoadingText>
+      </Wrapper>
+    );
+
+  // ❌ 에러 상태
+  if (isError)
+    return (
+      <Wrapper>
+        <LoadingText>뉴스를 불러오지 못했어요 😢</LoadingText>
+      </Wrapper>
+    );
+
   return (
     <Wrapper>
       <Section>
@@ -85,10 +112,12 @@ const Home = () => {
       {/* 📰 오늘의 뉴스 */}
       <Section>
         <SectionTitle>📰 오늘의 뉴스</SectionTitle>
-        <Card onClick={() => handleNewsClick(todayNews)}>
-          <strong>{todayNews.title}</strong>
-          <p>{todayNews.summary}</p>
-        </Card>
+        {todayNews.map((news) => (
+          <Card key={news.id} onClick={() => handleNewsClick(news)}>
+            <strong>{news.title}</strong>
+            <p>{news.summary}</p>
+          </Card>
+        ))}
       </Section>
 
       {/* 🌙 놓친 뉴스 */}
@@ -147,6 +176,13 @@ const Wrapper = styled.div`
 
   /* 모달 떠 있을 때 배경 스크롤 방지용(선택) */
   position: relative;
+`;
+
+const LoadingText = styled.p`
+  text-align: center;
+  padding: 40px;
+  font-size: 15px;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const Section = styled.div`

@@ -10,31 +10,37 @@ import { RewardProvider } from "./context/RewardContext";
 import { ScoreProvider } from "./context/ScoreContext";
 import { AchievementProvider } from "./context/AchievementContext/AchievementContext";
 import { AuthProvider } from "./context/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// QueryClient 인스턴스 생성 (파일 최상단에 선언)
+const queryClient = new QueryClient();
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <AppThemeProvider>
-      <AuthProvider>
-        <UIProvider>
-          <WalletProvider>
-            <ScoreProvider>
-              <UserProgressProvider>
-                <RewardProvider>
-                  <QuizProvider>
-                    <AttendanceProvider>
-                      <TradeProvider>
-                        <AchievementProvider>
-                          <PortfolioProvider>{children}</PortfolioProvider>
-                        </AchievementProvider>
-                      </TradeProvider>
-                    </AttendanceProvider>
-                  </QuizProvider>
-                </RewardProvider>
-              </UserProgressProvider>
-            </ScoreProvider>
-          </WalletProvider>
-        </UIProvider>
-      </AuthProvider>
-    </AppThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppThemeProvider>
+        <AuthProvider>
+          <UIProvider>
+            <WalletProvider>
+              <ScoreProvider>
+                <UserProgressProvider>
+                  <RewardProvider>
+                    <QuizProvider>
+                      <AttendanceProvider>
+                        <TradeProvider>
+                          <AchievementProvider>
+                            <PortfolioProvider>{children}</PortfolioProvider>
+                          </AchievementProvider>
+                        </TradeProvider>
+                      </AttendanceProvider>
+                    </QuizProvider>
+                  </RewardProvider>
+                </UserProgressProvider>
+              </ScoreProvider>
+            </WalletProvider>
+          </UIProvider>
+        </AuthProvider>
+      </AppThemeProvider>
+    </QueryClientProvider>
   );
 };
