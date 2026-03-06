@@ -33,8 +33,6 @@ const Home = () => {
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading, isError } = useNewsQuery();
 
-  console.log("query result", data);
-
   const todayNews = data?.news.filter((n) => n.type === "today") ?? []; // 첫 번째 뉴스 = 오늘의 뉴스
   const missedNews = data?.news.filter((n) => n.type === "missed") ?? []; // 나머지 = 놓친 뉴스
 

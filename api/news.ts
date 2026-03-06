@@ -77,7 +77,7 @@ export default async function handler(
     const newsRes = await fetch(
       "https://api.rss2json.com/v1/api.json?rss_url=https://www.mk.co.kr/rss/40300001/",
     );
-
+    console.log("😍", newsRes);
     const newsData = await newsRes.json();
 
     // 상위 뉴스 6개만 사용

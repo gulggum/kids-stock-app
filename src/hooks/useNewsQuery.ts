@@ -37,7 +37,6 @@ const fetchTodayNews = async (): Promise<NewsResponse> => {
   const res = await fetch("https://kids-stock-app.vercel.app/api/news");
 
   const text = await res.text();
-  console.log("RAW RESPONSE", text);
 
   return JSON.parse(text);
 };
