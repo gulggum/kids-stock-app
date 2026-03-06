@@ -84,7 +84,7 @@ const Card = styled.div<{
   $tier?: "COMMON" | "RARE" | "EPIC" | "LEGEND";
 }>`
   background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.lg};
+  border-radius: ${({ theme }) => theme.radius.sm};
   padding: 16px;
 
   display: flex;

@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import { communityMock, type CommunityUser } from "../data/mock/communityMock";
-import { useModal } from "../context/UIContext/ModalContext";
 import { useEffect, useState } from "react";
-import { useRef } from "react";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
 import { useCharacter } from "../context/UserContext/CharacterContext";
 import { useScore } from "../context/ScoreContext";
