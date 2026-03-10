@@ -21,6 +21,13 @@ const fallbackNews = {
       stockId: "0",
       type: "today",
     },
+    {
+      id: "news_1",
+      title: "곧 새로운 경제 이야기가 도착해요",
+      summary: "잠시 후 새로운 뉴스가 업데이트됩니다.",
+      stockId: "0",
+      type: "missed",
+    },
   ],
   quizzes: [],
 };
@@ -41,7 +48,7 @@ const buildPrompt = (articles: { title: string; description: string }[]) => {
 아래 뉴스 ${articles.length}개를 읽고
 어린이가 이해할 수 있게 설명해줘.
 
-각 뉴스마다 퀴즈도 하나 만들어줘.
+각 뉴스마다 어린이 기준의 퀴즈도 하나 만들어줘.
 
 ${articleText}
 
@@ -67,9 +74,9 @@ ${articleText}
  ]
 }
    규칙:
-- news_0 ~ news_2 (앞 3개) → "type": "today"  (오늘의 뉴스)
-- news_3 ~ news_5 (뒤 3개) → "type": "missed" (어제 놓친 뉴스)
-- 반드시 6개 모두 작성
+- news_0 ~ news_1 (앞 2개) → "type": "today"  (오늘의 뉴스)
+- news_2 ~ news_3 (뒤 2개) → "type": "missed" (어제 놓친 뉴스)
+- 반드시 4개 모두 작성
 `;
 };
 
@@ -98,11 +105,11 @@ export default async function handler(
     const newsRes = await fetch(
       "https://api.rss2json.com/v1/api.json?rss_url=https://www.mk.co.kr/rss/40300001/",
     );
-    console.log("😍", newsRes);
+
     const newsData = await newsRes.json();
 
-    // 상위 뉴스 6개만 사용
-    const articles = newsData.items.slice(0, 6).map((a: any) => ({
+    // ⭐ 뉴스 4개만 사용 (AI 비용 절약)
+    const articles = newsData.items.slice(0, 4).map((a: any) => ({
       title: a.title,
       description: a.description,
     }));
@@ -192,7 +199,7 @@ export default async function handler(
     // 뒤 3개 = 놓친 뉴스
     parsed.news = parsed.news.map((news: any, i: number) => ({
       ...news,
-      type: i < 3 ? "today" : "missed",
+      type: i < 2 ? "today" : "missed",
     }));
 
     // -----------------------------

@@ -21,12 +21,12 @@ const AttendanceCalendar = () => {
   return (
     <Calendar>
       {Array.from({ length: daysInMonth }, (_, i) => {
-        const date = getDateKey(new Date(year, month, i + 2));
-
+        const date = getDateKey(new Date(year, month, i + 1));
         const checked = checkedDates.includes(date);
+        const isToday = i + 1 === today.getDate();
 
         return (
-          <Day key={i} $checked={checked}>
+          <Day key={i} $checked={checked} $today={isToday}>
             {i + 1}
           </Day>
         );
@@ -40,7 +40,7 @@ const Calendar = styled.div`
   gap: 6px;
 `;
 
-const Day = styled.div<{ $checked: boolean }>`
+const Day = styled.div<{ $checked: boolean; $today: boolean }>`
   height: 32px;
   border-radius: 6px;
 
@@ -55,6 +55,9 @@ const Day = styled.div<{ $checked: boolean }>`
     $checked ? theme.colors.primary : theme.colors.surface};
 
   color: ${({ $checked }) => ($checked ? "#fff" : "inherit")};
+
+  border: ${({ $today }) =>
+    $today ? "2px solid #22c55e" : "2px solid transparent"};
 `;
 
 export default AttendanceCalendar;

@@ -3,7 +3,7 @@ import { useAttendance } from "../context/AttendanceContext";
 import { type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useScore } from "../context/ScoreContext";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
 import { useModal } from "../context/UIContext/ModalContext";
@@ -11,6 +11,7 @@ import { playCoinSound } from "../utils/sounds";
 import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
 import { useNewsQuery } from "../hooks/useNewsQuery";
 import type { NewsQuiz } from "../data/mock/newsQuiz";
+import NewsSection from "../components/news/NewsSection";
 
 /**
  * 🏠 홈 화면
@@ -30,12 +31,21 @@ const Home = () => {
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<NewsQuiz | null>(null);
 
+  //로컬스토리지의 캐릭터상태 불러오기
+  const character = JSON.parse(localStorage.getItem("character_state") || "{}");
+
   // ✅ 실제 API 데이터 (하루 1번만 호출)
-  const { data, isLoading, isError } = useNewsQuery();
-  console.log(data);
+  const { data, isLoading } = useNewsQuery();
+
   // ✅ 뉴스
-  const todayNews = data?.news?.filter((n) => n.type === "today") ?? [];
-  const missedNews = data?.news?.filter((n) => n.type === "missed") ?? [];
+  const todayNews = useMemo(
+    () => data?.news?.filter((n) => n.type === "today") ?? [],
+    [data],
+  );
+  const missedNews = useMemo(
+    () => data?.news?.filter((n) => n.type === "missed") ?? [],
+    [data],
+  );
 
   // ✅ 퀴즈 (API에서 가져옴)
   const quizzes = data?.quizzes ?? [];
@@ -88,43 +98,71 @@ const Home = () => {
     playCoinSound();
   };
 
+  //오늘의 뉴스 진행도
+  const completed = JSON.parse(localStorage.getItem("quiz_completed") || "[]");
+
+  const todayCompleted = todayNews.filter((n) =>
+    completed.includes(n.id),
+  ).length;
+
+  //날짜
+  const today = new Date();
+  const month = today.getMonth() + 1;
+
   return (
     <Wrapper>
+      {/* 🏆 나의 경제 활동 */}
       <Section>
-        <SectionTitle>🏆 이번 주 활동 점수</SectionTitle>
-        <AttendanceBox>{score} 점</AttendanceBox>
-      </Section>
-      {/* 📰 오늘의 뉴스 */}
-      <Section>
-        <SectionTitle>📰 오늘의 뉴스</SectionTitle>
-        {isLoading && <LoadingText>뉴스 불러오는 중...</LoadingText>}
-        {isError && <LoadingText>뉴스를 불러오지 못했어요 😢</LoadingText>}
-        {!isLoading &&
-          todayNews.map((news) => (
-            <Card key={news.id} onClick={() => handleNewsClick(news)}>
-              <strong>{news.title}</strong>
-              <p>{news.summary}</p>
-            </Card>
-          ))}
+        <SectionTitle>🏆 나의 경제 활동</SectionTitle>
+        <CharacterBox>
+          <LevelRow>
+            <Level>🐻 레벨 {character.level}</Level>
+            <Exp>EXP {character.exp}</Exp>
+          </LevelRow>
+          <ExpBar>
+            <ExpFill style={{ width: `${character.exp / 5}%` }} />
+          </ExpBar>
+
+          <ScoreRow>
+            <ScoreNumber>{score}</ScoreNumber>
+            <ScoreLabel>오늘 점수</ScoreLabel>
+          </ScoreRow>
+        </CharacterBox>
       </Section>
 
-      {/* 🌙 놓친 뉴스 */}
+      {/* 📰 오늘의 뉴스 */}
       <Section>
-        <SectionTitle>🌙 자면서 놓친 뉴스</SectionTitle>
+        <SectionTitle>
+          📰 오늘의 경제 이야기{" "}
+          <Progress>
+            {todayCompleted} / {todayNews.length}
+          </Progress>
+        </SectionTitle>
+
         {isLoading && <LoadingText>뉴스 불러오는 중...</LoadingText>}
-        {isError && <LoadingText>뉴스를 불러오지 못했어요 😢</LoadingText>}
-        {!isLoading &&
-          missedNews.map((news) => (
-            <Card key={news.id} onClick={() => handleNewsClick(news)}>
-              <strong>{news.title}</strong>
-              <p>{news.summary}</p>
-            </Card>
-          ))}
+        {!isLoading && (
+          <NewsSection news={todayNews} onClick={handleNewsClick} />
+        )}
+      </Section>
+
+      {/* 📚 놓친 뉴스 */}
+      <Section>
+        <SectionTitle>
+          📚 지난 경제 이야기{" "}
+          <Progress>
+            {todayCompleted} / {missedNews.length}
+          </Progress>
+        </SectionTitle>
+
+        {isLoading && <LoadingText>뉴스 불러오는 중...</LoadingText>}
+        {!isLoading && (
+          <NewsSection news={missedNews} onClick={handleNewsClick} />
+        )}
       </Section>
 
       {/* 📅 출석 상태 */}
       <Section>
-        <SectionTitle>📅 오늘의 출석</SectionTitle>
+        <SectionTitle>📅 {month}월 출석</SectionTitle>
         <AttendanceBox>
           {" "}
           <span>오늘의 출석</span>
@@ -134,8 +172,8 @@ const Home = () => {
         </AttendanceBox>
         <AttendanceCalendar />
       </Section>
+
       {/* 📰 뉴스 상세 모달 */}
-      {/* 🧠 퀴즈 모달 */}
       {activeNews && (
         <NewsDetailModal
           news={activeNews}
@@ -147,7 +185,7 @@ const Home = () => {
           }}
         />
       )}
-
+      {/* 🧠 퀴즈 모달 */}
       {activeQuiz && (
         <NewsQuizModal
           quiz={activeQuiz}
@@ -187,19 +225,12 @@ const SectionTitle = styled.h3`
   font-weight: 800;
 `;
 
-const Card = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  padding: 14px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-  cursor: pointer;
-
-  p {
-    margin-top: 6px;
-    font-size: 14px;
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
+const Progress = styled.span`
+  font-size: 12px;
+  margin-left: 8px;
+  color: ${({ theme }) => theme.colors.primary};
 `;
+
 const AttendanceBox = styled.div`
   padding: 14px 16px;
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -220,6 +251,63 @@ const AttendanceBox = styled.div`
   font-weight: 700;
 `;
 
+//캐릭터(내상태) 박스
+const CharacterBox = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  padding: 18px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const LevelRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+`;
+
+const Level = styled.div`
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.accentPurple};
+`;
+
+const Exp = styled.div`
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+const ExpBar = styled.div`
+  height: 8px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 6px;
+`;
+
+const ExpFill = styled.div`
+  height: 100%;
+  background: ${({ theme }) => theme.colors.primary};
+  transition: width 0.3s ease;
+`;
+
+const ScoreRow = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+`;
+
+const ScoreNumber = styled.div`
+  font-size: 32px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.accentPink};
+`;
+
+const ScoreLabel = styled.div`
+  font-size: 14px;
+  opacity: 0.7;
+`;
+
+//오늘의 출석
 const StreakText = styled.span`
   display: flex;
   align-items: center;

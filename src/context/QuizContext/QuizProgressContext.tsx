@@ -17,13 +17,23 @@ const QuizProgressContext = createContext<QuizProgressContextType>(
   {} as QuizProgressContextType,
 );
 
+const QUIZ_KEY = "quiz_progress";
+
 export const QuizProgressProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const { giveReward } = useReward(); //중앙 보상 시스템
-  const [solvedQuizIds, setSolvedQuizIds] = useState<string[]>([]);
+  const [solvedQuizIds, setSolvedQuizIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem(QUIZ_KEY);
+
+    if (!saved || saved === "undefined") {
+      return [];
+    }
+
+    return JSON.parse(saved);
+  });
 
   //이미 푼 퀴즈인지 확인만
   const isSolved = (quizId: string) => {
@@ -33,7 +43,10 @@ export const QuizProgressProvider = ({
   const markSolved = (quizId: string) => {
     if (solvedQuizIds.includes(quizId)) return false;
 
-    setSolvedQuizIds((prev) => [...prev, quizId]);
+    const updated = [...solvedQuizIds, quizId];
+    setSolvedQuizIds(updated);
+
+    localStorage.setItem(QUIZ_KEY, JSON.stringify(updated));
 
     giveReward("QUIZ_CORRECT");
 

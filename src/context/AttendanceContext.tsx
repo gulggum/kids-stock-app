@@ -68,7 +68,7 @@ export const AttendanceProvider = ({
       giveReward("ATTENDANCE_DAILY"); //기본 출석보상
 
       // 🎁 7일 연속 출석 보너스
-      if (streak % 7 === 0) {
+      if (nextStreak % 7 === 0) {
         giveReward("ATTENDANCE_STREAK_7");
       }
 
@@ -78,7 +78,6 @@ export const AttendanceProvider = ({
 
   //오늘 출석여부 -> UI에서 버튼 비활성화, 체크표시용
   const isCheckedToday = checkedDates.includes(today);
-
   //로컬 저장
   useEffect(() => {
     const data: AttendanceStorage = {
