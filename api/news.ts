@@ -49,6 +49,10 @@ ${articleText}
    }
  ]
 }
+   규칙:
+- news_0 ~ news_2 (앞 3개) → "type": "today"  (오늘의 뉴스)
+- news_3 ~ news_5 (뒤 3개) → "type": "missed" (어제 놓친 뉴스)
+- 반드시 6개 모두 작성
 `;
 };
 

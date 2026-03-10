@@ -5,7 +5,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { type HomeNews } from "../data/mock/homeNews";
-import { type NewsQuiz } from "../data/mock/newsQuiz";
+
+type NewsQuiz = {
+  newsId: string;
+  question: string;
+  options: string[];
+  answerIndex: number;
+};
 
 type NewsResponse = {
   news: HomeNews[];
@@ -16,29 +22,36 @@ type NewsResponse = {
 //API 호출하는 함수
 const fetchTodayNews = async (): Promise<NewsResponse> => {
   //프론트 mock
-  // if (import.meta.env.DEV) {
-  //   return {
-  //     news: [
-  //       {
-  //         id: "news_0",
-  //         title: "테스트 뉴스",
-  //         summary: "개발용 뉴스입니다",
-  //         stockId: "0",
-  //         type: "today",
-  //       },
-  //     ],
-  //     quizzes: [],
-  //     date: new Date().toISOString().slice(0, 10),
-  //   };
-  // }
-
-  console.log("fetchTodayNews 실행");
+  if (import.meta.env.DEV) {
+    return {
+      news: [
+        {
+          id: "news_0",
+          title: "테스트 뉴스",
+          summary: "개발용 뉴스입니다",
+          stockId: "0",
+          type: "today",
+        },
+      ],
+      quizzes: [
+        {
+          newsId: "news_0",
+          question: "이 뉴스는 무엇에 대한 이야기일까요?",
+          options: ["주식", "날씨", "축구"],
+          answerIndex: 0,
+        },
+      ],
+      date: new Date().toISOString().slice(0, 10),
+    };
+  }
 
   const res = await fetch("https://kids-stock-app.vercel.app/api/news");
 
-  const text = await res.text();
+  if (!res.ok) {
+    throw new Error("뉴스 API 실패");
+  }
 
-  return JSON.parse(text);
+  return res.json();
 };
 
 //react query 훅

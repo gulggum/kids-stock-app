@@ -3,7 +3,6 @@ import { useAttendance } from "../context/AttendanceContext";
 import { type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useScore } from "../context/ScoreContext";
-import { newsQuizzes, type NewsQuiz } from "../data/mock/newsQuiz";
 import { useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
@@ -11,6 +10,7 @@ import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
 import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
 import { useNewsQuery } from "../hooks/useNewsQuery";
+import type { NewsQuiz } from "../data/mock/newsQuiz";
 
 /**
  * 🏠 홈 화면
@@ -32,9 +32,13 @@ const Home = () => {
 
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading, isError } = useNewsQuery();
+  console.log(data);
+  // ✅ 뉴스
+  const todayNews = data?.news?.filter((n) => n.type === "today") ?? [];
+  const missedNews = data?.news?.filter((n) => n.type === "missed") ?? [];
 
-  const todayNews = data?.news.filter((n) => n.type === "today") ?? []; // 첫 번째 뉴스 = 오늘의 뉴스
-  const missedNews = data?.news.filter((n) => n.type === "missed") ?? []; // 나머지 = 놓친 뉴스
+  // ✅ 퀴즈 (API에서 가져옴)
+  const quizzes = data?.quizzes ?? [];
 
   const handleNewsClick = (news: HomeNews) => {
     setActiveNews(news);
@@ -45,8 +49,8 @@ const Home = () => {
   };
 
   const handleGoQuiz = (news: HomeNews) => {
-    const quiz = newsQuizzes.find((q) => q.newsId === news.id); //이 뉴스와 일치하는 id의 퀴즈 가져오기
-    console.log(quiz);
+    const quiz = quizzes.find((q) => q.newsId === news.id); //이 뉴스와 일치하는 id의 퀴즈 가져오기
+
     if (!quiz) {
       openModal({
         type: "INFO",

@@ -68,9 +68,8 @@ const StockDetail = () => {
   const explainText = getExplainTextByTrend(isUptrend, company.name, isHolding);
 
   const handleBuyConfirm = () => {
-    spendMoney(company.price); //머니 차감, 현재는 돈 부족해도 구매 막지않고, 돈쓰면 줄어든다는 경험만 제공
-
     playMoneySound(); //구매시 사운드효과
+    spendMoney(company.price); //머니 차감, 현재는 돈 부족해도 구매 막지않고, 돈쓰면 줄어든다는 경험만 제공
 
     // 💰 이펙트 ON
     setShowMoneyEffect(true);
