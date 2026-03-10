@@ -10,6 +10,22 @@ let cachedNews: any = null;
 let cachedDate: string | null = null;
 
 // -----------------------------
+// ⭐ 추가 1️⃣ Gemini 실패 시 fallback 뉴스
+// -----------------------------
+const fallbackNews = {
+  news: [
+    {
+      id: "news_0",
+      title: "AI 뉴스 준비 중이에요",
+      summary: "지금 AI가 오늘의 경제 뉴스를 준비하고 있어요!",
+      stockId: "0",
+      type: "today",
+    },
+  ],
+  quizzes: [],
+};
+
+// -----------------------------
 // 2️⃣ Gemini에게 보낼 프롬프트 생성 함수
 // -----------------------------
 const buildPrompt = (articles: { title: string; description: string }[]) => {
@@ -30,6 +46,7 @@ const buildPrompt = (articles: { title: string; description: string }[]) => {
 ${articleText}
 
 반드시 아래 JSON 형식으로만 답해.
+설명은 절대 하지마.
 
 {
  "news":[
@@ -123,9 +140,12 @@ export default async function handler(
 
     // 응답이 없으면 에러 반환
     if (!raw) {
-      return res.status(500).json({
-        error: "Gemini 응답 없음",
-        gemini: geminiData,
+      console.error("Gemini 응답 없음", geminiData);
+
+      // AI 실패 fallback
+      return res.status(200).json({
+        ...fallbackNews,
+        date: today,
       });
     }
 
@@ -134,15 +154,36 @@ export default async function handler(
     // -----------------------------
     // AI가 설명을 붙일 수도 있어서 JSON만 찾아서 파싱
     const match = raw.match(/\{[\s\S]*\}/);
-
     if (!match) {
-      return res.status(500).json({
-        error: "JSON 찾기 실패",
-        raw,
+      console.error("JSON 찾기 실패", raw);
+
+      return res.status(200).json({
+        ...fallbackNews,
+        date: today,
       });
     }
 
-    const parsed = JSON.parse(match[0]);
+    // -----------------------------
+    // ⭐ 추가 3️⃣ JSON 파싱 안전 처리
+    // -----------------------------
+    let parsed;
+
+    try {
+      parsed = JSON.parse(match[0]);
+    } catch (err) {
+      console.error("JSON 파싱 실패", err);
+
+      return res.status(200).json({
+        ...fallbackNews,
+        date: today,
+      });
+    }
+
+    // -----------------------------
+    // ⭐ 추가 4️⃣ 데이터 보호
+    // -----------------------------
+    if (!parsed.news) parsed.news = fallbackNews.news;
+    if (!parsed.quizzes) parsed.quizzes = [];
 
     // -----------------------------
     // 9️⃣ 뉴스 타입 추가
@@ -173,9 +214,10 @@ export default async function handler(
   } catch (err) {
     console.error("SERVER ERROR:", err);
 
-    return res.status(500).json({
-      error: "서버 에러",
-      detail: String(err),
+    // 서버 에러 fallback
+    return res.status(200).json({
+      ...fallbackNews,
+      date: today,
     });
   }
 }
