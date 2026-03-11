@@ -12,10 +12,10 @@
 
 import { useContext, createContext, useMemo } from "react";
 import { useTrade } from "./TradeContext";
-import { companyMeta } from "../data/static/companyMeta";
+import { chartMock } from "../data/mock/chartMock";
 
 type PortfolioItem = {
-  id: string; //회사id
+  id: number; //회사id
   name: string; //회사명
   quantity: number; //보유 수량
   buyPrice: number; //평균 매수가(📍 첫구매시 구매가격과동일,추가매수시 누적 평균가격)
@@ -39,19 +39,20 @@ export const PortfolioProvider = ({
 
   // portfolio 계산 , trades가 바뀔 때만 다시 계산됨,렌더링마다 반복 계산되는 것을 방지하기 위해 useMemo 사용
   const portfolio = useMemo(() => {
-    const map = new Map<string, PortfolioItem>();
+    const map = new Map<number, PortfolioItem>();
 
     trades.forEach((trade) => {
       // SELL은 아직 고려 안 함 (나중에 확장)
       if (trade.type !== "BUY") return;
 
-      const existing = map.get(trade.stockId);
+      const stockId = Number(trade.stockId);
+      const existing = map.get(stockId);
 
       if (!existing) {
         // 📌 첫 매수
         // buyPrice는 이 시점에서는 '구매 가격'과 동일
-        map.set(trade.stockId, {
-          id: trade.stockId,
+        map.set(stockId, {
+          id: stockId,
           name: trade.stockName,
           quantity: trade.quantity,
           buyPrice: trade.price,
@@ -72,11 +73,19 @@ export const PortfolioProvider = ({
   }, [trades]); // ⭐ trades가 바뀔 때만 재계산
 
   // 2️⃣ totalAsset 계산 (portfolio 기반)
+
   const totalAsset = useMemo(() => {
     const BASE_MONEY = 100000;
 
+    // 7일 차트
+    // → 마지막 가격
+    // → 현재가격
     const evaluationAmount = portfolio.reduce((total, item) => {
-      const currentPrice = companyMeta[item.id].price;
+      const chart = chartMock[item.id];
+
+      const currentPrice =
+        chart?.["7d"][chart["7d"].length - 1].price ?? item.buyPrice;
+
       return total + currentPrice * item.quantity;
     }, 0);
 

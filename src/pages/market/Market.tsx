@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import StockCard from "../../components/stock/StockCard";
 import { useNavigate } from "react-router";
-import { marketMockData, type Stock } from "../../data/mock/marketMock";
+import { marketMockData } from "../../data/mock/marketMock";
 import { useEffect, useState } from "react";
 
 type FilterType = "ALL" | "KR" | "US" | "FAVORITE";

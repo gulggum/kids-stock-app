@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { usePortfolio } from "../context/PortfolioContext";
 import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 import { useNavigate } from "react-router";
+import { chartMock } from "../data/mock/chartMock";
 
 const PortfolioPage = () => {
   const { portfolio } = usePortfolio();
@@ -20,27 +21,63 @@ const PortfolioPage = () => {
         {portfolio.length === 0 ? (
           <Empty>
             아직 구매한 주식이 없어요 🥲
-            <SmallHint>마켓에서 주식을 골라보세요!</SmallHint>
+            <SmallHint>마켓에서 첫 투자를 시작해보세요!</SmallHint>
             <GoMarketButton onClick={() => navigate("/market")}>
               📈 마켓 바로가기
             </GoMarketButton>
           </Empty>
         ) : (
-          portfolio.map((item) => (
-            <ItemCard key={item.id}>
-              <Title>{item.name}</Title>
+          portfolio.map((item) => {
+            const chart = chartMock[String(item.id)];
 
-              <Info>
-                <Label>보유 수량</Label>
-                <Value>{item.quantity}주</Value>
-              </Info>
+            const currentPrice =
+              //7일 차트의 마지막 가격=현재가격
+              chart?.["7d"]?.[chart["7d"].length - 1].price ?? item.buyPrice;
 
-              <Info>
-                <Label>평균 단가</Label>
-                <Value>{item.buyPrice.toLocaleString()}원</Value>
-              </Info>
-            </ItemCard>
-          ))
+            const totalValue = currentPrice * item.quantity;
+
+            const profitRate =
+              ((currentPrice - item.buyPrice) / item.buyPrice) * 100;
+
+            const isUp = profitRate >= 0;
+
+            return (
+              <ItemCard
+                key={item.id}
+                onClick={() => navigate(`/market/${item.id}`)}
+              >
+                <Title>{item.name}</Title>
+
+                <Info>
+                  <Label>내가 가진 주식</Label>
+                  <Value>{item.quantity}주</Value>
+                </Info>
+
+                <Info>
+                  <Label>내가 산 가격</Label>
+                  <Value>{item.buyPrice.toLocaleString()}원</Value>
+                </Info>
+
+                <Divider />
+
+                <Info>
+                  <Label>지금 가격</Label>
+                  <Value>{currentPrice.toLocaleString()}원</Value>
+                </Info>
+
+                <Info>
+                  <Label>지금 가치 💰</Label>
+                  <Value>{totalValue.toLocaleString()}원</Value>
+                </Info>
+
+                <Profit $isUp={isUp}>
+                  {isUp ? "📈 +" : "📉 "}
+                  {profitRate.toFixed(1)}%
+                  {isUp ? " 올라갔어요!" : " 내려갔어요"}
+                </Profit>
+              </ItemCard>
+            );
+          })
         )}
       </ListSection>
     </Wrapper>
@@ -124,6 +161,23 @@ const ItemCard = styled.div`
   gap: 10px;
 
   font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: ${({ theme }) => theme.shadows.sm};
+    border: 1px solid ${({ theme }) => theme.colors.primary}20;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
 `;
 
 // 회사명
@@ -151,5 +205,16 @@ const Value = styled.span`
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
 `;
+const Divider = styled.div`
+  height: 1px;
+  background: ${({ theme }) => theme.colors.border};
+  margin: 6px 0;
+`;
 
+const Profit = styled.div<{ $isUp: boolean }>`
+  font-weight: 800;
+  font-size: 14px;
+
+  color: ${({ theme, $isUp }) => ($isUp ? theme.colors.up : theme.colors.down)};
+`;
 export default PortfolioPage;

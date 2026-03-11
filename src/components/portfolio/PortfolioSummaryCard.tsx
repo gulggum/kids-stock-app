@@ -1,9 +1,9 @@
 //총자산 요약 카드
 
 import styled from "styled-components";
-import { companyMeta } from "../../data/static/companyMeta";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useTrade } from "../../context/TradeContext";
+import { chartMock } from "../../data/mock/chartMock";
 
 const BASE_MONEY = 100000; //초기 사이버 머니(고정값)
 const PortfolioSummaryCard = () => {
@@ -15,7 +15,10 @@ const PortfolioSummaryCard = () => {
 
   //현재 평가 금액
   const evaluationAmount = portfolio.reduce((total, item) => {
-    const currentPrice = companyMeta[item.id].price; //보유수량*현재가격
+    const chart = chartMock[item.id];
+
+    const currentPrice =
+      chart?.["7d"][chart["7d"].length - 1].price ?? item.buyPrice; //보유수량*현재가격
     return total + currentPrice * item.quantity; //모든주식 합산
   }, 0);
 

@@ -1,4 +1,4 @@
-//거래 기록(원본 데이터)
+//거래 기록만 저장(원본 데이터)
 // 언제,어떤종목을,어떻게 거래했는지 전부 기록하는 곳(구매,매도,히스토리)
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
