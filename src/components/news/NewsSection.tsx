@@ -103,6 +103,7 @@ const TitleRow = styled.div`
 `;
 
 const NewsIcon = styled.span`
+  flex-shrink: 0;
   width: 28px;
   height: 28px;
 
@@ -114,18 +115,25 @@ const NewsIcon = styled.span`
 
   background: #fde68a;
   font-size: 14px;
+  margin-right: 8px;
 `;
 const Title = styled.strong`
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 최대 2줄 */
+  -webkit-box-orient: vertical;
+
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
-  max-width: 100%;
+
+  font-size: 14px;
+  line-height: 1.3;
+
+  word-break: keep-all;
 `;
 
 const Reward = styled.div`
   position: absolute;
-  top: 10px;
+  top: 20px;
   right: 12px;
 
   background: white;
@@ -162,15 +170,20 @@ const Summary = styled.p`
   margin-top: 6px;
   font-size: 14px;
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
 `;
 
 const CompletedStamp = styled.div`
   position: absolute;
-  top: 20px;
+  top: 40px;
   right: 10px;
 
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
 
   border-radius: 50%;
   border: 3px solid #16a34a;

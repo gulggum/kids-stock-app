@@ -11,6 +11,7 @@ import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
 import { useNewsQuery } from "../hooks/useNewsQuery";
 import NewsSection from "../components/news/NewsSection";
 import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
+import { useCharacter } from "../context/UserContext/CharacterContext";
 
 /**
  * 🏠 홈 화면
@@ -29,6 +30,7 @@ const Home = () => {
   const { isSolved, markSolved } = useQuizProgress();
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<NewsQuiz | null>(null);
+  const { expProgress } = useCharacter();
 
   //로컬스토리지의 캐릭터상태 불러오기
   const character = JSON.parse(localStorage.getItem("character_state") || "{}");
@@ -98,9 +100,14 @@ const Home = () => {
   };
 
   //오늘의 뉴스 진행도
-  const completed = JSON.parse(localStorage.getItem("quiz_completed") || "[]");
+  const completed = JSON.parse(localStorage.getItem("quiz_progress") || "[]");
 
   const todayCompleted = todayNews.filter((n) =>
+    completed.includes(n.id),
+  ).length;
+
+  //어제의 뉴스 진행도
+  const YesterDayCompleted = missedNews.filter((n) =>
     completed.includes(n.id),
   ).length;
 
@@ -119,7 +126,7 @@ const Home = () => {
             <Exp>EXP {character.exp}</Exp>
           </LevelRow>
           <ExpBar>
-            <ExpFill style={{ width: `${character.exp / 5}%` }} />
+            <ExpFill style={{ width: `${expProgress}%` }} />
           </ExpBar>
 
           <ScoreRow>
@@ -149,7 +156,7 @@ const Home = () => {
         <SectionTitle>
           📚 지난 경제 이야기{" "}
           <Progress>
-            {todayCompleted} / {missedNews.length}
+            {YesterDayCompleted} / {missedNews.length}
           </Progress>
         </SectionTitle>
 
@@ -222,12 +229,16 @@ const Section = styled.div`
 const SectionTitle = styled.h3`
   font-size: 16px;
   font-weight: 800;
+  display: flex;
+  flex-wrap: wrap; /* 줄바꿈 허용 */
+  gap: 6px;
 `;
 
 const Progress = styled.span`
   font-size: 12px;
   margin-left: 8px;
   color: ${({ theme }) => theme.colors.primary};
+  white-space: nowrap; /* 0 / 2 줄바꿈 방지 */
 `;
 const CalendarSection = styled.section`
   position: relative;

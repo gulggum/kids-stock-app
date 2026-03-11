@@ -14,6 +14,7 @@ type CharacterContextType = {
   character: CharacterState;
   addExp: (amount: number) => void; //경험치 추가 함수
   currentTitle: string;
+  expProgress: number;
 };
 
 const CharacterContext = createContext<CharacterContextType>(
@@ -86,8 +87,28 @@ export const CharacterProvider = ({
     localStorage.setItem(CHARACTER_KEY, JSON.stringify(character));
   }, [character]);
 
+  //exp게이지 계산 함수
+  const getExpProgress = (exp: number) => {
+    const currentRule =
+      LEVEL_RULES.slice()
+        .reverse()
+        .find((r) => exp >= r.requiredExp) ?? LEVEL_RULES[0];
+
+    const nextRule = LEVEL_RULES.find((r) => r.level === currentRule.level + 1);
+
+    if (!nextRule) return 100;
+
+    const currentLevelExp = exp - currentRule.requiredExp;
+    const neededExp = nextRule.requiredExp - currentRule.requiredExp;
+
+    return (currentLevelExp / neededExp) * 100;
+  };
+  const expProgress = getExpProgress(character.exp);
+
   return (
-    <CharacterContext.Provider value={{ character, addExp, currentTitle }}>
+    <CharacterContext.Provider
+      value={{ character, addExp, expProgress, currentTitle }}
+    >
       {children}
     </CharacterContext.Provider>
   );
