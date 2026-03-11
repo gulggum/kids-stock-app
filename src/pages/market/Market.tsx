@@ -2,25 +2,31 @@ import styled from "styled-components";
 import StockCard from "../../components/stock/StockCard";
 import { useNavigate } from "react-router";
 import { marketMockData, type Stock } from "../../data/mock/marketMock";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type FilterType = "ALL" | "KR" | "US" | "FAVORITE";
+const FAVORITE_KEY = "favorite_stocks";
 
 const Market = () => {
   const navigate = useNavigate();
-  // 주식 상태 (즐겨찾기 포함)
-  const [stocks, setStocks] = useState<Stock[]>(marketMockData);
   // 검색 상태
   const [search, setSearch] = useState("");
   // 필터 상태
   const [filter, setFilter] = useState<FilterType>("ALL");
+  const [favoriteIds, setFavoriteIds] = useState<number[]>(() => {
+    const saved = localStorage.getItem(FAVORITE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const stocks = marketMockData.map((stock) => ({
+    ...stock,
+    isFavorite: favoriteIds.includes(stock.id),
+  }));
 
   /* ⭐ 즐겨찾기 토글 */
   const toggleFavorite = (id: number) => {
-    setStocks((prev) =>
-      prev.map((stock) =>
-        stock.id === id ? { ...stock, isFavorite: !stock.isFavorite } : stock,
-      ),
+    setFavoriteIds((prev) =>
+      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id],
     );
   };
 
@@ -47,8 +53,14 @@ const Market = () => {
 
   // /즐겨찾기 / 일반 리스트 분리
   const favoriteStocks = filteredStocks.filter((s) => s.isFavorite);
-  const normalStocks = filteredStocks.filter((s) => !s.isFavorite);
 
+  const favoriteKR = favoriteStocks.filter((s) => s.country === "KR");
+  const favoriteUS = favoriteStocks.filter((s) => s.country === "US");
+
+  const normalStocks = filteredStocks.filter((s) => !s.isFavorite);
+  useEffect(() => {
+    localStorage.setItem(FAVORITE_KEY, JSON.stringify(favoriteIds));
+  }, [favoriteIds]);
   return (
     <Wrapper>
       <StickyHeader>
@@ -94,28 +106,62 @@ const Market = () => {
         </FilterBar>
       </StickyHeader>
       {/* 🧩 주식 카드 리스트 */}
-      {filteredStocks.length === 0 && (
+      {/* 🔎 검색 결과 없음 */}
+      {search && filteredStocks.length === 0 && filter !== "FAVORITE" && (
         <EmptyText>찾는 회사가 없어요 🥲</EmptyText>
       )}
+
+      {/* ⭐ 찜 탭 비어있을 때 */}
+      {filter === "FAVORITE" && favoriteStocks.length === 0 && (
+        <EmptyText>
+          관심있는 회사를 눌러 ⭐<br />
+          나만의 기업 목록을 만들어보세요!
+        </EmptyText>
+      )}
       {/* 찜목록탭에 추가 */}
+
       {filter === "FAVORITE" && (
         <>
-          <SectionTitle>⭐ 내가 좋아하는 기업</SectionTitle>
+          {favoriteKR.length > 0 && (
+            <>
+              <SectionTitle>⭐ 내가 좋아하는 기업</SectionTitle>
+              <SubSectionTitle>🇰🇷 한국 기업</SubSectionTitle>
+              {favoriteKR.map((stock) => (
+                <StockCard
+                  key={stock.id}
+                  name={stock.name}
+                  character={stock.character}
+                  price={stock.price}
+                  changeRate={stock.changeRate}
+                  country={stock.country}
+                  description={stock.description}
+                  isFavorite={stock.isFavorite}
+                  onToggleFavorite={() => toggleFavorite(stock.id)}
+                  onClick={() => handleCardClick(stock.id)}
+                />
+              ))}
+            </>
+          )}
 
-          {favoriteStocks.map((stock) => (
-            <StockCard
-              key={stock.id}
-              name={stock.name}
-              character={stock.character}
-              price={stock.price}
-              changeRate={stock.changeRate}
-              country={stock.country}
-              description={stock.description}
-              isFavorite={stock.isFavorite}
-              onToggleFavorite={() => toggleFavorite(stock.id)}
-              onClick={() => handleCardClick(stock.id)}
-            />
-          ))}
+          {favoriteUS.length > 0 && (
+            <>
+              <SubSectionTitle>🇺🇸 미국 기업</SubSectionTitle>
+              {favoriteUS.map((stock) => (
+                <StockCard
+                  key={stock.id}
+                  name={stock.name}
+                  character={stock.character}
+                  price={stock.price}
+                  changeRate={stock.changeRate}
+                  country={stock.country}
+                  description={stock.description}
+                  isFavorite={stock.isFavorite}
+                  onToggleFavorite={() => toggleFavorite(stock.id)}
+                  onClick={() => handleCardClick(stock.id)}
+                />
+              ))}
+            </>
+          )}
         </>
       )}
       {/* 찜목록 상위리스트로 이동 */}
@@ -258,6 +304,16 @@ const SectionTitle = styled.div`
 
   margin-top: 10px;
   margin-bottom: 4px;
+
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const SubSectionTitle = styled.div`
+  margin-top: 10px;
+  margin-bottom: 4px;
+
+  font-size: 13px;
+  font-weight: 700;
 
   color: ${({ theme }) => theme.colors.textSecondary};
 `;

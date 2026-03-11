@@ -6,8 +6,8 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 type TradeType = "BUY" | "SELL";
 
 type Trade = {
-  id: string; //거래 고유값
-  stockId: string; //어떤 주식인지
+  id: string; //거래 고유값(거래id)
+  stockId: number; //어떤 주식인지(회사id)
   stockName: string; //이름(ui용)
   price: number; //거래 당시 1주 가격
   quantity: number; //거래수량
@@ -18,9 +18,9 @@ type Trade = {
 // Context에서 제공할 API(하루1회제한,오늘의한번배지,부모리포트,경험치 정책)
 type TradeContextType = {
   trades: Trade[]; // 전체 거래 내역
-  buyStock: (stock: { id: string; name: string; price: number }) => boolean;
+  buyStock: (stock: { id: number; name: string; price: number }) => boolean;
   hasBoughtToday: boolean; // 오늘 이미 샀는지
-  isHoldingStock: (id: string) => boolean;
+  isHoldingStock: (id: number) => boolean;
 };
 
 const TradeContext = createContext<TradeContextType>({} as TradeContextType);
@@ -45,7 +45,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [trades]);
 
   //주식 구매
-  const buyStock = (stock: { id: string; name: string; price: number }) => {
+  const buyStock = (stock: { id: number; name: string; price: number }) => {
     if (hasBoughtToday) return false; //1회제한
     const newTrade: Trade = {
       id: crypto.randomUUID(),
@@ -61,7 +61,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     return true; //구매성공
   };
   //보유 여부 판단 - BUY 기록이 하나라도 있으면 보유 중으로 판단
-  const isHoldingStock = (companyId: string) => {
+  const isHoldingStock = (companyId: number) => {
     return trades.some(
       (trade) => trade.type === "BUY" && trade.stockId === companyId,
     );

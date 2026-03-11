@@ -7,61 +7,60 @@ export type ChartPoint = {
   price: number;
 };
 
-export type ChartPeriod = "7d" | "30d";
+export type ChartPeriod = "7d" | "1y";
 
 type CompanyChartData = {
   [period in ChartPeriod]: ChartPoint[];
 };
 
+const generate7d = (base: number, volatility = 0.02): ChartPoint[] => {
+  return Array.from({ length: 7 }, (_, i) => ({
+    date: `${i + 1}`,
+    price: Math.round(base * (1 + (Math.random() - 0.5) * volatility)),
+  }));
+};
+
+const generate1y = (base: number, trend = 0.0008): ChartPoint[] => {
+  return Array.from({ length: 365 }, (_, i) => ({
+    date: `${i + 1}`,
+    price: Math.round(base * (1 + trend * i + Math.sin(i / 20) * 0.05)),
+  }));
+};
+
+const createCompany = (base: number): CompanyChartData => ({
+  "7d": generate7d(base),
+  "1y": generate1y(base),
+});
+
 export const chartMock: Record<string, CompanyChartData> = {
-  "1": {
-    // 삼성전자 – 비교적 안정적
-    "7d": [
-      { date: "1", price: 70000 },
-      { date: "2", price: 71000 },
-      { date: "3", price: 70500 },
-      { date: "4", price: 72000 },
-      { date: "5", price: 71500 },
-      { date: "6", price: 72500 },
-      { date: "7", price: 72000 },
-    ],
-    "30d": Array.from({ length: 30 }, (_, i) => ({
-      date: `${i + 1}`,
-      price: Math.round(68000 + i * 200),
-    })),
-  },
+  // 🇰🇷 한국 기업
+  "1": createCompany(72000),
+  "2": createCompany(138000),
+  "3": createCompany(182000),
+  "4": createCompany(98000),
+  "5": createCompany(210000),
+  "6": createCompany(56000),
+  "7": createCompany(420000),
+  "8": createCompany(350000),
+  "9": createCompany(480000),
+  "10": createCompany(390000),
+  "11": createCompany(32000),
+  "12": createCompany(410000),
+  "13": createCompany(390000),
+  "14": createCompany(260000),
+  "15": createCompany(240000),
 
-  "2": {
-    // 농심 – 등락 조금 있음
-    "7d": [
-      { date: "1", price: 400000 },
-      { date: "2", price: 405000 },
-      { date: "3", price: 398000 },
-      { date: "4", price: 410000 },
-      { date: "5", price: 408000 },
-      { date: "6", price: 415000 },
-      { date: "7", price: 410000 },
-    ],
-    "30d": Array.from({ length: 30 }, (_, i) => ({
-      date: `${i + 1}`,
-      price: Math.round(390000 + Math.sin(i / 3) * 15000),
-    })),
-  },
-
-  "3": {
-    // 현대차 – 점진적 상승
-    "7d": [
-      { date: "1", price: 175000 },
-      { date: "2", price: 176000 },
-      { date: "3", price: 178000 },
-      { date: "4", price: 179000 },
-      { date: "5", price: 180000 },
-      { date: "6", price: 181000 },
-      { date: "7", price: 182000 },
-    ],
-    "30d": Array.from({ length: 30 }, (_, i) => ({
-      date: `${i + 1}`,
-      price: Math.round(165000 + i * 600),
-    })),
-  },
+  // 🇺🇸 미국 기업
+  "101": createCompany(230000),
+  "102": createCompany(410000),
+  "103": createCompany(170000),
+  "104": createCompany(180000),
+  "105": createCompany(250000),
+  "106": createCompany(900000),
+  "107": createCompany(390000),
+  "108": createCompany(610000),
+  "109": createCompany(150000),
+  "110": createCompany(75000),
+  "111": createCompany(130000),
+  "112": createCompany(220000),
 };

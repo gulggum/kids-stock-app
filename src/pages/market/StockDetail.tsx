@@ -1,10 +1,9 @@
 import { useParams } from "react-router";
 import { useNavigate } from "react-router";
 import styled, { keyframes, useTheme } from "styled-components";
-import { companyMeta } from "../../data/static/companyMeta";
+import { marketMockData } from "../../data/mock/marketMock";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
 import { useEffect, useRef, useState } from "react";
-import { companyExplain } from "../../data/static/companyExplain";
 import { chartMock } from "../../data/mock/chartMock";
 import StockChart from "../../components/stock/StockChart";
 import { useTrade } from "../../context/TradeContext";
@@ -21,19 +20,18 @@ const StockDetail = () => {
   const { buyStock, hasBoughtToday, isHoldingStock } = useTrade();
   const { openModal } = useModal();
   const { money, spendMoney } = useMoney();
-  const [period, setPeriod] = useState<"7d" | "30d">("7d");
+  const [period, setPeriod] = useState<"7d" | "1y">("7d");
   const [activeTab, setActiveTab] = useState<"CHART" | "MY_STOCK">("CHART");
   const [animateMoney, setAnimateMoney] = useState(false); //moneyBar 애니메이션효과
   const [showMoneyEffect, setShowMoneyEffect] = useState(false); //구매시 -금액 보이는 애니메이션효과
 
   const prevMoneyRef = useRef(money); //이전 money 기억
 
-  const explain = companyExplain[Number(id)];
+  const company = marketMockData.find((s) => s.id === Number(id));
 
-  if (!id || !companyMeta[id]) {
+  if (!company) {
     return <div>회사를 찾을 수 없어요 🥲</div>;
   }
-  const company = companyMeta[id];
 
   //차트 데이터의 "시작값"과 "마지막 값"을 비교해, 전체 흐름이 상승인지/하락인지 판단
   const isChartUptrend = (data: { price: number }[]) => {
@@ -202,7 +200,7 @@ if (money < company.price) {
 
         {/* 💡 설명 카드 */}
         <ExplainCard>
-          <ExplainTitle>{explain?.title}</ExplainTitle>
+          <ExplainTitle>{company?.description}</ExplainTitle>
           <ExplainText>{explainText}</ExplainText>
         </ExplainCard>
         {/* 🛒 구매 버튼 */}

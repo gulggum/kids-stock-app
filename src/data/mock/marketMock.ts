@@ -5,10 +5,10 @@ export type Stock = {
   price: number;
   changeRate: number;
   country: "KR" | "US";
+  category: string;
   description: string; // ⭐ 아이용 회사 설명
   isFavorite?: boolean; // ⭐ 즐겨찾기
 };
-
 export const marketMockData: Stock[] = [
   // 🇰🇷 한국 기업
   {
@@ -18,6 +18,7 @@ export const marketMockData: Stock[] = [
     price: 72000,
     changeRate: 1.8,
     country: "KR",
+    category: "반도체",
     description: "컴퓨터와 스마트폰에 들어가는 반도체를 만드는 회사",
   },
   {
@@ -27,6 +28,7 @@ export const marketMockData: Stock[] = [
     price: 138000,
     changeRate: 0.9,
     country: "KR",
+    category: "반도체",
     description: "컴퓨터 기억장치를 만드는 반도체 회사",
   },
   {
@@ -36,6 +38,7 @@ export const marketMockData: Stock[] = [
     price: 182000,
     changeRate: 0.4,
     country: "KR",
+    category: "자동차",
     description: "자동차를 만드는 큰 회사",
   },
   {
@@ -45,6 +48,7 @@ export const marketMockData: Stock[] = [
     price: 98000,
     changeRate: 1.2,
     country: "KR",
+    category: "자동차",
     description: "자동차와 전기차를 만드는 회사",
   },
   {
@@ -54,6 +58,7 @@ export const marketMockData: Stock[] = [
     price: 210000,
     changeRate: -0.5,
     country: "KR",
+    category: "인터넷",
     description: "인터넷 검색과 다양한 서비스를 만드는 회사",
   },
   {
@@ -63,6 +68,7 @@ export const marketMockData: Stock[] = [
     price: 56000,
     changeRate: 0.7,
     country: "KR",
+    category: "인터넷",
     description: "카카오톡 같은 메신저 서비스를 만든 회사",
   },
   {
@@ -72,6 +78,7 @@ export const marketMockData: Stock[] = [
     price: 420000,
     changeRate: 1.3,
     country: "KR",
+    category: "배터리",
     description: "전기차 배터리를 만드는 회사",
   },
   {
@@ -81,6 +88,7 @@ export const marketMockData: Stock[] = [
     price: 350000,
     changeRate: -0.4,
     country: "KR",
+    category: "배터리",
     description: "배터리와 전자부품을 만드는 회사",
   },
   {
@@ -90,6 +98,7 @@ export const marketMockData: Stock[] = [
     price: 480000,
     changeRate: 0.2,
     country: "KR",
+    category: "화학",
     description: "화학 제품과 배터리 소재를 만드는 회사",
   },
   {
@@ -99,6 +108,7 @@ export const marketMockData: Stock[] = [
     price: 390000,
     changeRate: 0.6,
     country: "KR",
+    category: "철강",
     description: "철을 만들어 건물과 자동차에 사용하는 회사",
   },
   {
@@ -108,6 +118,7 @@ export const marketMockData: Stock[] = [
     price: 32000,
     changeRate: 1.1,
     country: "KR",
+    category: "쇼핑",
     description: "인터넷으로 물건을 빠르게 배송해주는 회사",
   },
   {
@@ -117,6 +128,7 @@ export const marketMockData: Stock[] = [
     price: 410000,
     changeRate: -0.7,
     country: "KR",
+    category: "음식",
     description: "라면과 과자를 만드는 회사",
   },
   {
@@ -126,6 +138,7 @@ export const marketMockData: Stock[] = [
     price: 390000,
     changeRate: 0.3,
     country: "KR",
+    category: "음식",
     description: "카레와 소스를 만드는 음식 회사",
   },
   {
@@ -135,6 +148,7 @@ export const marketMockData: Stock[] = [
     price: 260000,
     changeRate: 2.1,
     country: "KR",
+    category: "엔터테인먼트",
     description: "아이돌 음악과 공연을 만드는 회사",
   },
   {
@@ -144,6 +158,7 @@ export const marketMockData: Stock[] = [
     price: 240000,
     changeRate: -0.3,
     country: "KR",
+    category: "게임",
     description: "게임을 만드는 회사",
   },
 
@@ -155,6 +170,7 @@ export const marketMockData: Stock[] = [
     price: 230000,
     changeRate: 1.5,
     country: "US",
+    category: "IT",
     description: "아이폰과 맥북을 만드는 회사",
   },
   {
@@ -164,6 +180,7 @@ export const marketMockData: Stock[] = [
     price: 410000,
     changeRate: 0.8,
     country: "US",
+    category: "IT",
     description: "윈도우와 컴퓨터 프로그램을 만드는 회사",
   },
   {
@@ -173,6 +190,7 @@ export const marketMockData: Stock[] = [
     price: 170000,
     changeRate: 1.2,
     country: "US",
+    category: "인터넷",
     description: "인터넷 검색과 유튜브 서비스를 운영하는 회사",
   },
   {
@@ -182,6 +200,7 @@ export const marketMockData: Stock[] = [
     price: 180000,
     changeRate: 0.6,
     country: "US",
+    category: "쇼핑",
     description: "세계에서 가장 큰 인터넷 쇼핑 회사",
   },
   {
@@ -191,6 +210,7 @@ export const marketMockData: Stock[] = [
     price: 250000,
     changeRate: 2.4,
     country: "US",
+    category: "자동차",
     description: "전기 자동차를 만드는 회사",
   },
   {
@@ -200,6 +220,7 @@ export const marketMockData: Stock[] = [
     price: 900000,
     changeRate: 3.1,
     country: "US",
+    category: "AI",
     description: "AI와 그래픽카드를 만드는 회사",
   },
   {
@@ -209,6 +230,7 @@ export const marketMockData: Stock[] = [
     price: 390000,
     changeRate: -0.4,
     country: "US",
+    category: "SNS",
     description: "페이스북과 인스타그램을 만든 회사",
   },
   {
@@ -218,6 +240,7 @@ export const marketMockData: Stock[] = [
     price: 610000,
     changeRate: 0.9,
     country: "US",
+    category: "엔터테인먼트",
     description: "영화와 드라마를 인터넷으로 보여주는 회사",
   },
   {
@@ -227,6 +250,7 @@ export const marketMockData: Stock[] = [
     price: 150000,
     changeRate: 0.3,
     country: "US",
+    category: "엔터테인먼트",
     description: "애니메이션과 놀이공원을 만드는 회사",
   },
   {
@@ -236,6 +260,7 @@ export const marketMockData: Stock[] = [
     price: 75000,
     changeRate: 0.2,
     country: "US",
+    category: "음료",
     description: "콜라 음료를 만드는 회사",
   },
   {
@@ -245,6 +270,7 @@ export const marketMockData: Stock[] = [
     price: 130000,
     changeRate: 0.5,
     country: "US",
+    category: "패션",
     description: "운동화와 스포츠 옷을 만드는 회사",
   },
   {
@@ -254,6 +280,7 @@ export const marketMockData: Stock[] = [
     price: 220000,
     changeRate: 0.4,
     country: "US",
+    category: "음식",
     description: "햄버거를 파는 세계적인 음식 회사",
   },
 ];
