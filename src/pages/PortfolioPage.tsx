@@ -299,33 +299,4 @@ const InfoIcon = styled.span`
   }
 `;
 
-const InfoText = styled.div`
-  position: absolute;
-  top: -60px;
-  left: 0;
-
-  background: white;
-  padding: 10px 12px;
-
-  border-radius: ${({ theme }) => theme.radius.sm};
-  font-size: 12px;
-
-  box-shadow: ${({ theme }) => theme.shadows.md};
-
-  width: 220px;
-
-  z-index: 10;
-
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -6px;
-    left: 20px;
-
-    border-width: 6px;
-    border-style: solid;
-
-    border-color: white transparent transparent transparent;
-  }
-`;
 export default PortfolioPage;
