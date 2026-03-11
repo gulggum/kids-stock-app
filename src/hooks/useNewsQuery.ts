@@ -17,11 +17,11 @@ type NewsResponse = {
 //API 호출하는 함수
 const fetchTodayNews = async (): Promise<NewsResponse> => {
   //프론트 mock
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV || import.meta.env.VITE_USE_MOCK === "true") {
     return mockNewsData;
   }
 
-  const res = await fetch("https://kids-stock-app.vercel.app/api/news");
+  const res = await fetch("/api/news");
 
   if (!res.ok) {
     throw new Error("뉴스 API 실패");
