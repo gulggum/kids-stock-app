@@ -38,33 +38,47 @@ export const PortfolioProvider = ({
   const { trades } = useTrade(); //// 🔹 TradeContext에서 거래 원본 데이터 가져옴
 
   // portfolio 계산 , trades가 바뀔 때만 다시 계산됨,렌더링마다 반복 계산되는 것을 방지하기 위해 useMemo 사용
+  //BUY → 평균단가 계산 , SELL → 수량만 감소
   const portfolio = useMemo(() => {
     const map = new Map<number, PortfolioItem>();
 
     trades.forEach((trade) => {
-      // SELL은 아직 고려 안 함 (나중에 확장)
-      if (trade.type !== "BUY") return;
-
       const stockId = Number(trade.stockId);
       const existing = map.get(stockId);
 
-      if (!existing) {
-        // 📌 첫 매수
-        // buyPrice는 이 시점에서는 '구매 가격'과 동일
-        map.set(stockId, {
-          id: stockId,
-          name: trade.stockName,
-          quantity: trade.quantity,
-          buyPrice: trade.price,
-        });
-      } else {
-        // 📌 추가 매수, 이미 있는 종목이면 평균단가 계산
-        const totalQuantity = existing.quantity + trade.quantity;
-        const totalCost =
-          existing.buyPrice * existing.quantity + trade.price * trade.quantity;
+      //BUY
+      if (trade.type === "BUY") {
+        if (!existing) {
+          // 📌 첫 매수
+          // buyPrice는 이 시점에서는 '구매 가격'과 동일
+          map.set(stockId, {
+            id: stockId,
+            name: trade.stockName,
+            quantity: trade.quantity,
+            buyPrice: trade.price,
+          });
+        } else {
+          // 📌 추가 매수, 이미 있는 종목이면 평균단가 계산
+          const totalQuantity = existing.quantity + trade.quantity;
+          const totalCost =
+            existing.buyPrice * existing.quantity +
+            trade.price * trade.quantity;
 
-        existing.quantity = totalQuantity;
-        existing.buyPrice = Math.round(totalCost / totalQuantity);
+          existing.quantity = totalQuantity;
+          existing.buyPrice = Math.round(totalCost / totalQuantity);
+        }
+      }
+
+      // SELL
+      if (trade.type === "SELL") {
+        if (!existing) return;
+
+        existing.quantity -= trade.quantity;
+
+        // 전량 매도하면 제거
+        if (existing.quantity <= 0) {
+          map.delete(stockId);
+        }
       }
     });
 

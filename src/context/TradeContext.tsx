@@ -19,6 +19,7 @@ type Trade = {
 type TradeContextType = {
   trades: Trade[]; // 전체 거래 내역
   buyStock: (stock: { id: number; name: string; price: number }) => boolean;
+  sellStock: (stock: { id: number; name: string; price: number }) => boolean;
   hasBoughtToday: boolean; // 오늘 이미 샀는지
   isHoldingStock: (id: number) => boolean;
 };
@@ -60,11 +61,38 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     setTrades((prev) => [...prev, newTrade]);
     return true; //구매성공
   };
+
+  //주식 판매
+  const sellStock = (stock: { id: number; name: string; price: number }) => {
+    if (!isHoldingStock(stock.id)) return false;
+
+    const newTrade: Trade = {
+      id: crypto.randomUUID(),
+      stockId: stock.id,
+      stockName: stock.name,
+      price: stock.price,
+      quantity: 1,
+      type: "SELL",
+      createdAt: new Date().toISOString(),
+    };
+
+    setTrades((prev) => [...prev, newTrade]);
+
+    return true;
+  };
+
   //보유 여부 판단 - BUY 기록이 하나라도 있으면 보유 중으로 판단
   const isHoldingStock = (companyId: number) => {
-    return trades.some(
-      (trade) => trade.type === "BUY" && trade.stockId === companyId,
-    );
+    const quantity = trades.reduce((total, trade) => {
+      if (trade.stockId !== companyId) return total;
+
+      if (trade.type === "BUY") return total + trade.quantity;
+      if (trade.type === "SELL") return total - trade.quantity;
+
+      return total;
+    }, 0);
+
+    return quantity > 0;
   };
   useEffect(() => {
     localStorage.setItem(TRADE_KEY, JSON.stringify(trades));
@@ -72,7 +100,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <TradeContext.Provider
-      value={{ trades, buyStock, hasBoughtToday, isHoldingStock }}
+      value={{ trades, buyStock, sellStock, hasBoughtToday, isHoldingStock }}
     >
       {children}
     </TradeContext.Provider>

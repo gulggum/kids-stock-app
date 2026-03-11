@@ -4,11 +4,13 @@ import styled from "styled-components";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useTrade } from "../../context/TradeContext";
 import { chartMock } from "../../data/mock/chartMock";
+import { useMoney } from "../../context/WalletContext/MoneyContext";
 
-const BASE_MONEY = 100000; //초기 사이버 머니(고정값)
+const BASE_MONEY = 1000000; //초기 사이버 머니(고정값)
 const PortfolioSummaryCard = () => {
   const { portfolio } = usePortfolio();
   const { hasBoughtToday } = useTrade();
+  const { money } = useMoney();
 
   //보유 종목 수
   const stockCount = portfolio.length;
@@ -23,12 +25,28 @@ const PortfolioSummaryCard = () => {
   }, 0);
 
   //총 자산 = 초기머니(BASE_MONEY) +현재 평가 금액(evaluationAmount)
-  const totalAsset = BASE_MONEY + evaluationAmount;
+  const totalAsset = money + evaluationAmount;
+
+  // ⭐ 수익 계산
+  const profit = totalAsset - BASE_MONEY;
+  const profitRate = (profit / BASE_MONEY) * 100;
+  const isUp = profit >= 0;
 
   return (
     <Card>
       {/* 오늘의한번 뱃지🎖️*/}
       {!hasBoughtToday && <Badge>오늘의 한 번 🎖️</Badge>}
+
+      {/* 총 자산 */}
+      <AssetSection>
+        <AssetLabel>내 자산 💰</AssetLabel>
+        <AssetValue>{totalAsset.toLocaleString()}원</AssetValue>
+
+        <Profit $isUp={isUp}>
+          {isUp ? "📈 +" : "📉 "}
+          {profit.toLocaleString()}원 ({profitRate.toFixed(1)}%)
+        </Profit>
+      </AssetSection>
       <Row>
         <Label>보유 종목</Label>
         <Value>{stockCount}개</Value>
@@ -40,22 +58,18 @@ const PortfolioSummaryCard = () => {
       </Row>
 
       <Divider />
-
-      <Row>
-        <TotalLabel>총 자산</TotalLabel>
-        <TotalValue>{totalAsset.toLocaleString()}원</TotalValue>
-      </Row>
     </Card>
   );
 };
 
 const Card = styled.div`
-  background: ${({ theme }) => theme.colors.card};
+  background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
 `;
 
 const Row = styled.div`
@@ -80,16 +94,6 @@ const Divider = styled.div`
   margin: 8px 0;
 `;
 
-const TotalLabel = styled.span`
-  font-size: 15px;
-  font-weight: 700;
-`;
-
-const TotalValue = styled.span`
-  font-size: 18px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.primary};
-`;
 const Badge = styled.div`
   align-self: flex-start;
   background: ${({ theme }) => theme.colors.primary};
@@ -98,6 +102,29 @@ const Badge = styled.div`
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 999px;
+`;
+
+const AssetSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const AssetLabel = styled.span`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+
+const AssetValue = styled.span`
+  font-size: 24px;
+  font-weight: 800;
+`;
+
+const Profit = styled.span<{ $isUp: boolean }>`
+  font-size: 14px;
+  font-weight: 700;
+
+  color: ${({ theme, $isUp }) => ($isUp ? theme.colors.up : theme.colors.down)};
 `;
 
 export default PortfolioSummaryCard;

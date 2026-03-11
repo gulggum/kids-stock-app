@@ -3,11 +3,16 @@ import { usePortfolio } from "../context/PortfolioContext";
 import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 import { useNavigate } from "react-router";
 import { chartMock } from "../data/mock/chartMock";
+import { useState } from "react";
+import InfoModal from "../components/ImfoModal";
 
 const PortfolioPage = () => {
   const { portfolio } = usePortfolio();
   const navigate = useNavigate();
-
+  const [openInfo, setOpenInfo] = useState<string | null>(null);
+  const toggleInfo = (key: string) => {
+    setOpenInfo((prev) => (prev === key ? null : key));
+  };
   return (
     <Wrapper>
       {/*  상단 요약 카드 */}
@@ -39,6 +44,7 @@ const PortfolioPage = () => {
             const profitRate =
               ((currentPrice - item.buyPrice) / item.buyPrice) * 100;
 
+            const profitAmount = (currentPrice - item.buyPrice) * item.quantity;
             const isUp = profitRate >= 0;
 
             return (
@@ -54,25 +60,60 @@ const PortfolioPage = () => {
                 </Info>
 
                 <Info>
-                  <Label>내가 산 가격</Label>
+                  <Label>
+                    내가 산 가격
+                    <InfoIcon
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleInfo("buyPrice");
+                      }}
+                    >
+                      ℹ️
+                    </InfoIcon>
+                  </Label>
+
                   <Value>{item.buyPrice.toLocaleString()}원</Value>
                 </Info>
 
                 <Divider />
 
                 <Info>
-                  <Label>지금 가격</Label>
+                  <Label>
+                    현재 가격
+                    <InfoIcon
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleInfo("currentPrice");
+                      }}
+                    >
+                      ℹ️
+                    </InfoIcon>
+                  </Label>
+
                   <Value>{currentPrice.toLocaleString()}원</Value>
                 </Info>
 
                 <Info>
-                  <Label>지금 가치 💰</Label>
-                  <Value>{totalValue.toLocaleString()}원</Value>
+                  <Label>
+                    현재 가치 💰
+                    <InfoIcon
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleInfo("totalValue");
+                      }}
+                    >
+                      ℹ️
+                    </InfoIcon>
+                  </Label>
+
+                  <ValueHighlight>
+                    {totalValue.toLocaleString()}원
+                  </ValueHighlight>
                 </Info>
 
                 <Profit $isUp={isUp}>
                   {isUp ? "📈 +" : "📉 "}
-                  {profitRate.toFixed(1)}%
+                  {profitAmount.toLocaleString()}원 ( {profitRate.toFixed(1)}% )
                   {isUp ? " 올라갔어요!" : " 내려갔어요"}
                 </Profit>
               </ItemCard>
@@ -80,6 +121,30 @@ const PortfolioPage = () => {
           })
         )}
       </ListSection>
+
+      <InfoModal
+        open={openInfo === "buyPrice"}
+        onClose={() => setOpenInfo(null)}
+      >
+        내가 산 가격은 주식을 구매했을 때의 가격이에요. 여러 번 다른 가격으로
+        사면 평균 가격으로 계산돼요.
+      </InfoModal>
+
+      <InfoModal
+        open={openInfo === "currentPrice"}
+        onClose={() => setOpenInfo(null)}
+      >
+        현재 가격은 지금 이 회사 주식 1개의 가격이에요. 예를 들어 현재 가격이
+        137,000원이면 주식 1개를 137,000원에 사고팔 수 있어요.
+      </InfoModal>
+
+      <InfoModal
+        open={openInfo === "totalValue"}
+        onClose={() => setOpenInfo(null)}
+      >
+        현재 가치는 내가 가진 주식 전체 금액이에요. 현재 가격 × 보유 수량으로
+        계산돼요.
+      </InfoModal>
     </Wrapper>
   );
 };
@@ -192,6 +257,7 @@ const Info = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 `;
 
 // 왼쪽 라벨
@@ -216,5 +282,50 @@ const Profit = styled.div<{ $isUp: boolean }>`
   font-size: 14px;
 
   color: ${({ theme, $isUp }) => ($isUp ? theme.colors.up : theme.colors.down)};
+`;
+const ValueHighlight = styled.span`
+  font-weight: 800;
+  font-size: 16px;
+`;
+
+const InfoIcon = styled.span`
+  margin-left: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const InfoText = styled.div`
+  position: absolute;
+  top: -60px;
+  left: 0;
+
+  background: white;
+  padding: 10px 12px;
+
+  border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: 12px;
+
+  box-shadow: ${({ theme }) => theme.shadows.md};
+
+  width: 220px;
+
+  z-index: 10;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 20px;
+
+    border-width: 6px;
+    border-style: solid;
+
+    border-color: white transparent transparent transparent;
+  }
 `;
 export default PortfolioPage;

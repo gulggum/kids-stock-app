@@ -17,13 +17,14 @@ const StockDetail = () => {
   const navigate = useNavigate();
   const theme = useTheme(); //테마 가져오기/경험치 획득
   const { giveReward } = useReward();
-  const { buyStock, hasBoughtToday, isHoldingStock } = useTrade();
+  const { buyStock, sellStock, hasBoughtToday, isHoldingStock } = useTrade();
   const { openModal } = useModal();
-  const { money, spendMoney } = useMoney();
+  const { money, spendMoney, addMoney } = useMoney();
   const [period, setPeriod] = useState<"7d" | "1y">("7d");
   const [activeTab, setActiveTab] = useState<"CHART" | "MY_STOCK">("CHART");
   const [animateMoney, setAnimateMoney] = useState(false); //moneyBar 애니메이션효과
   const [showMoneyEffect, setShowMoneyEffect] = useState(false); //구매시 -금액 보이는 애니메이션효과
+  const [showSellEffect, setShowSellEffect] = useState(false);
 
   const prevMoneyRef = useRef(money); //이전 money 기억
 
@@ -115,6 +116,44 @@ if (money < company.price) {
 
     prevMoneyRef.current = money;
   }, [money]);
+
+  //판매 핸들러
+
+  const handleSellConfirm = () => {
+    playMoneySound(); // 판매 사운드
+
+    addMoney(company.price); // 💰 돈 증가 (spendMoney 반대)
+
+    // 💰 이펙트 ON
+    setShowSellEffect(true);
+    setTimeout(() => setShowSellEffect(false), 900);
+
+    // 주식 판매 처리
+    sellStock(company);
+
+    giveReward("SELL_STOCK");
+  };
+
+  const handleSellClick = () => {
+    if (!isHoldingStock(company.id)) {
+      openModal({
+        type: "INFO",
+        title: "판매할 주식이 없어요",
+        message: "먼저 주식을 구매해야 판매할 수 있어요!",
+        confirmText: "알겠어요",
+      });
+      return;
+    }
+
+    openModal({
+      type: "CONFIRM",
+      title: "판매할까요?",
+      message: `${company.name}\n${company.price}원`,
+      confirmText: "판매",
+      cancelText: "아니오",
+      onConfirm: handleSellConfirm,
+    });
+  };
 
   return (
     <Wrapper>
@@ -215,8 +254,16 @@ if (money < company.price) {
           <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
             {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
           </BuyButton>
+          {isHoldingStock(company.id) && (
+            <SellButton onClick={handleSellClick}>
+              보유 주식 판매하기 💸
+            </SellButton>
+          )}
           {showMoneyEffect && (
             <MoneyEffect>💰 -{company.price.toLocaleString()}</MoneyEffect>
+          )}
+          {showSellEffect && (
+            <SellEffect>💵 +{company.price.toLocaleString()}</SellEffect>
           )}
         </BuyButtonWrapper>
       </Content>
@@ -256,6 +303,27 @@ const MoneyEffect = styled.div`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+`;
+const SellEffect = styled.div`
+  position: absolute;
+  right: 10px;
+  top: -10px;
+
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.up};
+
+  animation: moneyFloat 1.2s ease forwards;
+
+  @keyframes moneyFloat {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-25px);
+    }
+  }
 `;
 
 //헤더 고정영역
@@ -508,6 +576,9 @@ const ExplainText = styled.p`
 const BuyButtonWrapper = styled.div`
   position: relative;
   margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 const BuyButton = styled.button<{ disabled?: boolean }>`
   width: 100%;
@@ -524,6 +595,29 @@ const BuyButton = styled.button<{ disabled?: boolean }>`
 
   &:active {
     transform: ${({ disabled }) => (disabled ? "none" : "scale(0.98)")};
+  }
+`;
+const SellButton = styled.button`
+  padding: 12px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: none;
+
+  font-weight: 700;
+  font-size: 14px;
+
+  background: ${({ theme }) => theme.colors.secondary};
+  color: white;
+
+  cursor: pointer;
+
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
