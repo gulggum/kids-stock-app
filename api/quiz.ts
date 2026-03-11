@@ -1,5 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
+//뉴스 하나를 가지고 퀴즈 만드는  api (보내는 데이터 title,summary,newsId=>ai가 퀴즈생성)
+
 // 개발 환경 mock
 const devQuiz = {
   newsId: "dev",

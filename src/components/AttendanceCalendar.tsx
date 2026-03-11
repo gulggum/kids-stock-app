@@ -37,12 +37,15 @@ const AttendanceCalendar = () => {
 const Calendar = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+
+  gap: 10px;
+  margin-top: 12px;
 `;
 
 const Day = styled.div<{ $checked: boolean; $today: boolean }>`
-  height: 32px;
-  border-radius: 6px;
+  aspect-ratio: 1;
+
+  border-radius: 8px;
 
   display: flex;
   align-items: center;
@@ -58,6 +61,9 @@ const Day = styled.div<{ $checked: boolean; $today: boolean }>`
 
   border: ${({ $today }) =>
     $today ? "2px solid #22c55e" : "2px solid transparent"};
+
+  box-shadow: ${({ $today }) =>
+    $today ? "0 0 0 2px rgba(34,197,94,0.15)" : "none"};
 `;
 
 export default AttendanceCalendar;

@@ -6,6 +6,12 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 // -----------------------------
 // 서버가 살아있는 동안 메모리에 저장됨
 // 같은 날이면 Gemini API를 다시 호출하지 않음
+// 1️⃣ RSS 뉴스 가져옴
+// 2️⃣ Gemini AI 호출
+// 3️⃣ 어린이용 뉴스 + 퀴즈 생성
+// 4️⃣ 하루 캐싱
+// 5️⃣ 프론트에 반환
+
 let cachedNews: any = null;
 let cachedDate: string | null = null;
 

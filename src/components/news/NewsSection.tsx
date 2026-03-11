@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { type HomeNews } from "../../data/mock/homeNews";
+import { type HomeNews } from "../../data/mock/homeNewsMockData";
 import { useQuizProgress } from "../../context/QuizContext/QuizProgressContext";
 
 type Props = {
@@ -99,6 +99,7 @@ const TitleRow = styled.div`
   align-items: center;
   gap: 6px;
   min-width: 0;
+  margin-bottom: 8px;
 `;
 
 const NewsIcon = styled.span`

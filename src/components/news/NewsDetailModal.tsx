@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { type HomeNews } from "../../data/mock/homeNews";
+import { type HomeNews } from "../../data/mock/homeNewsMockData";
 
 /**
  * 📰 뉴스 상세 모달

@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useAttendance } from "../context/AttendanceContext";
-import { type HomeNews } from "../data/mock/homeNews";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useScore } from "../context/ScoreContext";
 import { useMemo, useState } from "react";
@@ -10,8 +9,8 @@ import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
 import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
 import { useNewsQuery } from "../hooks/useNewsQuery";
-import type { NewsQuiz } from "../data/mock/newsQuiz";
 import NewsSection from "../components/news/NewsSection";
+import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
 
 /**
  * 🏠 홈 화면
@@ -161,8 +160,8 @@ const Home = () => {
       </Section>
 
       {/* 📅 출석 상태 */}
-      <Section>
-        <SectionTitle>📅 {month}월 출석</SectionTitle>
+      <CalendarSection>
+        <SectionTitle>📅 {month}월 출석 </SectionTitle>
         <AttendanceBox>
           {" "}
           <span>오늘의 출석</span>
@@ -171,7 +170,7 @@ const Home = () => {
           </StreakText>
         </AttendanceBox>
         <AttendanceCalendar />
-      </Section>
+      </CalendarSection>
 
       {/* 📰 뉴스 상세 모달 */}
       {activeNews && (
@@ -230,7 +229,40 @@ const Progress = styled.span`
   margin-left: 8px;
   color: ${({ theme }) => theme.colors.primary};
 `;
+const CalendarSection = styled.section`
+  position: relative;
 
+  padding: 20px;
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  background: #fffef6;
+
+  box-shadow: ${({ theme }) => theme.shadows.md};
+
+  border: 2px solid #f1e6b8;
+
+  overflow: hidden;
+
+  /* 📌 달력 철 느낌 */
+  &::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 18px;
+
+    background: repeating-linear-gradient(
+      90deg,
+      #d6d6d6 0px,
+      #d6d6d6 12px,
+      transparent 12px,
+      transparent 28px
+    );
+
+    opacity: 0.6;
+  }
+`;
 const AttendanceBox = styled.div`
   padding: 14px 16px;
   border-radius: ${({ theme }) => theme.radius.lg};
