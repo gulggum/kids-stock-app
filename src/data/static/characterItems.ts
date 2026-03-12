@@ -15,6 +15,14 @@ export type CharacterItem = {
   setId?: string;
 };
 
+//랜덤박스
+export const MYSTERY_BOX_PRICE = 20;
+//랜덤 대상 아이템 필터 함수
+export function getRandomItem(items: CharacterItem[]) {
+  const index = Math.floor(Math.random() * items.length);
+  return items[index];
+}
+
 // -------------------------------
 // 🎒 아이템 세트 효과 정의
 // 같은 setId 아이템을 여러 개 착용하면 보너스 발생

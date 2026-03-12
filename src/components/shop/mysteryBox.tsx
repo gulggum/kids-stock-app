@@ -1,0 +1,215 @@
+import { useState } from "react";
+import styled, { keyframes } from "styled-components";
+import { useItem } from "../../context/UserContext/ItemContext";
+import { useToast } from "../../context/UIContext/ToastContext";
+import { playCoinSound } from "../../utils/sounds";
+import { useModal } from "../../context/UIContext/ModalContext";
+import { MYSTERY_BOX_PRICE } from "../../data/static/characterItems";
+
+export const MysteryBox = () => {
+  const { openMysteryBox } = useItem();
+  const { createToast } = useToast();
+  const { openModal } = useModal();
+
+  const [opening, setOpening] = useState(false);
+  const [reward, setReward] = useState<any>(null);
+
+  return (
+    <>
+      {/* 랜덤박스 카드 */}
+      <Card
+        onClick={() => {
+          openModal({
+            type: "CONFIRM",
+            title: "랜덤 박스를 열까요?",
+            message: `🎁 랜덤 아이템 : \n${MYSTERY_BOX_PRICE} 코인`,
+            confirmText: "열기",
+            cancelText: "취소",
+            onConfirm: () => {
+              const item = openMysteryBox();
+
+              if (!item) {
+                createToast("더 이상 얻을 아이템이 없어요!");
+                return;
+              }
+
+              setOpening(true);
+
+              setTimeout(() => {
+                setOpening(false);
+                setReward(item);
+
+                playCoinSound();
+                createToast(`🎉 ${item.name} 획득!`);
+              }, 900);
+            },
+          });
+        }}
+      >
+        <Emoji>🎁</Emoji>
+        <Name>랜덤 박스</Name>
+        <Price>20 코인</Price>
+        <OpenText>열어보기</OpenText>
+      </Card>
+
+      {/* 박스 흔들림 연출 */}
+      {opening && (
+        <Overlay>
+          <BoxAnimation>🎁</BoxAnimation>
+          <BoxText>열리는 중...</BoxText>
+        </Overlay>
+      )}
+
+      {/* 아이템 등장 */}
+      {reward && (
+        <Overlay onClick={() => setReward(null)}>
+          <RewardCard>
+            <RewardEmoji>{reward.emoji}</RewardEmoji>
+            <RewardName>{reward.name}</RewardName>
+            <RewardText>획득했습니다!</RewardText>
+            <ConfirmButton onClick={() => setReward(null)}>확인</ConfirmButton>
+          </RewardCard>
+        </Overlay>
+      )}
+    </>
+  );
+};
+
+const shake = keyframes`
+0% { transform: rotate(0deg); }
+25% { transform: rotate(6deg); }
+50% { transform: rotate(-6deg); }
+75% { transform: rotate(4deg); }
+100% { transform: rotate(0deg); }
+`;
+
+const pop = keyframes`
+0% { transform: scale(0.5); opacity:0; }
+100% { transform: scale(1); opacity:1; }
+`;
+
+const Card = styled.div`
+  background: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  }
+`;
+
+const Emoji = styled.div`
+  font-size: 32px;
+`;
+
+const Name = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+`;
+
+const Price = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin-top: 2px;
+`;
+
+const OpenText = styled.div`
+  margin-top: 10px;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1000;
+`;
+
+const BoxAnimation = styled.div`
+  font-size: 72px;
+  animation: ${shake} 0.6s infinite;
+`;
+
+const BoxText = styled.div`
+  margin-top: 16px;
+  font-weight: 700;
+  color: white;
+`;
+const RewardCard = styled.div`
+  background: white;
+  border-radius: 20px;
+
+  padding: 32px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  animation: ${pop} 0.35s ease;
+`;
+
+const RewardEmoji = styled.div`
+  font-size: 64px;
+`;
+
+const RewardName = styled.div`
+  font-size: 18px;
+  font-weight: 700;
+`;
+
+const RewardText = styled.div`
+  font-size: 14px;
+  color: #666;
+`;
+const ConfirmButton = styled.button`
+  margin-top: 12px;
+
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+  }
+`;

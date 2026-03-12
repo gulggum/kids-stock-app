@@ -13,6 +13,7 @@ import styled, { keyframes } from "styled-components";
 import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
 import { useReward } from "../context/RewardContext";
+import { MysteryBox } from "../components/shop/mysteryBox";
 
 const Shop = () => {
   const { coins } = useCoin();
@@ -51,6 +52,9 @@ const Shop = () => {
       </CoinBar>
 
       <Grid>
+        {/* 🎁 랜덤 박스 */}
+        <MysteryBox />
+
         {characterItems.map((item) => {
           const owned = isOwned(item.id);
           const isEquipped = equippedItems[item.slot] === item.id;

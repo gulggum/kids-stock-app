@@ -5,6 +5,12 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCoin } from "../WalletContext/CoinContext";
+import {
+  characterItems,
+  getRandomItem,
+  MYSTERY_BOX_PRICE,
+  type CharacterItem,
+} from "../../data/static/characterItems";
 
 // localStorage에 저장할 key 이름
 const OWNED_KEY = "owned_items";
@@ -29,7 +35,7 @@ type BuyItemResult = "SUCCESS" | "ALREADY_OWNED" | "NOT_ENOUGH_COIN";
 type ItemContextType = {
   ownedItems: string[]; //보유한 아이템 id 목록
   equippedItems: EquipSlots;
-
+  openMysteryBox: () => CharacterItem | null;
   buyItem: (id: string, price: number) => BuyItemResult; //아이템 구매
   isOwned: (id: string) => boolean; //보유 여부 확인
   toggleEquip: (slot: keyof EquipSlots, id: string) => void; //장착토글
@@ -94,6 +100,25 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem(EQUIPPED_KEY, JSON.stringify(equippedItems));
   }, [equippedItems]);
 
+  //미스터리박스 함수
+  const openMysteryBox = () => {
+    const success = spendCoin(MYSTERY_BOX_PRICE);
+    if (!success) return null;
+
+    // 아직 없는 아이템만 랜덤
+    const available = characterItems.filter(
+      (item) => !ownedItems.includes(item.id),
+    );
+
+    if (available.length === 0) return null;
+
+    const item = getRandomItem(available);
+
+    setOwnedItems((prev) => [...prev, item.id]);
+
+    return item;
+  };
+
   return (
     <ItemContext.Provider
       value={{
@@ -102,6 +127,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         buyItem,
         isOwned,
         toggleEquip,
+        openMysteryBox,
       }}
     >
       {children}
