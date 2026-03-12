@@ -52,7 +52,7 @@ export const ACHIEVEMENTS: Achievement[] = [
       description: "처음으로 주식을 샀어요!",
       emoji: "🎉",
     },
-    reward: { coin: 3, exp: 30 },
+    reward: { coin: 30, exp: 40 },
     condition: (state) => state.totalTrades >= 1,
   },
 
@@ -64,7 +64,7 @@ export const ACHIEVEMENTS: Achievement[] = [
       description: "주식을 10번 거래했어요!",
       emoji: "📈",
     },
-    reward: { coin: 5, exp: 40 },
+    reward: { coin: 50, exp: 60 },
     condition: (state) => state.totalTrades >= 10,
   },
 
@@ -80,7 +80,7 @@ export const ACHIEVEMENTS: Achievement[] = [
       description: "총 자산이 120만원을 넘었어요!",
       emoji: "💰",
     },
-    reward: { coin: 5, exp: 40 },
+    reward: { coin: 70, exp: 70 },
     condition: (state) => state.totalAsset >= 1200000,
   },
 
@@ -96,7 +96,7 @@ export const ACHIEVEMENTS: Achievement[] = [
       description: "투자 레벨이 10이 되었어요!",
       emoji: "⭐",
     },
-    reward: { coin: 10, exp: 50 },
+    reward: { coin: 100, exp: 100 },
     condition: (state) => state.level >= 10,
   },
 
@@ -112,7 +112,7 @@ export const ACHIEVEMENTS: Achievement[] = [
       description: "7일 연속 출석 성공!",
       emoji: "🔥",
     },
-    reward: { coin: 5 },
+    reward: { coin: 50 },
     condition: (state) => state.streak >= 7,
   },
 
@@ -124,7 +124,7 @@ export const ACHIEVEMENTS: Achievement[] = [
       description: "30일 연속 출석!",
       emoji: "🏆",
     },
-    reward: { coin: 15 },
+    reward: { coin: 150 },
     condition: (state) => state.streak >= 30,
   },
 ];
