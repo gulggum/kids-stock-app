@@ -9,6 +9,7 @@ import { useCharacter } from "../context/UserContext/CharacterContext";
 import { LEVEL_RULES } from "../data/rules/levelTitles";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
+import { getActiveSetBonus } from "../utils/setItemBonus";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
@@ -81,27 +82,52 @@ const CharacterPage = () => {
     (item) => item.slot === activeSlot && isOwned(item.id),
   );
 
-  // 현재 장착된 아이템들의 setId 모음
-  const equippedSetIds = Object.values(equippedItems)
-    .map((itemId) => characterItems.find((item) => item.id === itemId)?.setId)
-    .filter(Boolean);
-  // 같은 setId가 3개 이상이면 세트 완성
-  const hasSchoolSet =
-    equippedSetIds.filter((id) => id === "school").length >= 3;
-
+  // -------------------------------------
+  // 🎒 장착 아이템 기반 세트 효과 계산
+  // -------------------------------------
+  const activeSets = getActiveSetBonus(equippedItems);
+  console.log("activeSets", activeSets);
   return (
     <Wrapper>
       {/* 👦 캐릭터 영역 */}
       <CharacterCard>
         {/* 기본 캐릭터 */}
         <CharacterArea>
-          <Avatar $animate={animate} $levelUp={levelUp}>
+          <Avatar
+            $animate={animate}
+            $levelUp={levelUp}
+            $setActive={Object.keys(activeSets).length > 0} //세트 하나라도 있으면 glow효과
+          >
             {" "}
             <BaseCharacter>🧒</BaseCharacter>
             {/* 장착된 아이템들 */}
-            {equippedItems.hat && <Hat>🧢</Hat>}
-            {equippedItems.top && <Top>👕</Top>}
-            {equippedItems.shoes && <Shoes>👟</Shoes>}
+            {equippedItems.hair && (
+              <Hair>
+                {" "}
+                {characterItems.find((i) => i.id === equippedItems.hair)?.emoji}
+              </Hair>
+            )}
+            {equippedItems.hat && (
+              <Hat>
+                {" "}
+                {characterItems.find((i) => i.id === equippedItems.hat)?.emoji}
+              </Hat>
+            )}
+            {equippedItems.top && (
+              <Top>
+                {" "}
+                {characterItems.find((i) => i.id === equippedItems.top)?.emoji}
+              </Top>
+            )}
+            {equippedItems.accessory && (
+              <Accessory>
+                {" "}
+                {
+                  characterItems.find((i) => i.id === equippedItems.accessory)
+                    ?.emoji
+                }
+              </Accessory>
+            )}
           </Avatar>
         </CharacterArea>
 
@@ -121,7 +147,9 @@ const CharacterPage = () => {
             <ExpText>최고 레벨 🎉</ExpText>
           )}
         </Level>
-        {hasSchoolSet && <SetBonus>🎁 학교 세트 효과 발동!</SetBonus>}
+        {Object.entries(activeSets).map(([setId, set]) => (
+          <SetBonus key={setId}>✨ {set.name} 세트 효과 발동!!</SetBonus>
+        ))}
       </CharacterCard>
 
       {/* 🪙 코인 상태 */}
@@ -154,9 +182,10 @@ const CharacterPage = () => {
             <EmptyState>
               {/* 슬롯별 안내 문구 */}
               <Message>
+                {activeSlot === "hair" && "💇 아직 가진 헤어가 없어요"}
                 {activeSlot === "hat" && "🧢 아직 가진 모자가 없어요"}
                 {activeSlot === "top" && "👕 아직 가진 옷이 없어요"}
-                {activeSlot === "shoes" && "👟 아직 가진 신발이 없어요"}
+                {activeSlot === "accessory" && "🎒 아직 가진 악세서리가 없어요"}
               </Message>
               {/* 상점 바로가기 버튼 */}
               <GoShopButton onClick={() => navigate("/shop")}>
@@ -205,6 +234,12 @@ const CharacterPage = () => {
       {/* 슬롯 선택 버튼 */}
       <SlotTabs>
         <SlotButton
+          $active={activeSlot === "hair"}
+          onClick={() => setActiveSlot("hair")}
+        >
+          💇 헤어
+        </SlotButton>
+        <SlotButton
           $active={activeSlot === "hat"}
           onClick={() => setActiveSlot("hat")}
         >
@@ -219,10 +254,10 @@ const CharacterPage = () => {
         </SlotButton>
 
         <SlotButton
-          $active={activeSlot === "shoes"}
-          onClick={() => setActiveSlot("shoes")}
+          $active={activeSlot === "accessory"}
+          onClick={() => setActiveSlot("accessory")}
         >
-          👟 신발
+          👟 악세서리
         </SlotButton>
       </SlotTabs>
     </Wrapper>
@@ -240,6 +275,35 @@ const pop = keyframes`
     transform: scale(1);
   }
 `;
+//세트효과 애니메이션(배찌)
+const sparkle = keyframes`
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255,255,255,0);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 14px rgba(255,255,255,0.8);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255,255,255,0);
+  }
+`;
+//세트효과 애니메이션(캐릭터)
+const glow = keyframes`
+  0% {
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9),
+                0 0 40px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+  }
+`;
+
 //레벨업 애니메이션
 const levelUpAnim = keyframes`
   0% { transform: scale(1); }
@@ -266,6 +330,7 @@ const CharacterCard = styled.div`
 `;
 
 const CharacterArea = styled.div`
+  position: relative;
   margin: 20px 0;
   padding: 24px 0;
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -281,14 +346,20 @@ const CharacterArea = styled.div`
   justify-content: center;
 `;
 
-const Avatar = styled.div<{ $animate: boolean; $levelUp?: boolean }>`
+const Avatar = styled.div<{
+  $animate: boolean;
+  $levelUp?: boolean;
+  $setActive?: boolean;
+}>`
   font-size: 64px;
   position: relative;
   font-size: 72px;
   transition: transform 0.2s;
   /* 장착 시에만 애니메이션 실행 */
-  animation: ${({ $animate }) => ($animate ? pop : "none")} 0.4s ease;
-  animation: ${({ $levelUp }) => ($levelUp ? levelUpAnim : "none")} 0.6s ease;
+  animation:
+    ${({ $animate }) => ($animate ? pop : "none")} 0.4s ease,
+    ${({ $levelUp }) => ($levelUp ? levelUpAnim : "none")} 0.6s ease,
+    ${({ $setActive }) => ($setActive ? glow : "none")} 1.8s infinite;
 `;
 const BaseCharacter = styled.div``;
 
@@ -447,9 +518,15 @@ const Top = styled.div`
   left: 20px;
 `;
 
-const Shoes = styled.div`
+const Accessory = styled.div`
   position: absolute;
   top: 90px;
+  left: 20px;
+`;
+
+const Hair = styled.div`
+  position: absolute;
+  top: -8px;
   left: 20px;
 `;
 
@@ -544,25 +621,27 @@ const GoShopButton = styled.button`
   transition: all 0.15s ease;
 `;
 const SetBonus = styled.div`
-  margin-top: 12px;
-  padding: 10px 14px;
+  position: absolute;
+  top: 40px;
+  right: 45px;
 
-  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 8px 14px;
+  border-radius: 999px;
 
-  /* 세트 보너스는 눈에 띄는 색 */
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.secondary},
-    ${({ theme }) => theme.colors.primary}
-  );
+  font-size: 10px;
+  font-weight: 800;
+
+  background: linear-gradient(135deg, #ffd84d, #ff9f43);
 
   color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
 
-  /* 살짝 뜨는 느낌 */
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  animation: ${sparkle} 1.6s infinite;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 `;
 
 export default CharacterPage;
