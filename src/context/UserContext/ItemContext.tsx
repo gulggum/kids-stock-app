@@ -7,9 +7,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useCoin } from "../WalletContext/CoinContext";
 import {
   characterItems,
-  getRandomItem,
-  MYSTERY_BOX_PRICE,
   type CharacterItem,
+  type ItemRarity,
 } from "../../data/static/characterItems";
 
 // localStorage에 저장할 key 이름
@@ -29,13 +28,18 @@ const DEFAULT_EQUIP: EquipSlots = {
   accessory: null,
 };
 
+//미스터리박스 반환타입
+type MysteryBoxResult = CharacterItem & {
+  duplicate?: boolean;
+};
+
 //아이템 구매결과 별 토스트메세지
 type BuyItemResult = "SUCCESS" | "ALREADY_OWNED" | "NOT_ENOUGH_COIN";
 
 type ItemContextType = {
   ownedItems: string[]; //보유한 아이템 id 목록
   equippedItems: EquipSlots;
-  openMysteryBox: () => CharacterItem | null;
+  openMysteryBox: () => MysteryBoxResult | null;
   buyItem: (id: string, price: number) => BuyItemResult; //아이템 구매
   isOwned: (id: string) => boolean; //보유 여부 확인
   toggleEquip: (slot: keyof EquipSlots, id: string) => void; //장착토글
@@ -45,7 +49,7 @@ type ItemContextType = {
 const ItemContext = createContext<ItemContextType>({} as ItemContextType);
 
 export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
-  const { spendCoin } = useCoin();
+  const { spendCoin, addCoin } = useCoin();
   const [ownedItems, setOwnedItems] = useState<string[]>(() => {
     //처음 렌더될 때 한번만 실행, 렌더링마다 localStorage 읽지않음
     const saved = localStorage.getItem(OWNED_KEY);
@@ -101,19 +105,36 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
   }, [equippedItems]);
 
   //미스터리박스 함수
-  const openMysteryBox = () => {
-    const success = spendCoin(MYSTERY_BOX_PRICE);
-    if (!success) return null;
+  const openMysteryBox = (): MysteryBoxResult | null => {
+    const roll = Math.random() * 100;
 
-    // 아직 없는 아이템만 랜덤
-    const available = characterItems.filter(
-      (item) => !ownedItems.includes(item.id),
+    let rarity: ItemRarity;
+
+    if (roll < 5) rarity = "LEGEND";
+    else if (roll < 30) rarity = "RARE";
+    else rarity = "COMMON";
+
+    // 기본머리는 제외 (price 0)
+    const candidates = characterItems.filter(
+      (item) => item.rarity === rarity && item.price > 0,
     );
 
-    if (available.length === 0) return null;
+    const item = candidates[Math.floor(Math.random() * candidates.length)];
 
-    const item = getRandomItem(available);
+    // ⭐ 이미 가진 아이템인지 체크
+    const alreadyOwned = ownedItems.includes(item.id);
 
+    if (alreadyOwned) {
+      // 중복 → 코인 지급
+      addCoin(10);
+
+      return {
+        ...item,
+        duplicate: true,
+      };
+    }
+
+    // 신규 아이템이면 추가
     setOwnedItems((prev) => [...prev, item.id]);
 
     return item;

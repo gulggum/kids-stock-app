@@ -14,6 +14,7 @@ export const MysteryBox = () => {
   const [opening, setOpening] = useState(false);
   const [reward, setReward] = useState<any>(null);
 
+  const sparkles = Array.from({ length: 18 });
   return (
     <>
       {/* 랜덤박스 카드 */}
@@ -38,9 +39,16 @@ export const MysteryBox = () => {
               setTimeout(() => {
                 setOpening(false);
                 setReward(item);
+                if (item.rarity === "LEGEND") {
+                  createToast("🌟 LEGEND 아이템 획득!");
+                }
 
                 playCoinSound();
-                createToast(`🎉 ${item.name} 획득!`);
+                if (item.duplicate) {
+                  createToast(`🔁 ${item.name} 중복! 코인 +10`);
+                } else {
+                  createToast(`🎉 ${item.name} 획득!`);
+                }
               }, 900);
             },
           });
@@ -63,11 +71,32 @@ export const MysteryBox = () => {
       {/* 아이템 등장 */}
       {reward && (
         <Overlay onClick={() => setReward(null)}>
+          {/* ⭐ LEGEND일 때만 반짝이 */}
+          {reward.rarity === "LEGEND" && (
+            <Sparkles>
+              {sparkles.map((_, i) => (
+                <Sparkle
+                  key={i}
+                  style={{
+                    top: `${Math.random() * 100}%`,
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 2}s`,
+                  }}
+                >
+                  ✨
+                </Sparkle>
+              ))}
+            </Sparkles>
+          )}
+
           <RewardCard>
             <RewardEmoji>{reward.emoji}</RewardEmoji>
             <RewardName>{reward.name}</RewardName>
             <RewardText>획득했습니다!</RewardText>
+
             <ConfirmButton onClick={() => setReward(null)}>확인</ConfirmButton>
+            {/* ⭐ 카드 빛 회오리도 LEGEND만 */}
+            {reward.rarity === "LEGEND" && <BorderLight />}
           </RewardCard>
         </Overlay>
       )}
@@ -86,6 +115,16 @@ const shake = keyframes`
 const pop = keyframes`
 0% { transform: scale(0.5); opacity:0; }
 100% { transform: scale(1); opacity:1; }
+`;
+const sparkle = keyframes`
+0% { opacity: 0; transform: scale(0.5); }
+50% { opacity: 1; transform: scale(1); }
+100% { opacity: 0; transform: scale(0.5); }
+`;
+
+const rotateLight = keyframes`
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
 `;
 
 const Card = styled.div`
@@ -165,6 +204,7 @@ const BoxText = styled.div`
   color: white;
 `;
 const RewardCard = styled.div`
+  position: relative;
   background: white;
   border-radius: 20px;
 
@@ -176,22 +216,28 @@ const RewardCard = styled.div`
   gap: 8px;
 
   animation: ${pop} 0.35s ease;
+
+  overflow: hidden;
 `;
 
 const RewardEmoji = styled.div`
   font-size: 64px;
+  z-index: 1;
 `;
 
 const RewardName = styled.div`
   font-size: 18px;
   font-weight: 700;
+  z-index: 1;
 `;
 
 const RewardText = styled.div`
   font-size: 14px;
   color: #666;
+  z-index: 1;
 `;
 const ConfirmButton = styled.button`
+  z-index: 1;
   margin-top: 12px;
 
   padding: 8px 16px;
@@ -212,4 +258,35 @@ const ConfirmButton = styled.button`
     transform: translateY(2px);
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
   }
+`;
+
+const Sparkles = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+`;
+const Sparkle = styled.div`
+  position: absolute;
+  font-size: 20px;
+  animation: ${sparkle} 1.6s infinite;
+`;
+const BorderLight = styled.div`
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    transparent,
+    #ffd700,
+    #fff7a8,
+    #ffd700,
+    transparent
+  );
+
+  animation: ${rotateLight} 3s linear infinite;
+
+  top: -50%;
+  left: -50%;
+
+  opacity: 0.6;
+  z-index: 0;
 `;

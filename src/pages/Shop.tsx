@@ -14,6 +14,9 @@ import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
 import { useReward } from "../context/RewardContext";
 import { MysteryBox } from "../components/shop/mysteryBox";
+import { ShopTabs } from "../components/shop/shopTabs";
+
+type TabType = "NEW" | "HOT" | "hair" | "hat" | "top" | "accessory";
 
 const Shop = () => {
   const { coins } = useCoin();
@@ -22,6 +25,7 @@ const Shop = () => {
   const { openModal } = useModal();
   const { giveReward } = useReward();
   const [sparkleItemId, setSparkleItemId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>("NEW");
 
   const handleBuyConfirm = (item: CharacterItem) => {
     handleBuyItem(item.id, item.price);
@@ -43,6 +47,16 @@ const Shop = () => {
     }
   };
 
+  //아이템 필터
+  const filteredItems = characterItems.filter((item) => {
+    if (activeTab === "NEW") return true;
+
+    if (activeTab === "HOT")
+      return item.rarity === "LEGEND" || item.rarity === "RARE";
+
+    return item.slot === activeTab;
+  });
+
   return (
     <Wrapper>
       <Title>상점 🛍</Title>
@@ -50,12 +64,13 @@ const Shop = () => {
       <CoinBar>
         🪙 보유 코인 <strong>{coins}</strong>
       </CoinBar>
+      <ShopTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <Grid>
         {/* 🎁 랜덤 박스 */}
-        <MysteryBox />
+        {activeTab === "NEW" && <MysteryBox />}
 
-        {characterItems.map((item) => {
+        {filteredItems.map((item) => {
           const owned = isOwned(item.id);
           const isEquipped = equippedItems[item.slot] === item.id;
           return (
@@ -63,6 +78,7 @@ const Shop = () => {
               key={item.id}
               $owned={owned}
               $sparkle={sparkleItemId === item.id}
+              $rarity={item.rarity}
               onClick={() => {
                 if (owned) {
                   createToast("이미 가지고 있는 아이템이에요 😊");
@@ -143,7 +159,11 @@ const Grid = styled.div`
   gap: 12px;
 `;
 
-const ItemCard = styled.div<{ $owned?: boolean; $sparkle?: boolean }>`
+const ItemCard = styled.div<{
+  $owned?: boolean;
+  $sparkle?: boolean;
+  $rarity?: "COMMON" | "RARE" | "LEGEND";
+}>`
   background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 16px;
@@ -162,6 +182,23 @@ const ItemCard = styled.div<{ $owned?: boolean; $sparkle?: boolean }>`
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
   }
+  /* rarity 테두리 */
+  border: 2px solid
+    ${({ $rarity }) =>
+      $rarity === "LEGEND"
+        ? "#FFD700"
+        : $rarity === "RARE"
+          ? "#4DA3FF"
+          : "transparent"};
+
+  box-shadow: ${({ $rarity }) =>
+    $rarity === "LEGEND"
+      ? "0 0 10px rgba(255,215,0,0.5)"
+      : $rarity === "RARE"
+        ? "0 0 8px rgba(77,163,255,0.4)"
+        : "none"};
+
+  opacity: ${({ $owned }) => ($owned ? 0.6 : 1)};
 `;
 
 const Emoji = styled.div`
