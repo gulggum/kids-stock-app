@@ -51,6 +51,7 @@ const BottomWrapper = styled.header`
   @media (min-width: 769px) {
     display: none; // PC에서는 숨김
   }
+  z-index: 5;
 `;
 
 const Nav = styled.nav`

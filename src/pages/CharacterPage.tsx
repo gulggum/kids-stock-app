@@ -86,7 +86,7 @@ const CharacterPage = () => {
   // 🎒 장착 아이템 기반 세트 효과 계산
   // -------------------------------------
   const activeSets = getActiveSetBonus(equippedItems);
-  console.log("activeSets", activeSets);
+
   return (
     <Wrapper>
       {/* 👦 캐릭터 영역 */}
@@ -552,7 +552,7 @@ const SlotButton = styled.button<{ $active: boolean }>`
   padding: 12px 0;
   border-radius: 999px; /* 알약 모양 */
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
 
   border: none;

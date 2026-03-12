@@ -10,57 +10,73 @@ type Props = {
 export const ShopTabs = ({ activeTab, setActiveTab }: Props) => {
   return (
     <TabBar>
-      <TabButton
-        $active={activeTab === "NEW"}
-        onClick={() => setActiveTab("NEW")}
-      >
-        NEW
-      </TabButton>
+      {/* 윗줄 */}
+      <TabGroup>
+        <TabButton
+          $active={activeTab === "NEW"}
+          onClick={() => setActiveTab("NEW")}
+        >
+          NEW
+        </TabButton>
+        <TabButton
+          $active={activeTab === "HOT"}
+          onClick={() => setActiveTab("HOT")}
+        >
+          HOT
+        </TabButton>
+      </TabGroup>
 
-      <TabButton
-        $active={activeTab === "HOT"}
-        onClick={() => setActiveTab("HOT")}
-      >
-        HOT
-      </TabButton>
-
-      <TabButton
-        $active={activeTab === "hair"}
-        onClick={() => setActiveTab("hair")}
-      >
-        💇 머리
-      </TabButton>
-
-      <TabButton
-        $active={activeTab === "hat"}
-        onClick={() => setActiveTab("hat")}
-      >
-        🧢 모자
-      </TabButton>
-
-      <TabButton
-        $active={activeTab === "top"}
-        onClick={() => setActiveTab("top")}
-      >
-        👕 옷
-      </TabButton>
-
-      <TabButton
-        $active={activeTab === "accessory"}
-        onClick={() => setActiveTab("accessory")}
-      >
-        ✨ 악세
-      </TabButton>
+      {/* 아랫줄 */}
+      <TabGroup>
+        <TabButton
+          $active={activeTab === "hair"}
+          onClick={() => setActiveTab("hair")}
+        >
+          💇 머리
+        </TabButton>
+        <TabButton
+          $active={activeTab === "hat"}
+          onClick={() => setActiveTab("hat")}
+        >
+          🧢 모자
+        </TabButton>
+        <TabButton
+          $active={activeTab === "top"}
+          onClick={() => setActiveTab("top")}
+        >
+          👕 옷
+        </TabButton>
+        <TabButton
+          $active={activeTab === "accessory"}
+          onClick={() => setActiveTab("accessory")}
+        >
+          ✨ 악세
+        </TabButton>
+      </TabGroup>
     </TabBar>
   );
 };
 
 const TabBar = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 0;
+
+  background: ${({ theme }) => theme.colors.background};
+`;
+const TabGroup = styled.div`
+  display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 6px 0;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const TabButton = styled.button<{ $active: boolean }>`
