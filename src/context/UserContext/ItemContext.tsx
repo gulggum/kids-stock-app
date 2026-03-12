@@ -126,7 +126,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (alreadyOwned) {
       // 중복 → 코인 지급
-      addCoin(10);
+      addCoin(50);
 
       return {
         ...item,

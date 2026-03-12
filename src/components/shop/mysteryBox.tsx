@@ -45,7 +45,7 @@ export const MysteryBox = () => {
 
                 playCoinSound();
                 if (item.duplicate) {
-                  createToast(`🔁 ${item.name} 중복! 코인 +10`);
+                  createToast(`🔁 ${item.name} 중복! 코인 +50`);
                 } else {
                   createToast(`🎉 ${item.name} 획득!`);
                 }
@@ -56,7 +56,7 @@ export const MysteryBox = () => {
       >
         <Emoji>🎁</Emoji>
         <Name>랜덤 박스</Name>
-        <Price>20 코인</Price>
+        <Price>100 코인</Price>
         <OpenText>열어보기</OpenText>
       </Card>
 
@@ -129,7 +129,7 @@ const rotateLight = keyframes`
 
 const Card = styled.div`
   background: ${({ theme }) => theme.colors.card};
-  border-radius: ${({ theme }) => theme.radius.lg};
+  border-radius: ${({ theme }) => theme.radius.sm};
   padding: 16px;
 
   display: flex;

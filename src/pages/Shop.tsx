@@ -110,6 +110,14 @@ const Shop = () => {
                 {owned && !isEquipped && "보유중"}
                 {isEquipped && "착용중"}
               </StatusText>
+              {/* 아이템별 등급표기 */}
+              <RarityBadge $rarity={item.rarity}>
+                {item.rarity === "LEGEND"
+                  ? "👑LEGEND"
+                  : item.rarity === "RARE"
+                    ? "⭐RARE"
+                    : "NORMAL"}
+              </RarityBadge>
             </ItemCard>
           );
         })}
@@ -164,8 +172,9 @@ const ItemCard = styled.div<{
   $sparkle?: boolean;
   $rarity?: "COMMON" | "RARE" | "LEGEND";
 }>`
+  position: relative;
   background: ${({ theme }) => theme.colors.card};
-  border-radius: ${({ theme }) => theme.radius.lg};
+  border-radius: ${({ theme }) => theme.radius.sm};
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -182,21 +191,6 @@ const ItemCard = styled.div<{
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
   }
-  /* rarity 테두리 */
-  border: 2px solid
-    ${({ $rarity }) =>
-      $rarity === "LEGEND"
-        ? "#FFD700"
-        : $rarity === "RARE"
-          ? "#4DA3FF"
-          : "transparent"};
-
-  box-shadow: ${({ $rarity }) =>
-    $rarity === "LEGEND"
-      ? "0 0 10px rgba(255,215,0,0.5)"
-      : $rarity === "RARE"
-        ? "0 0 8px rgba(77,163,255,0.4)"
-        : "none"};
 
   opacity: ${({ $owned }) => ($owned ? 0.6 : 1)};
 `;
@@ -227,6 +221,25 @@ const StatusText = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-//구매확인창 모달
+//rarity 뱃지
+const RarityBadge = styled.div<{ $rarity: "COMMON" | "RARE" | "LEGEND" }>`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  z-index: 2;
+  opacity: 1;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  padding: 3px 6px;
+  border-radius: 8px;
+
+  color: white;
+
+  background: ${({ $rarity }) =>
+    $rarity === "LEGEND" ? "#FFD700" : $rarity === "RARE" ? "#4DA3FF" : ""};
+`;
 
 export default Shop;

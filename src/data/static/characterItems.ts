@@ -16,7 +16,7 @@ export type CharacterItem = {
 };
 
 //랜덤박스
-export const MYSTERY_BOX_PRICE = 20;
+export const MYSTERY_BOX_PRICE = 100;
 //랜덤 대상 아이템 필터 함수
 export function getRandomItem(items: CharacterItem[]) {
   const index = Math.floor(Math.random() * items.length);
