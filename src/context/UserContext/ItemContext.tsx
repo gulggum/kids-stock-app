@@ -11,10 +11,17 @@ const OWNED_KEY = "owned_items";
 const EQUIPPED_KEY = "equipped_items";
 
 // 장착 가능한 슬롯 타입
-export type EquipSlot = "hat" | "top" | "shoes";
+export type EquipSlot = "hair" | "hat" | "top" | "accessory";
 
-//아이템 장작 슬롯
+//아이템 장작 슬롯 상태
 export type EquipSlots = Record<EquipSlot, string | null>;
+
+const DEFAULT_EQUIP: EquipSlots = {
+  hair: null,
+  hat: null,
+  top: null,
+  accessory: null,
+};
 
 //아이템 구매결과 별 토스트메세지
 type BuyItemResult = "SUCCESS" | "ALREADY_OWNED" | "NOT_ENOUGH_COIN";
@@ -25,7 +32,6 @@ type ItemContextType = {
 
   buyItem: (id: string, price: number) => BuyItemResult; //아이템 구매
   isOwned: (id: string) => boolean; //보유 여부 확인
-
   toggleEquip: (slot: keyof EquipSlots, id: string) => void; //장착토글
 };
 
@@ -47,9 +53,9 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const saved = localStorage.getItem(EQUIPPED_KEY);
 
     if (!saved || saved === "undefined") {
-      return {};
+      return DEFAULT_EQUIP;
     }
-    return saved ? JSON.parse(saved) : {};
+    return JSON.parse(saved);
   });
 
   //아이템 구매함수 / 코인차감 / 성공시 아이템 보유 목록에 추가
@@ -73,7 +79,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     setEquippedItems((prev) => {
       //이미 해당 슬롯에 장착되어 있으면 ->해제
       if (prev[slot] === id) {
-        return { ...prev, [slot]: undefined };
+        return { ...prev, [slot]: null };
       }
       //아니면 -> 해당 슬롯에 장착
       return { ...prev, [slot]: id };
@@ -90,7 +96,13 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <ItemContext.Provider
-      value={{ ownedItems, equippedItems, buyItem, isOwned, toggleEquip }}
+      value={{
+        ownedItems,
+        equippedItems,
+        buyItem,
+        isOwned,
+        toggleEquip,
+      }}
     >
       {children}
     </ItemContext.Provider>

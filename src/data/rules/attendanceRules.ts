@@ -11,6 +11,6 @@ export const ATTENDANCE_BADGE_RULES = [
 ];
 
 export const ATTENDANCE_REWARD = {
-  DAILY_COIN: 1,
-  WEEK_BONUS: 3,
+  DAILY_COIN: 20,
+  WEEK_BONUS: 50,
 };
