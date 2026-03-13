@@ -15,6 +15,7 @@ import styled from "styled-components";
 type NewsItem = {
   title: string;
   summary: string;
+  image: string;
   companies: string[];
 };
 
@@ -39,6 +40,9 @@ const AdminNewsCreate = () => {
         title: `뉴스 ${i + 1}`,
         summary:
           "AI가 어린이를 위해 쉽게 설명한 경제 뉴스입니다. 기업 활동과 시장 변화를 이해할 수 있도록 정리되었습니다.",
+
+        image: "https://picsum.photos/seed/computer/200/200", // ⭐ 추가
+
         companies: ["삼성전자", "애플"],
       }));
 
@@ -93,6 +97,12 @@ const AdminNewsCreate = () => {
                 onChange={(e) => updateNews(i, "title", e.target.value)}
               />
 
+              <Input
+                placeholder="이미지 URL"
+                value={item.image}
+                onChange={(e) => updateNews(i, "image", e.target.value)}
+              />
+
               <Textarea
                 value={item.summary}
                 onChange={(e) => updateNews(i, "summary", e.target.value)}
@@ -117,6 +127,7 @@ const AdminNewsCreate = () => {
           <PreviewGrid>
             {published.map((item, i) => (
               <PreviewCard key={i}>
+                <PreviewImage src={item.image} />
                 <PreviewTitle>{item.title}</PreviewTitle>
                 <PreviewText>{item.summary}</PreviewText>
 
@@ -222,6 +233,13 @@ const PreviewCard = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
+const PreviewImage = styled.img`
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  margin-bottom: 8px;
+`;
 const PreviewTitle = styled.h4`
   margin-bottom: 6px;
 `;
