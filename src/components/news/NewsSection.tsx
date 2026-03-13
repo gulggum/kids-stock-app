@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { type HomeNews } from "../../data/mock/homeNewsMockData";
 import { useQuizProgress } from "../../context/QuizContext/QuizProgressContext";
+import { marketMockData } from "../../data/mock/marketMock";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   news: HomeNews[];
@@ -8,6 +10,7 @@ type Props = {
 };
 
 const NewsSection = ({ news, onClick }: Props) => {
+  const navigate = useNavigate();
   const { isSolved } = useQuizProgress();
 
   return (
@@ -16,29 +19,54 @@ const NewsSection = ({ news, onClick }: Props) => {
         <LoadingText>새로운 경제 뉴스가 준비되고 있어요 📚</LoadingText>
       )}
 
-      {news.map((item) => (
-        <Card key={item.id} onClick={() => onClick(item)}>
-          <CardTop>
-            <TitleRow>
-              <NewsIcon>📰</NewsIcon>
-              <Title>{item.title}</Title>
-            </TitleRow>
+      {news.map((item) => {
+        const company = marketMockData.find(
+          (s) => s.id.toString() === item.stockId,
+        );
 
-            {!isSolved(item.id) && <Reward>+10 EXP</Reward>}
-            {isSolved(item.id) && (
-              <CompletedStamp>
-                퀴즈
-                <br />
-                완료
-              </CompletedStamp>
-            )}
-          </CardTop>
+        return (
+          <Card
+            key={item.id}
+            onClick={() => onClick(item)}
+            $completed={isSolved(item.id)}
+          >
+            <CardTop>
+              <TitleRow>
+                <NewsIcon>📰</NewsIcon>
+                <Title>{item.title}</Title>
+              </TitleRow>
 
-          <Summary>{item.summary}</Summary>
+              {!isSolved(item.id) && <Reward>+10 EXP</Reward>}
 
-          {!isSolved(item.id) && <QuizHint>🧠 퀴즈 도전하기</QuizHint>}
-        </Card>
-      ))}
+              {isSolved(item.id) && (
+                <CompletedStamp>
+                  퀴즈
+                  <br />
+                  완료
+                </CompletedStamp>
+              )}
+            </CardTop>
+
+            <Summary>{item.summary}</Summary>
+            <BottomRow>
+              <LeftArea>
+                {!isSolved(item.id) && <QuizHint>🧠 퀴즈 도전하기</QuizHint>}
+              </LeftArea>
+
+              {company && (
+                <CompanyLink
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/market/${company.id}`);
+                  }}
+                >
+                  기업 구경가기 →<CompanyTag>#{company.name}</CompanyTag>
+                </CompanyLink>
+              )}
+            </BottomRow>
+          </Card>
+        );
+      })}
     </Section>
   );
 };
@@ -57,24 +85,38 @@ const LoadingText = styled.p`
   font-size: 14px;
 `;
 
-const Card = styled.div`
+const Card = styled.div<{ $completed?: boolean }>`
   position: relative;
-  background: ${({ theme }) => theme.colors.surface};
+
+  background: ${({ $completed }) =>
+    $completed ? "linear-gradient(180deg, #f5f1dc, #efe8c8)" : "#ffffff"};
+
   padding: 14px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  border-radius: ${({ $completed }) =>
+    $completed ? "18px 14px 20px 12px" : "16px"};
+
+  box-shadow: ${({ $completed }) =>
+    $completed
+      ? "0 2px 4px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.05)"
+      : "0 2px 6px rgba(0,0,0,0.1)"};
+
   cursor: pointer;
 
-  p {
-    margin-top: 6px;
-    font-size: 14px;
-  }
+  /* 읽은 카드 바랜 느낌 */
+  filter: ${({ $completed }) =>
+    $completed ? "saturate(0.7) brightness(0.96)" : "none"};
+
+  /* 애니메이션 */
   transition: transform 0.15s ease;
 
   &:hover {
     transform: translateY(-3px);
   }
+
+  /* 카드 등장 애니메이션 */
   animation: cardIn 0.3s ease;
+
   @keyframes cardIn {
     from {
       opacity: 0;
@@ -85,6 +127,11 @@ const Card = styled.div`
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  p {
+    margin-top: 6px;
+    font-size: 14px;
   }
 `;
 
@@ -179,41 +226,42 @@ const Summary = styled.p`
 
 const CompletedStamp = styled.div`
   position: absolute;
-  top: 40px;
-  right: 10px;
+  top: 50%;
+  left: 50%;
 
-  width: 60px;
-  height: 60px;
+  width: 90px;
+  height: 90px;
 
   border-radius: 50%;
   border: 3px solid #16a34a;
 
   color: #16a34a;
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 900;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  transform: rotate(-12deg);
-
   background: rgba(255, 255, 255, 0.5);
-
+  pointer-events: none; /* 클릭 막지 않게 */
   box-shadow:
     0 3px 6px rgba(0, 0, 0, 0.15),
     inset 0 0 0 1px rgba(22, 163, 74, 0.3);
 
   color: rgba(22, 163, 74, 0.9);
+  transform: translate(-50%, -50%) rotate(-12deg);
+
   animation: stamp 0.25s ease;
 
   @keyframes stamp {
     0% {
-      transform: scale(1.6) rotate(-12deg);
+      transform: translate(-50%, -50%) scale(1.6) rotate(-12deg);
       opacity: 0;
     }
+
     100% {
-      transform: scale(1) rotate(-12deg);
+      transform: translate(-50%, -50%) scale(1) rotate(-12deg);
       opacity: 1;
     }
   }
@@ -223,4 +271,45 @@ const QuizHint = styled.div`
   margin-top: 8px;
   font-size: 12px;
   opacity: 0.7;
+`;
+
+const BottomRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+`;
+
+const LeftArea = styled.div`
+  font-size: 12px;
+  opacity: 0.7;
+`;
+
+//관련기업태그
+const CompanyTag = styled.span`
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 2px 6px;
+  border-radius: 8px;
+`;
+const CompanyLink = styled.button`
+  border: none;
+  background: none;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: ${({ theme }) => theme.colors.primary};
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateX(2px);
+  }
 `;

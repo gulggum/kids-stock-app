@@ -31,6 +31,8 @@ const Home = () => {
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<NewsQuiz | null>(null);
   const { expProgress } = useCharacter();
+  const [newsTab, setNewsTab] = useState<"today" | "yesterday">("today"); //뉴스탭
+  const [countryTab, setCountryTab] = useState<"KR" | "US">("KR");
 
   //로컬스토리지의 캐릭터상태 불러오기
   const character = JSON.parse(localStorage.getItem("character_state") || "{}");
@@ -38,13 +40,29 @@ const Home = () => {
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading } = useNewsQuery();
 
-  // ✅ 뉴스
-  const todayNews = useMemo(
-    () => data?.news?.filter((n) => n.type === "today") ?? [],
+  // ✅ 오늘 뉴스
+  const todayKRNews = useMemo(
+    () =>
+      data?.news?.filter((n) => n.type === "today" && n.country === "KR") ?? [],
     [data],
   );
-  const missedNews = useMemo(
-    () => data?.news?.filter((n) => n.type === "missed") ?? [],
+  const todayUSNews = useMemo(
+    () =>
+      data?.news?.filter((n) => n.type === "today" && n.country === "US") ?? [],
+    [data],
+  );
+
+  // ✅ 어제 뉴스
+  const yesterdayKRNews = useMemo(
+    () =>
+      data?.news?.filter((n) => n.type === "yesterday" && n.country === "KR") ??
+      [],
+    [data],
+  );
+  const yesterdayUSNews = useMemo(
+    () =>
+      data?.news?.filter((n) => n.type === "yesterday" && n.country === "US") ??
+      [],
     [data],
   );
 
@@ -99,21 +117,18 @@ const Home = () => {
     playCoinSound();
   };
 
-  //오늘의 뉴스 진행도
-  const completed = JSON.parse(localStorage.getItem("quiz_progress") || "[]");
-
-  const todayCompleted = todayNews.filter((n) =>
-    completed.includes(n.id),
-  ).length;
-
-  //어제의 뉴스 진행도
-  const YesterDayCompleted = missedNews.filter((n) =>
-    completed.includes(n.id),
-  ).length;
-
   //날짜
   const today = new Date();
   const month = today.getMonth() + 1;
+
+  // 뉴스 읽은 기록 (퀴즈 푼 뉴스)
+  const readNewsIds = JSON.parse(localStorage.getItem("quiz_progress") || "[]");
+  const currentKRNews = newsTab === "today" ? todayKRNews : yesterdayKRNews;
+  const currentUSNews = newsTab === "today" ? todayUSNews : yesterdayUSNews;
+  const currentReadCount =
+    currentKRNews.filter((n) => readNewsIds.includes(n.id)).length +
+    currentUSNews.filter((n) => readNewsIds.includes(n.id)).length;
+  const currentNews = countryTab === "KR" ? currentKRNews : currentUSNews;
 
   return (
     <Wrapper>
@@ -138,31 +153,51 @@ const Home = () => {
 
       {/* 📰 오늘의 뉴스 */}
       <Section>
-        <SectionTitle>
-          📰 오늘의 경제 이야기{" "}
-          <Progress>
-            {todayCompleted} / {todayNews.length}
-          </Progress>
-        </SectionTitle>
+        <TitleRow>
+          <SectionTitle>
+            {newsTab === "today"
+              ? "📰 오늘의 경제 이야기"
+              : "📚 지난 경제 이야기"}
+            <Progress>
+              읽은 뉴스 {currentReadCount} /{" "}
+              {currentKRNews.length + currentUSNews.length}
+            </Progress>
+          </SectionTitle>
+
+          {newsTab === "today" && (
+            <PastNewsButton onClick={() => setNewsTab("yesterday")}>
+              지난 뉴스
+            </PastNewsButton>
+          )}
+
+          {newsTab === "yesterday" && (
+            <PastNewsButton onClick={() => setNewsTab("today")}>
+              오늘의 뉴스
+            </PastNewsButton>
+          )}
+        </TitleRow>
 
         {isLoading && <LoadingText>뉴스 불러오는 중...</LoadingText>}
         {!isLoading && (
-          <NewsSection news={todayNews} onClick={handleNewsClick} />
-        )}
-      </Section>
+          <>
+            <CountryTabBar>
+              <CountryTab
+                $active={countryTab === "KR"}
+                onClick={() => setCountryTab("KR")}
+              >
+                🇰🇷 한국 경제
+              </CountryTab>
 
-      {/* 📚 놓친 뉴스 */}
-      <Section>
-        <SectionTitle>
-          📚 지난 경제 이야기{" "}
-          <Progress>
-            {YesterDayCompleted} / {missedNews.length}
-          </Progress>
-        </SectionTitle>
+              <CountryTab
+                $active={countryTab === "US"}
+                onClick={() => setCountryTab("US")}
+              >
+                🌎 세계 경제
+              </CountryTab>
+            </CountryTabBar>
 
-        {isLoading && <LoadingText>뉴스 불러오는 중...</LoadingText>}
-        {!isLoading && (
-          <NewsSection news={missedNews} onClick={handleNewsClick} />
+            <NewsSection news={currentNews} onClick={handleNewsClick} />
+          </>
         )}
       </Section>
 
@@ -232,6 +267,13 @@ const SectionTitle = styled.h3`
   display: flex;
   flex-wrap: wrap; /* 줄바꿈 허용 */
   gap: 6px;
+`;
+
+const SubTitle = styled.h4`
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 6px;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const Progress = styled.span`
@@ -363,5 +405,41 @@ const StreakText = styled.span`
 const StreakNumber = styled.strong`
   font-size: 18px;
   font-weight: 900;
+`;
+
+const TitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PastNewsButton = styled.button`
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+  cursor: pointer;
+`;
+
+//탭 바
+const CountryTabBar = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+`;
+
+const CountryTab = styled.button<{ $active: boolean }>`
+  padding: 6px 14px;
+  border-radius: 18px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.primary : theme.colors.surface};
+
+  color: ${({ $active }) => ($active ? "white" : "#666")};
 `;
 export default Home;
