@@ -2,14 +2,11 @@ import { useState } from "react";
 import styled from "styled-components";
 
 /**
- * 관리자 AI 뉴스 생성 페이지
+ * 관리자 뉴스 생성 페이지
  *
- * 기능
- * - 뉴스 원문 입력
- * - AI 요약 생성
- * - 관리자 수정
- * - 미리보기
- * - 게시
+ * Step1 → 뉴스 입력
+ * Step2 → 뉴스 수정
+ * Step3 → 미리보기
  */
 
 type NewsItem = {
@@ -19,8 +16,13 @@ type NewsItem = {
   companies: string[];
 };
 
+type Step = "input" | "edit" | "preview";
+
 const AdminNewsCreate = () => {
+  const [step, setStep] = useState<Step>("input");
+
   const [inputs, setInputs] = useState<string[]>(["", "", "", "", "", ""]);
+
   const [news, setNews] = useState<NewsItem[]>([]);
   const [published, setPublished] = useState<NewsItem[]>([]);
 
@@ -40,13 +42,12 @@ const AdminNewsCreate = () => {
         title: `뉴스 ${i + 1}`,
         summary:
           "AI가 어린이를 위해 쉽게 설명한 경제 뉴스입니다. 기업 활동과 시장 변화를 이해할 수 있도록 정리되었습니다.",
-
-        image: "https://picsum.photos/seed/computer/200/200", // ⭐ 추가
-
+        image: "https://picsum.photos/seed/computer/400/200",
         companies: ["삼성전자", "애플"],
       }));
 
     setNews(result);
+    setStep("edit");
   };
 
   /**
@@ -69,26 +70,32 @@ const AdminNewsCreate = () => {
 
   return (
     <Container>
-      <Title>AI 뉴스 생성</Title>
+      <Title>오늘 뉴스 생성</Title>
 
-      <Section>
-        <SectionTitle>뉴스 원문 입력</SectionTitle>
+      {/* STEP 1 : 뉴스 입력 */}
 
-        {inputs.map((v, i) => (
-          <Textarea
-            key={i}
-            placeholder={`뉴스 ${i + 1}`}
-            value={v}
-            onChange={(e) => handleInput(i, e.target.value)}
-          />
-        ))}
-
-        <Button onClick={handleGenerate}>AI 요약 생성</Button>
-      </Section>
-
-      {news.length > 0 && (
+      {step === "input" && (
         <Section>
-          <SectionTitle>AI 결과 (수정 가능)</SectionTitle>
+          <SectionTitle>뉴스 원문 입력</SectionTitle>
+
+          {inputs.map((v, i) => (
+            <Textarea
+              key={i}
+              placeholder={`뉴스 ${i + 1}`}
+              value={v}
+              onChange={(e) => handleInput(i, e.target.value)}
+            />
+          ))}
+
+          <Button onClick={handleGenerate}>AI 요약 생성</Button>
+        </Section>
+      )}
+
+      {/* STEP 2 : 수정 */}
+
+      {step === "edit" && (
+        <Section>
+          <SectionTitle>뉴스 수정</SectionTitle>
 
           {news.map((item, i) => (
             <Card key={i}>
@@ -116,19 +123,26 @@ const AdminNewsCreate = () => {
             </Card>
           ))}
 
-          <PublishButton onClick={handlePublish}>뉴스 게시</PublishButton>
+          <ButtonRow>
+            <Button onClick={() => setStep("input")}>뒤로</Button>
+            <Button onClick={() => setStep("preview")}>미리보기</Button>
+          </ButtonRow>
         </Section>
       )}
 
-      {published.length > 0 && (
+      {/* STEP 3 : 미리보기 */}
+
+      {step === "preview" && (
         <Section>
           <SectionTitle>홈 미리보기</SectionTitle>
 
           <PreviewGrid>
-            {published.map((item, i) => (
+            {news.map((item, i) => (
               <PreviewCard key={i}>
                 <PreviewImage src={item.image} />
+
                 <PreviewTitle>{item.title}</PreviewTitle>
+
                 <PreviewText>{item.summary}</PreviewText>
 
                 <CompanyRow>
@@ -139,6 +153,11 @@ const AdminNewsCreate = () => {
               </PreviewCard>
             ))}
           </PreviewGrid>
+
+          <ButtonRow>
+            <Button onClick={() => setStep("edit")}>수정</Button>
+            <PublishButton onClick={handlePublish}>뉴스 게시</PublishButton>
+          </ButtonRow>
         </Section>
       )}
     </Container>
@@ -191,6 +210,13 @@ const Button = styled.button`
   background: ${({ theme }) => theme.colors.primary};
   color: white;
   border: none;
+  cursor: pointer;
+`;
+
+const ButtonRow = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
 `;
 
 const Card = styled.div`
@@ -214,12 +240,12 @@ const Tag = styled.span`
 `;
 
 const PublishButton = styled.button`
-  margin-top: 12px;
   padding: 12px 16px;
   border-radius: ${({ theme }) => theme.radius.sm};
   background: ${({ theme }) => theme.colors.accentGreen};
   color: white;
   border: none;
+  cursor: pointer;
 `;
 
 const PreviewGrid = styled.div`
@@ -240,6 +266,7 @@ const PreviewImage = styled.img`
   border-radius: ${({ theme }) => theme.radius.sm};
   margin-bottom: 8px;
 `;
+
 const PreviewTitle = styled.h4`
   margin-bottom: 6px;
 `;
