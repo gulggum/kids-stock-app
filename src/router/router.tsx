@@ -10,13 +10,21 @@ import CharacterPage from "../pages/CharacterPage";
 import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
 import NotFoundPage from "../pages/NotFoundPage";
+import AdminRoute from "./AdminRoute";
+import AdminLayout from "../components/admin/AdminLayout";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminNewsCreate from "../pages/admin/AdminNewsCreate";
+import AdminRanking from "../pages/admin/AdminRanking";
+import AdminItems from "../pages/admin/AdminItems";
+import AdminStats from "../pages/admin/AdminStats";
 
 export const router = createBrowserRouter([
-  // 2️⃣ 로그인
+  // ⭐ 로그인
   {
     path: "/login",
     element: <LoginPage />,
   },
+  // ⭐ 사용자 앱
   {
     path: "/",
     element: (
@@ -37,7 +45,24 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // 404 없는 경로시
+  // ⭐ 관리자 페이지(별도 분리)
+  {
+    path: "/admin",
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: "news", element: <AdminNewsCreate /> },
+      { path: "ranking", element: <AdminRanking /> },
+      { path: "items", element: <AdminItems /> },
+      { path: "stats", element: <AdminStats /> },
+    ],
+  },
+
+  // ⭐ 404 없는 경로시
   {
     path: "*",
     element: <NotFoundPage />,
