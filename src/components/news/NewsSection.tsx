@@ -20,8 +20,8 @@ const NewsSection = ({ news, onClick }: Props) => {
       )}
 
       {news.map((item) => {
-        const company = marketMockData.find(
-          (s) => s.id.toString() === item.stockId,
+        const companies = marketMockData.filter((s) =>
+          item.stockIds?.includes(s.id),
         );
 
         return (
@@ -53,16 +53,25 @@ const NewsSection = ({ news, onClick }: Props) => {
                 {!isSolved(item.id) && <QuizHint>🧠 퀴즈 도전하기</QuizHint>}
               </LeftArea>
 
-              {company && (
-                <CompanyLink
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/market/${company.id}`);
-                  }}
-                >
-                  기업 구경가기 →<CompanyTag>#{company.name}</CompanyTag>
-                </CompanyLink>
-              )}
+              <RightArea>
+                {companies.length > 0 && (
+                  <CompanyGuide>관련기업 구경가기 {""}</CompanyGuide>
+                )}
+
+                <CompanyTags>
+                  {companies.map((company) => (
+                    <CompanyTagLink
+                      key={company.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/market/${company.id}`);
+                      }}
+                    >
+                      #{company.name}
+                    </CompanyTagLink>
+                  ))}
+                </CompanyTags>
+              </RightArea>
             </BottomRow>
           </Card>
         );
@@ -286,13 +295,27 @@ const LeftArea = styled.div`
 `;
 
 //관련기업태그
-const CompanyTag = styled.span`
-  background: #eef2ff;
-  color: #4338ca;
-  padding: 2px 6px;
-  border-radius: 8px;
+const RightArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
 `;
-const CompanyLink = styled.button`
+
+const CompanyGuide = styled.div`
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-right: 10px;
+`;
+
+const CompanyTags = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+`;
+
+const CompanyTagLink = styled.button`
   border: none;
   background: none;
 
@@ -311,5 +334,6 @@ const CompanyLink = styled.button`
 
   &:hover {
     transform: translateX(2px);
+    text-decoration: underline;
   }
 `;

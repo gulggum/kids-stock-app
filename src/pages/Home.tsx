@@ -39,6 +39,7 @@ const Home = () => {
 
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading } = useNewsQuery();
+  //ㄴ>useQuery로 가져오는 과정에서 string으로 전부 변환됌(주의)
 
   // ✅ 오늘 뉴스
   const todayKRNews = useMemo(
@@ -267,13 +268,6 @@ const SectionTitle = styled.h3`
   display: flex;
   flex-wrap: wrap; /* 줄바꿈 허용 */
   gap: 6px;
-`;
-
-const SubTitle = styled.h4`
-  font-size: 14px;
-  font-weight: 700;
-  margin-top: 6px;
-  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const Progress = styled.span`

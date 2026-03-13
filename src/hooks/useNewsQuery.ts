@@ -1,13 +1,13 @@
-//하루 1번 캐싱
-
-// 🔄 역할: 하루에 한번만 뉴스 데이터를 가져오고 하루 동안 캐싱
-//         새로고침해도 오늘 이미 불러왔으면 API 재호출 안 함!
-
 import { useQuery } from "@tanstack/react-query";
 import { type HomeNews } from "../data/mock/homeNewsMockData";
 import { type NewsQuiz } from "../data/mock/homeNewsMockData";
 import { mockNewsData } from "../data/mock/homeNewsMockData";
 
+/**
+ * 뉴스 가져오기
+ * 개발환경에서는 localStorage 사용
+ * 운영환경에서는 API 호출
+ */
 type NewsResponse = {
   news: HomeNews[];
   quizzes: NewsQuiz[];
