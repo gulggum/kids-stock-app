@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { getNews, saveNews } from "../../utils/newsStorage";
 
 /**
  * 관리자 뉴스 생성 페이지
@@ -24,7 +25,6 @@ const AdminNewsCreate = () => {
   const [inputs, setInputs] = useState<string[]>(["", "", "", "", "", ""]);
 
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [published, setPublished] = useState<NewsItem[]>([]);
 
   const handleInput = (index: number, value: string) => {
     const copy = [...inputs];
@@ -64,7 +64,38 @@ const AdminNewsCreate = () => {
    * 게시
    */
   const handlePublish = () => {
-    setPublished(news);
+    // 빈 값 체크
+    const validNews = news.filter((n) => n.title.trim() && n.summary.trim());
+
+    if (validNews.length === 0) {
+      alert("뉴스 내용을 입력해주세요!");
+      return;
+    }
+
+    const data = getNews();
+
+    const newItems = validNews.map((item, index) => ({
+      id: `news_today_${Date.now()}_${index}`,
+
+      title: item.title,
+      summary: item.summary,
+      image: item.image,
+
+      stockId: "1",
+
+      type: "today",
+      country: "KR",
+
+      createdAt: new Date().toISOString(),
+    }));
+
+    const updated = {
+      ...data,
+      news: [...newItems, ...data.news],
+    };
+
+    saveNews(updated);
+
     alert("뉴스 게시 완료!");
   };
 

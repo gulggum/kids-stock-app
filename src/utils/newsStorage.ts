@@ -1,11 +1,11 @@
-import { mockNewsData, type NewsResponse } from "../data/mock/homeNewsMockData";
+import { mockNewsData } from "../data/mock/homeNewsMockData";
 
-const STORAGE_KEY = "kidsstock_news";
+const STORAGE_KEY = "kidsStock_news";
 
 /**
  * 뉴스 가져오기
  */
-export const getNews = (): NewsResponse => {
+export const getNews = () => {
   const saved = localStorage.getItem(STORAGE_KEY);
 
   if (!saved) {
@@ -19,6 +19,6 @@ export const getNews = (): NewsResponse => {
 /**
  * 뉴스 저장
  */
-export const saveNews = (data: NewsResponse) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+export const saveNews = (newsData: any) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newsData));
 };

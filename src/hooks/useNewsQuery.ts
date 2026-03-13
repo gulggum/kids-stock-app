@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { type HomeNews } from "../data/mock/homeNewsMockData";
+import { mockNewsData, type HomeNews } from "../data/mock/homeNewsMockData";
 import { type NewsQuiz } from "../data/mock/homeNewsMockData";
-import { mockNewsData } from "../data/mock/homeNewsMockData";
+// import { mockNewsData } from "../data/mock/homeNewsMockData";
+import { getNews } from "../utils/newsStorage";
 
 /**
  * 뉴스 가져오기
@@ -18,7 +19,7 @@ type NewsResponse = {
 const fetchTodayNews = async (): Promise<NewsResponse> => {
   //프론트 mock
   if (import.meta.env.DEV || import.meta.env.VITE_USE_MOCK === "true") {
-    return mockNewsData;
+    return mockNewsData; //getData()하면 관리자페이지 적용가능
   }
 
   const res = await fetch("/api/news");
