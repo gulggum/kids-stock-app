@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { mockNewsData, type HomeNews } from "../data/mock/homeNewsMockData";
 import { type NewsQuiz } from "../data/mock/homeNewsMockData";
 // import { mockNewsData } from "../data/mock/homeNewsMockData";
-import { getNews } from "../utils/newsStorage";
 
 /**
  * 뉴스 가져오기
