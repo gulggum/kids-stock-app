@@ -6,11 +6,11 @@ const LoadingScreen = () => {
   return (
     <Container>
       {/* 배경 영상 */}
-      <BlurVideo autoPlay muted loop>
+      <BlurVideo autoPlay muted loop playsInline preload="auto">
         <source src={videoPlay} type="video/mp4" />
       </BlurVideo>
 
-      <MainVideo autoPlay muted loop>
+      <MainVideo autoPlay muted loop playsInline preload="auto">
         <source src={videoPlay} type="video/mp4" />
       </MainVideo>
       <Content>
@@ -41,6 +41,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
 `;
 
 // 3️⃣ 내부 정렬용 래퍼
@@ -67,6 +68,8 @@ const BlurVideo = styled.video`
   object-fit: cover;
   filter: blur(60px);
   transform: scale(1.2);
+  backface-visibility: hidden;
+  transform: translateZ(0);
 `;
 
 const MainVideo = styled.video`
@@ -74,6 +77,8 @@ const MainVideo = styled.video`
   width: 100%;
   height: 100%;
   object-fit: contain;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 `;
 
 export default LoadingScreen;
