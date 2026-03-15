@@ -1,23 +1,33 @@
 import { useEffect, useState } from "react";
 import { Providers } from "./providers";
 import { AppRouter } from "./router/router";
-import SplashScreen from "./pages/LoadingPage/SplashScreen";
+import LoadingScreen from "./pages/LoadingPage/LoadingScreen";
 
+type Step = "video" | "logo" | "app";
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [step, setStep] = useState<Step>("video");
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
+    const videoTimer = setTimeout(() => {
+      setStep("logo");
+    }, 3000);
 
-    return () => clearTimeout(timer);
+    const logoTimer = setTimeout(() => {
+      setStep("app");
+    }, 4500);
+
+    return () => {
+      clearTimeout(videoTimer);
+      clearTimeout(logoTimer);
+    };
   }, []);
 
   return (
-    <>
-      <Providers> {isLoading ? <SplashScreen /> : <AppRouter />}</Providers>
-    </>
+    <Providers>
+      {step === "video" && <LoadingScreen />}
+      {/* {step === "logo" && <SplashScreen />} */}
+      {step === "app" && <AppRouter />}
+    </Providers>
   );
 }
 

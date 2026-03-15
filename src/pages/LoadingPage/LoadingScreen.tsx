@@ -1,16 +1,20 @@
 import styled, { keyframes } from "styled-components";
-import logo from "../assets/images/logo.png"; // 경로 맞게 수정
+import logo from "../../assets/images/logo.png"; // 경로 맞게 수정
+import videoPlay from "../../assets/videos/loadingVillage.mp4";
 
 const LoadingScreen = () => {
   return (
     <Container>
+      {/* 배경 영상 */}
+      <BlurVideo autoPlay muted loop>
+        <source src={videoPlay} type="video/mp4" />
+      </BlurVideo>
+
+      <MainVideo autoPlay muted loop>
+        <source src={videoPlay} type="video/mp4" />
+      </MainVideo>
       <Content>
         <Logo src={logo} alt="KidsStock Logo" />
-        <DotWrapper>
-          <Dot />
-          <Dot />
-          <Dot />
-        </DotWrapper>
       </Content>
     </Container>
   );
@@ -30,9 +34,9 @@ const fadeInUp = keyframes`
 
 // 2️⃣ 배경 컨테이너
 const Container = styled.div`
+  position: relative;
   width: 100vw;
   height: 100dvh;
-  background: ${({ theme }) => theme.colors.background};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,6 +45,7 @@ const Container = styled.div`
 
 // 3️⃣ 내부 정렬용 래퍼
 const Content = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,34 +60,20 @@ const Logo = styled.img`
   margin-bottom: 24px;
 `;
 
-// 5️⃣ 로딩 점 애니메이션
-const bounce = keyframes`
-  0%, 80%, 100% {
-    transform: scale(0);
-  } 
-  40% {
-    transform: scale(1);
-  }
+const BlurVideo = styled.video`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(60px);
+  transform: scale(1.2);
 `;
 
-const DotWrapper = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const Dot = styled.div`
-  width: 10px;
-  height: 10px;
-  background: ${({ theme }) => theme.colors.primary};
-  border-radius: 50%;
-  animation: ${bounce} 1.4s infinite ease-in-out both;
-
-  &:nth-child(1) {
-    animation-delay: -0.32s;
-  }
-  &:nth-child(2) {
-    animation-delay: -0.16s;
-  }
+const MainVideo = styled.video`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 `;
 
 export default LoadingScreen;
