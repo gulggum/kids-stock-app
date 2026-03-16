@@ -4,7 +4,8 @@ import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 import { useNavigate } from "react-router";
 import { chartMock } from "../data/mock/chartMock";
 import { useState } from "react";
-import InfoModal from "../components/ImfoModal";
+import InfoModal from "../components/InfoModal";
+import InfoIcon from "../components/InfoIcon";
 
 const PortfolioPage = () => {
   const { portfolio } = usePortfolio();
@@ -67,9 +68,7 @@ const PortfolioPage = () => {
                         e.stopPropagation();
                         toggleInfo("buyPrice");
                       }}
-                    >
-                      ℹ️
-                    </InfoIcon>
+                    />
                   </Label>
 
                   <Value>{item.buyPrice.toLocaleString()}원</Value>
@@ -85,9 +84,7 @@ const PortfolioPage = () => {
                         e.stopPropagation();
                         toggleInfo("currentPrice");
                       }}
-                    >
-                      ℹ️
-                    </InfoIcon>
+                    />
                   </Label>
 
                   <Value>{currentPrice.toLocaleString()}원</Value>
@@ -101,9 +98,7 @@ const PortfolioPage = () => {
                         e.stopPropagation();
                         toggleInfo("totalValue");
                       }}
-                    >
-                      ℹ️
-                    </InfoIcon>
+                    />
                   </Label>
 
                   <ValueHighlight>
@@ -125,6 +120,7 @@ const PortfolioPage = () => {
       <InfoModal
         open={openInfo === "buyPrice"}
         onClose={() => setOpenInfo(null)}
+        title="🛒 내가 산 가격"
       >
         내가 산 가격은 주식을 구매했을 때의 가격이에요. 여러 번 다른 가격으로
         사면 평균 가격으로 계산돼요.
@@ -133,14 +129,15 @@ const PortfolioPage = () => {
       <InfoModal
         open={openInfo === "currentPrice"}
         onClose={() => setOpenInfo(null)}
+        title="📈 현재 가격"
       >
-        현재 가격은 지금 이 회사 주식 1개의 가격이에요. 예를 들어 현재 가격이
-        137,000원이면 주식 1개를 137,000원에 사고팔 수 있어요.
+        현재 가격은 지금 이 회사 주식 1개의 가격이에요.
       </InfoModal>
 
       <InfoModal
         open={openInfo === "totalValue"}
         onClose={() => setOpenInfo(null)}
+        title="💰 현재 가치"
       >
         현재 가치는 내가 가진 주식 전체 금액이에요. 현재 가격 × 보유 수량으로
         계산돼요.
@@ -286,17 +283,6 @@ const Profit = styled.div<{ $isUp: boolean }>`
 const ValueHighlight = styled.span`
   font-weight: 800;
   font-size: 16px;
-`;
-
-const InfoIcon = styled.span`
-  margin-left: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  opacity: 0.7;
-
-  &:hover {
-    opacity: 1;
-  }
 `;
 
 export default PortfolioPage;

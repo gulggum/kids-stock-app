@@ -1,3 +1,5 @@
+//행동모달
+
 import styled from "styled-components";
 import type { ModalType } from "../context/UIContext/ModalContext";
 

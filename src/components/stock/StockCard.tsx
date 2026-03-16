@@ -9,6 +9,7 @@ type StockCardProps = {
   country: "KR" | "US";
   description: string; //아이기준 설명
   isFavorite?: boolean; //찜목록
+  usdPrice?: number; //환율반영가격
   onToggleFavorite: () => void;
   onClick?: () => void; // 카드 클릭 시 동작 (상세 페이지 이동)
 };
@@ -20,6 +21,8 @@ const StockCard = ({
   changeRate,
   description,
   isFavorite,
+  usdPrice,
+  country,
   onToggleFavorite,
   onClick,
 }: StockCardProps) => {
@@ -34,7 +37,12 @@ const StockCard = ({
       <Info>
         <Name>{name}</Name>
         <Description>{description}</Description>
-        <Price>{price.toLocaleString()}원</Price>
+        <Price>
+          {price.toLocaleString()}원
+          {country === "US" && usdPrice && (
+            <DollarPrice>(${usdPrice.toLocaleString()})</DollarPrice>
+          )}
+        </Price>
       </Info>
       <RightSide>
         <FavoriteButton
@@ -160,6 +168,17 @@ const ChangeRate = styled.div<{ $positive: boolean }>`
   font-weight: 600;
   color: ${({ theme, $positive }) =>
     $positive ? theme.colors.up : theme.colors.down};
+`;
+
+const DollarPrice = styled.span`
+  margin-left: 6px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  color: ${({ theme }) => theme.colors.primary};
+
+  opacity: 0.85;
 `;
 
 export default StockCard;
