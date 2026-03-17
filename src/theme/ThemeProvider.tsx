@@ -65,7 +65,7 @@ export const kidTheme: DefaultTheme = {
     secondary: "#F39C12",
 
     // 💛 메인 배경 (로고 노랑 톤)
-    background: "#FFD60A",
+    background: "#f5f7fb",
 
     // 카드 & 레이어
     surface: "#FFF9DB",
