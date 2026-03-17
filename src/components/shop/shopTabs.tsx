@@ -65,7 +65,7 @@ const TabBar = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 6px 0;
+  padding: 15px 0;
 
   backdrop-filter: blur(8px);
 `;

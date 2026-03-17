@@ -50,6 +50,8 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
   animation: ${fadeInUp} 0.8s ease-in-out;
+  animation-delay: 0.8s; /* ✅ 이만큼 늦게 시작 */
+  animation-fill-mode: both;
 `;
 
 // 4️⃣ 로고 스타일

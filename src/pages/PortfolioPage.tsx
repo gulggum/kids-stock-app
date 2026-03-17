@@ -216,6 +216,7 @@ const GoMarketButton = styled.button`
 const ItemCard = styled.div`
   background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.md};
+  box-shadow: ${({ theme }) => theme.shadows.md};
   padding: 16px;
 
   display: flex;

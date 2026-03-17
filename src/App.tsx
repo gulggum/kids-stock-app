@@ -27,8 +27,8 @@ function App() {
     }, 3000);
 
     return () => {
-      clearTimeout(logoTimer);
       clearTimeout(videoTimer);
+      clearTimeout(logoTimer);
     };
   }, []);
 

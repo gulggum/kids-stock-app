@@ -69,7 +69,7 @@ export const kidTheme: DefaultTheme = {
 
     // 카드 & 레이어
     surface: "#FFF9DB",
-    card: "#FFEAA7",
+    card: "#fff",
     border: "#E6C84F",
 
     // 🎨 로고 컬러 확장

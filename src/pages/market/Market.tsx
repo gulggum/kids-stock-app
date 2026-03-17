@@ -273,9 +273,7 @@ const FilterBar = styled.div`
   display: flex;
   gap: 8px;
 
-  padding-bottom: 9px;
-
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding-bottom: 10px;
 `;
 
 const FilterButton = styled.button<{ $active: boolean }>`

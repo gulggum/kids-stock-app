@@ -180,6 +180,7 @@ const ItemCard = styled.div<{
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
   animation: ${({ $sparkle }) => ($sparkle ? sparkle : "none")} 0.6s ease;
   opacity: ${({ $owned }) => ($owned ? 0.6 : 1)};
   transition:
