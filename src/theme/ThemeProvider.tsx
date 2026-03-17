@@ -154,7 +154,7 @@ export const GlobalStyle = createGlobalStyle`
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
 body {
-margin: 0;
+margin: 0 ;
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 font-family: ${(props) => props.theme.fonts.base};
@@ -162,6 +162,7 @@ background: ${(props) => props.theme.colors.background};
 color: ${(props) => props.theme.colors.text};
 line-height: 1.4;
 font-size: 16px;
+
 }
 
 

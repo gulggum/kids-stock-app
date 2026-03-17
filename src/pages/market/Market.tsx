@@ -239,7 +239,6 @@ const StickyHeader = styled.div`
   padding-bottom: 10px;
 
   backdrop-filter: blur(8px);
-  background: ${({ theme }) => theme.colors.background};
 `;
 
 const Title = styled.h2`

@@ -21,14 +21,8 @@ function App() {
       clearTimeout(videoTimer);
     };
   }, []);
-
-  return (
-    <Providers>
-      {step === "video" && <LoadingScreen />}
-      {/* {step === "logo" && <SplashScreen />} */}
-      {step === "app" && <AppRouter />}
-    </Providers>
-  );
+  if (step === "video") return <LoadingScreen />;
+  return <Providers>{step === "app" && <AppRouter />}</Providers>;
 }
 
 export default App;

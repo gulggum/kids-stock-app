@@ -6,6 +6,7 @@ import ModalPopup from "../ModalPopup";
 import { useModal } from "../../context/UIContext/ModalContext";
 import { useAchievement } from "../../context/AchievementContext/AchievementContext";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
+import bgImage from "../../assets/images/bgImage.png";
 
 const AppLayout = () => {
   const { popupAchievement, closePopupAchievement } = useAchievement();
@@ -59,8 +60,8 @@ const Layout = styled.div<{ $variant?: "home" | "default" }>`
 
   background-image: ${({ $variant }) =>
     $variant === "home"
-      ? "url('/원하는이미지첨부.png')" // 귀여운 홈
-      : "url('/원하는이미지첨부.png')"}; // 기본
+      ? `url(${bgImage})` // 귀여운 홈
+      : `url(${bgImage})`}; // 기본
 
   background-size: cover;
   background-position: center;

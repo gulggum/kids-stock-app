@@ -1,18 +1,20 @@
 import styled, { keyframes } from "styled-components";
+import logo from "../../assets/images/logo.png";
+import video from "../../assets/videos/loading1.mp4";
 
 const LoadingScreen = () => {
   return (
     <Container>
       {/* 배경 영상 */}
       <BlurVideo autoPlay muted loop playsInline preload="auto">
-        <source src="/loadingVillage.mp4" type="video/mp4" />
+        <source src={video} type="video/mp4" />
       </BlurVideo>
 
       <MainVideo autoPlay muted loop playsInline preload="auto">
-        <source src="/loadingVillage.mp4" type="video/mp4" />
+        <source src={video} type="video/mp4" />
       </MainVideo>
       <Content>
-        <Logo src="/logo.png" alt="KidsStock Logo" />
+        <Logo src={logo} alt="KidsStock Logo" />
       </Content>
     </Container>
   );
@@ -39,7 +41,6 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
 `;
 
 // 3️⃣ 내부 정렬용 래퍼
@@ -71,6 +72,9 @@ const BlurVideo = styled.video`
 `;
 
 const MainVideo = styled.video`
+  position: fixed; // 🔥 중요
+  top: 0;
+  left: 0;
   position: absolute;
   width: 100%;
   height: 100%;

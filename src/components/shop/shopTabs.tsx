@@ -67,7 +67,7 @@ const TabBar = styled.div`
   gap: 8px;
   padding: 6px 0;
 
-  background: ${({ theme }) => theme.colors.background};
+  backdrop-filter: blur(8px);
 `;
 const TabGroup = styled.div`
   display: flex;
