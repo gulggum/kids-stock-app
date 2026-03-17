@@ -1,20 +1,18 @@
 import styled, { keyframes } from "styled-components";
-import logo from "../../assets/images/logo.png"; // 경로 맞게 수정
-import videoPlay from "../../assets/videos/loadingVillage.mp4";
 
 const LoadingScreen = () => {
   return (
     <Container>
       {/* 배경 영상 */}
       <BlurVideo autoPlay muted loop playsInline preload="auto">
-        <source src={videoPlay} type="video/mp4" />
+        <source src="/loadingVillage.mp4" type="video/mp4" />
       </BlurVideo>
 
       <MainVideo autoPlay muted loop playsInline preload="auto">
-        <source src={videoPlay} type="video/mp4" />
+        <source src="/loadingVillage.mp4" type="video/mp4" />
       </MainVideo>
       <Content>
-        <Logo src={logo} alt="KidsStock Logo" />
+        <Logo src="/logo.png" alt="KidsStock Logo" />
       </Content>
     </Container>
   );

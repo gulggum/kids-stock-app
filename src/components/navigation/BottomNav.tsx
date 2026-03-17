@@ -1,35 +1,58 @@
 // 📱 모바일용 (하단 네비)
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
+import {
+  Home,
+  TrendingUp,
+  Wallet,
+  MessageCircle,
+  User,
+  ShoppingBag,
+} from "lucide-react";
 
 const BottomNav = () => {
   return (
     <BottomWrapper>
       <Nav>
         <Item to="/" end>
-          <Icon>🏠</Icon>홈
+          <IconBox>
+            <Home size={20} />
+          </IconBox>
+          홈
         </Item>
 
         <Item to="/market">
-          <Icon>📊</Icon>
+          <IconBox>
+            <TrendingUp size={20} />
+          </IconBox>
           마켓
         </Item>
 
         <Item to="/portfolio">
-          <Icon>💼</Icon>
+          <IconBox>
+            <Wallet size={20} />
+          </IconBox>
           자산
         </Item>
 
         <Item to="/community">
-          <Icon>💬</Icon>
+          <IconBox>
+            <MessageCircle size={20} />
+          </IconBox>
           커뮤니티
         </Item>
+
         <Item to="/character">
-          <Icon>👦</Icon>
+          <IconBox>
+            <User size={20} />
+          </IconBox>
           캐릭터
         </Item>
+
         <Item to="/shop">
-          <Icon>🛍</Icon>
+          <IconBox>
+            <ShoppingBag size={20} />
+          </IconBox>
           상점
         </Item>
       </Nav>
@@ -65,8 +88,11 @@ const Nav = styled.nav`
   align-items: center;
 
   height: 64px;
-  background: ${({ theme }) => theme.colors.surface};
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 
   padding-bottom: calc(env(safe-area-inset-bottom) + 6px);
 
@@ -90,14 +116,36 @@ const Item = styled(NavLink)`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.muted};
 
+  &:hover {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+
+    svg {
+      transform: scale(1.05);
+    }
+  }
   &.active {
     color: ${({ theme }) => theme.colors.primary};
+
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+
+    padding: 6px 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    svg {
+      stroke: ${({ theme }) => theme.colors.primary};
+      stroke-width: 2.4;
+      transform: scale(1.1);
+    }
   }
 `;
 
-// 아이콘
-const Icon = styled.span`
-  font-size: 20px;
+const IconBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export default BottomNav;

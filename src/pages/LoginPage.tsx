@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import logo from "../assets/images/logo.png";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 
@@ -15,7 +14,7 @@ const LoginPage = () => {
   return (
     <Container>
       <Card>
-        <Logo src={logo} alt="KidsStock Logo" />
+        <Logo src="/logo.png" alt="KidsStock Logo" />
         <Title>로그인</Title>
         <Input type="text" placeholder="아이디를 입력하세요" />
         <Input type="password" placeholder="비밀번호를 입력하세요" />

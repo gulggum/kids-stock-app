@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
@@ -13,8 +13,11 @@ const AppLayout = () => {
     ? ACHIEVEMENTS.find((a) => a.id === popupAchievement)
     : null;
   const { modal, closeModal } = useModal();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
   return (
-    <Layout>
+    <Layout $variant={isHome ? "home" : "default"}>
       <HeaderNav />
       <Main>
         {modal && (
@@ -49,10 +52,19 @@ const AppLayout = () => {
     </Layout>
   );
 };
-const Layout = styled.div`
+const Layout = styled.div<{ $variant?: "home" | "default" }>`
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;
+
+  background-image: ${({ $variant }) =>
+    $variant === "home"
+      ? "url('/원하는이미지첨부.png')" // 귀여운 홈
+      : "url('/원하는이미지첨부.png')"}; // 기본
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 `;
 
 const Main = styled.main`

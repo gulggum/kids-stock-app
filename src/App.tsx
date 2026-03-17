@@ -10,11 +10,11 @@ function App() {
   useEffect(() => {
     const videoTimer = setTimeout(() => {
       setStep("logo");
-    }, 3500);
+    }, 3000);
 
     const logoTimer = setTimeout(() => {
       setStep("app");
-    }, 3500);
+    }, 3000);
 
     return () => {
       clearTimeout(logoTimer);
