@@ -47,7 +47,7 @@ const Layout = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: ${({ theme }) => theme.colors.background};
 `;
 

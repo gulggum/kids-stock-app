@@ -21,12 +21,13 @@ const NotFoundPage = () => {
   );
 };
 const Wrapper = styled.div`
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: ${({ theme }) => theme.colors.background};
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  padding-bottom: env(safe-area-inset-bottom);
 `;
 
 const Card = styled.div`

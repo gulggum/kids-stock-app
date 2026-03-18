@@ -86,7 +86,7 @@ const Modal = styled.div`
   width: 280px;
   padding: 20px;
   border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
 
   display: flex;
   flex-direction: column;
@@ -123,14 +123,15 @@ const OptionButton = styled.button<{
   padding: 14px;
   border-radius: ${({ theme }) => theme.radius.md};
   border: none;
-
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
 
-  background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.text};
 
+  &:hover {
+    background: ${({ theme }) => theme.colors.background};
+  }
   transition: all 0.2s ease;
 
   ${({ $correct, theme }) =>

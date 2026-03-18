@@ -56,7 +56,7 @@ const AppLayout = () => {
 const Layout = styled.div<{ $variant?: "home" | "default" }>`
   display: grid;
   grid-template-rows: auto 1fr auto;
-  min-height: 100vh;
+  min-height: 100dvh;
 
   background-image: ${({ $variant }) =>
     $variant === "home"

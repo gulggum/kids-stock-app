@@ -32,7 +32,7 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
           💱 환율 <strong>1달러 = {exchangeRate.toLocaleString()}원</strong>
         </RateText>
 
-        <InfoIcon onClick={() => setOpen(true)} />
+        <InfoIcon variant="question" onClick={() => setOpen(true)} />
       </Wrapper>
 
       {open && (

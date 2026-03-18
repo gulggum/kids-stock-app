@@ -69,7 +69,7 @@ const Modal = styled.div`
   width: 280px;
   padding: 24px 20px;
 
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
 
   box-shadow: ${({ theme }) => theme.shadows.md};

@@ -59,7 +59,7 @@ const Overlay = styled.div`
 const Modal = styled.div`
   width: 300px;
   padding: 20px;
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   box-shadow: ${({ theme }) => theme.shadows.md};
   display: flex;
@@ -81,7 +81,7 @@ const Content = styled.p`
 
 const HintText = styled.div`
   font-size: 13px;
-  background: ${({ theme }) => theme.colors.card};
+  background: ${({ theme }) => theme.colors.surface};
   padding: 8px;
   border-radius: ${({ theme }) => theme.radius.md};
   text-align: center;
@@ -98,14 +98,15 @@ const CancelButton = styled.button`
   padding: 10px;
   border-radius: ${({ theme }) => theme.radius.md};
   border: none;
-  background: ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.primary};
   font-weight: 700;
+  color: white;
 
   cursor: pointer;
 
   &:hover {
     background: ${({ theme }) => theme.colors.primary};
-    color: white;
+    color: black;
   }
 `;
 

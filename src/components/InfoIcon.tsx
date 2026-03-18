@@ -15,12 +15,16 @@ import styled from "styled-components";
 
 type Props = {
   onClick?: (e: React.MouseEvent) => void;
+  variant?: "question" | "info";
 };
 
-const InfoIcon = ({ onClick }: Props) => {
-  return <IconButton onClick={onClick}>❓</IconButton>;
+const InfoIcon = ({ onClick, variant = "info" }: Props) => {
+  return (
+    <IconButton onClick={onClick}>
+      {variant === "question" ? "❓" : "ℹ️"}
+    </IconButton>
+  );
 };
-
 export default InfoIcon;
 
 /* ================= 스타일 ================= */

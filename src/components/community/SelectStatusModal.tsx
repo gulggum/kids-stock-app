@@ -61,6 +61,7 @@ const Title = styled.h3`
   font-size: 16px;
   font-weight: 800;
   text-align: center;
+  margin-bottom: 5px;
 `;
 
 const Option = styled.button<{ $selected?: boolean }>`
@@ -69,7 +70,8 @@ const Option = styled.button<{ $selected?: boolean }>`
   border: none;
 
   background: ${({ $selected, theme }) =>
-    $selected ? theme.colors.primary : theme.colors.surface};
+    $selected ? theme.colors.primary : theme.colors.background};
+  color: ${({ $selected, theme }) => ($selected ? "white" : theme.colors.text)};
 
   font-size: 14px;
   font-weight: 700;
