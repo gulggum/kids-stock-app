@@ -12,6 +12,8 @@ import { useMoney } from "../../context/WalletContext/MoneyContext";
 import { playMoneySound } from "../../utils/sounds";
 import { useReward } from "../../context/RewardContext";
 import InfoModal from "../../components/InfoModal";
+import StockDetailHeader from "../../components/stock/StockDetailHeader";
+import StockPriceSection from "../../components/stock/StockPriceSection";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -183,14 +185,11 @@ if (money < company.price) {
 
   return (
     <Wrapper>
-      <StickyHeader>
-        {/* 🔙 뒤로가기 */}
-        <BackButton onClick={() => navigate(-1)}>← 돌아가기</BackButton>
-        <MoneyBar className={animateMoney ? "decrease" : ""}>
-          <MoneyLabel>💰 내가 가진 돈</MoneyLabel>
-          <MoneyAmount>{money.toLocaleString()}</MoneyAmount>
-        </MoneyBar>
-      </StickyHeader>
+      <StockDetailHeader
+        money={money}
+        animateMoney={animateMoney}
+        onBack={() => navigate(-1)}
+      />
       <Content>
         {/* 🏢 회사 정보 */}
         <Title>
@@ -202,17 +201,10 @@ if (money < company.price) {
           <div>{company.category}</div>
         </InfoBox>
         {/* 💰 가격 정보 영역 */}
-        <PriceSection>
-          <PriceInfo>
-            <PriceLabel>현재 가격</PriceLabel>
-            <PriceValue>{company.price.toLocaleString()}원</PriceValue>
-          </PriceInfo>
-
-          <ChangeRate $positive={company.changeRate >= 0}>
-            {company.changeRate >= 0 ? "▲" : "▼"} {Math.abs(company.changeRate)}
-            %
-          </ChangeRate>
-        </PriceSection>
+        <StockPriceSection
+          price={company.price}
+          changeRate={company.changeRate}
+        />
         {/* 탭 버튼 영역 */}
         <TabHeader>
           <TabButton
