@@ -15,23 +15,28 @@ const BaseGlobalStyle = createGlobalStyle`
 
 type Step = "video" | "logo" | "app";
 function App() {
-  const [step, setStep] = useState<Step>("video");
+  const [step, setStep] = useState<Step>(() => {
+    const hasLoaded = sessionStorage.getItem("hasLoaded");
+    return hasLoaded ? "app" : "video";
+  });
 
   useEffect(() => {
+    if (step !== "video") return;
+
     const videoTimer = setTimeout(() => {
       setStep("logo");
     }, 3000);
 
     const logoTimer = setTimeout(() => {
       setStep("app");
-    }, 3000);
+      sessionStorage.setItem("hasLoaded", "true"); // 🔥 여기로 이동
+    }, 3000); // 👉 3초 + 3초
 
     return () => {
       clearTimeout(videoTimer);
       clearTimeout(logoTimer);
     };
-  }, []);
-
+  }, [step]);
   return (
     <Providers>
       <BaseGlobalStyle />
