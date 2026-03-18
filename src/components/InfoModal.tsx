@@ -11,6 +11,7 @@ type Props = {
   onClose: () => void;
   children: React.ReactNode;
   buttonText?: string;
+  width?: string;
 };
 
 const InfoModal = ({
@@ -19,12 +20,13 @@ const InfoModal = ({
   onClose,
   children,
   buttonText = "확인",
+  width,
 }: Props) => {
   if (!open) return null;
 
   return createPortal(
     <Overlay onClick={onClose}>
-      <Modal onClick={(e) => e.stopPropagation()}>
+      <Modal onClick={(e) => e.stopPropagation()} $width={width}>
         {title && <Title>{title}</Title>}
 
         <Content>{children}</Content>
@@ -54,14 +56,14 @@ const Overlay = styled.div`
   z-index: 9999;
 `;
 
-const Modal = styled.div`
+const Modal = styled.div<{ $width?: string }>`
   background: white;
 
   padding: 24px 20px;
 
   border-radius: ${({ theme }) => theme.radius.lg};
 
-  width: 300px;
+  width: ${({ $width }) => $width || "300px"};
   max-width: 90vw;
 
   display: flex;

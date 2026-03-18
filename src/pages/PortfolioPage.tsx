@@ -184,7 +184,7 @@ const SmallHint = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 const GoMarketButton = styled.button`
-  margin-top: 6px;
+  margin-top: 15px;
 
   padding: 8px 14px;
   font-size: 13px;

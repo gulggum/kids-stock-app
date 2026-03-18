@@ -11,6 +11,7 @@ import { useModal } from "../../context/UIContext/ModalContext";
 import { useMoney } from "../../context/WalletContext/MoneyContext";
 import { playMoneySound } from "../../utils/sounds";
 import { useReward } from "../../context/RewardContext";
+import InfoModal from "../../components/InfoModal";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,26 @@ const StockDetail = () => {
   const [animateMoney, setAnimateMoney] = useState(false); //moneyBar 애니메이션효과
   const [showMoneyEffect, setShowMoneyEffect] = useState(false); //구매시 -금액 보이는 애니메이션효과
   const [showSellEffect, setShowSellEffect] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(false);
+  const [hasCompletedFirstBuy, setHasCompletedFirstBuy] = useState(() => {
+    return localStorage.getItem("hasCompletedFirstBuy") === "true";
+  });
+  const [checks, setChecks] = useState({
+    rule1: false,
+    rule2: false,
+    rule3: false,
+    rule4: false,
+  }); //안내문구 확인용 체크박스
 
+  //전체 체크 여부계산
+  const isAllChecked = Object.values(checks).every(Boolean);
+  //체크 토글함수
+  const toggleCheck = (key: keyof typeof checks) => {
+    setChecks((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
   const prevMoneyRef = useRef(money); //이전 money 기억
 
   const company = marketMockData.find((s) => s.id === Number(id));
@@ -76,7 +96,8 @@ const StockDetail = () => {
 
     //주식 구매 처리 (보유 상태 기록)
     buyStock(company);
-
+    localStorage.setItem("hasCompletedFirstBuy", "true");
+    setHasCompletedFirstBuy(true);
     giveReward("BUY_STOCK");
   };
 
@@ -91,7 +112,11 @@ if (money < company.price) {
   });
   return;
     }
-*/
+*/ if (!hasCompletedFirstBuy) {
+      setShowGuideModal(true);
+      return;
+    }
+
     openModal({
       type: "CONFIRM",
       title: "구매할까요?",
@@ -99,6 +124,7 @@ if (money < company.price) {
       confirmText: "구매",
       cancelText: "아니오",
       onConfirm: handleBuyConfirm,
+      onCancel: () => {},
     });
   };
 
@@ -242,6 +268,7 @@ if (money < company.price) {
           <ExplainTitle>{company?.description}</ExplainTitle>
           <ExplainText>{explainText}</ExplainText>
         </ExplainCard>
+
         {/* 🛒 구매 버튼 */}
         {hasBoughtToday && (
           <HintText>
@@ -250,15 +277,94 @@ if (money < company.price) {
             내일 다시 도전해보세요!
           </HintText>
         )}
+
         <BuyButtonWrapper>
+          <InfoModal
+            open={showGuideModal}
+            width="350px"
+            title="💡 투자를 할 때 약속해요!"
+            onClose={() => {
+              if (!isAllChecked) return;
+              setShowGuideModal(false);
+
+              openModal({
+                type: "CONFIRM",
+                title: "구매할까요?",
+                message: `${company.name}\n${company.price}원`,
+                confirmText: "구매",
+                cancelText: "아니오",
+                onConfirm: handleBuyConfirm,
+                onCancel: () => {},
+              });
+            }}
+            buttonText={
+              isAllChecked ? "알겠어요" : "모두 체크해야 계속할 수 있어요"
+            }
+          >
+            <GuideContent>
+              <GuideItem
+                $checked={checks.rule1}
+                onClick={() => toggleCheck("rule1")}
+              >
+                <GuideText>
+                  <DangerIcon>⚠️</DangerIcon>
+                  주식은 오르기도 하고 내려가기도 해요
+                </GuideText>
+
+                <CheckIcon $checked={checks.rule1}>
+                  {checks.rule1 ? "✔" : ""}
+                </CheckIcon>
+              </GuideItem>
+
+              <GuideItem
+                $checked={checks.rule2}
+                onClick={() => toggleCheck("rule2")}
+              >
+                <GuideText>
+                  <DangerIcon>⚠️</DangerIcon>
+                  잃어도 괜찮은 돈으로 해야 해요
+                </GuideText>
+
+                <CheckIcon $checked={checks.rule2}>
+                  {checks.rule2 ? "✔" : ""}
+                </CheckIcon>
+              </GuideItem>
+
+              <GuideItem
+                $checked={checks.rule3}
+                onClick={() => toggleCheck("rule3")}
+              >
+                <GuideText>
+                  <DangerIcon>⚠️</DangerIcon>
+                  빚을 내서 투자하면 안 돼요
+                </GuideText>
+
+                <CheckIcon $checked={checks.rule3}>
+                  {checks.rule3 ? "✔" : ""}
+                </CheckIcon>
+              </GuideItem>
+
+              <GuideItem
+                $checked={checks.rule4}
+                onClick={() => toggleCheck("rule4")}
+              >
+                <GuideText>
+                  <DangerIcon>⚠️</DangerIcon>
+                  회사를 알아보고 투자하면 더 좋아요
+                </GuideText>
+
+                <CheckIcon $checked={checks.rule4}>
+                  {checks.rule4 ? "✔" : ""}
+                </CheckIcon>
+              </GuideItem>
+            </GuideContent>
+          </InfoModal>
           <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
             {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
           </BuyButton>
-          {isHoldingStock(company.id) && (
-            <SellButton onClick={handleSellClick}>
-              보유 주식 판매하기 💸
-            </SellButton>
-          )}
+          <SellButton onClick={handleSellClick}>
+            보유 주식 판매하기 💸
+          </SellButton>
           {showMoneyEffect && (
             <MoneyEffect>💰 -{company.price.toLocaleString()}</MoneyEffect>
           )}
@@ -577,47 +683,51 @@ const BuyButtonWrapper = styled.div`
   position: relative;
   margin-top: 16px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 `;
 const BuyButton = styled.button<{ disabled?: boolean }>`
-  width: 100%;
-  margin-top: 12px;
+  flex: 1;
   padding: 14px;
   border: none;
   border-radius: ${({ theme }) => theme.radius.lg};
+
   background: ${({ theme, disabled }) =>
     disabled ? theme.colors.muted : theme.colors.primary};
+
   color: white;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
+
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  transition: all 0.15s ease;
+
   &:active {
-    transform: ${({ disabled }) => (disabled ? "none" : "scale(0.98)")};
+    transform: ${({ disabled }) => (disabled ? "none" : "scale(0.97)")};
   }
 `;
 const SellButton = styled.button`
-  padding: 12px;
-  border-radius: ${({ theme }) => theme.radius.md};
+  flex: 1;
+  padding: 14px;
   border: none;
+  border-radius: ${({ theme }) => theme.radius.lg};
 
-  font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 800;
 
   background: ${({ theme }) => theme.colors.secondary};
   color: white;
 
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+
   cursor: pointer;
-
-  transition: transform 0.15s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
+  transition: all 0.15s ease;
 
   &:active {
-    transform: translateY(0);
+    transform: scale(0.97);
   }
 `;
 
@@ -667,4 +777,62 @@ const MoneyAmount = styled.strong`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
+//투자전 안내문구
+const GuideContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+`;
+const GuideItem = styled.div<{ $checked: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 🔥 핵심 */
+
+  padding: 12px 14px;
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  background: ${({ $checked, theme }) =>
+    $checked ? theme.colors.surface : theme.colors.card};
+
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  transition: all 0.15s ease;
+`;
+const DangerIcon = styled.span`
+  color: ${({ theme }) => theme.colors.down};
+`;
+
+const GuideText = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+`;
+
+const CheckIcon = styled.div<{ $checked: boolean }>`
+  width: 24px;
+  height: 24px;
+
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  background: ${({ $checked, theme }) =>
+    $checked ? theme.colors.primary : "transparent"};
+
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+
+  color: white;
+
+  transition: all 0.15s ease;
+`;
 export default StockDetail;
