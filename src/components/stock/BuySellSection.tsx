@@ -61,7 +61,6 @@ const BuySellSection = ({
   isAllChecked,
   hasBoughtToday,
   handleBuyClick,
-  handleBuyConfirm,
   handleSellClick,
   showMoneyEffect,
   showSellEffect,
