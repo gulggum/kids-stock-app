@@ -3,52 +3,19 @@ import { useNavigate } from "react-router";
 import styled, { keyframes, useTheme } from "styled-components";
 import { marketMockData } from "../../data/mock/marketMock";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
-import { useEffect, useRef, useState } from "react";
 import { chartMock } from "../../data/mock/chartMock";
 import StockChart from "../../components/stock/StockChart";
-import { useTrade } from "../../context/TradeContext";
-import { useModal } from "../../context/UIContext/ModalContext";
-import { useMoney } from "../../context/WalletContext/MoneyContext";
-import { playMoneySound } from "../../utils/sounds";
-import { useReward } from "../../context/RewardContext";
-import InfoModal from "../../components/InfoModal";
 import StockDetailHeader from "../../components/stock/StockDetailHeader";
 import StockPriceSection from "../../components/stock/StockPriceSection";
+import { useStockDetail } from "../../hooks/useStockDetail";
+import StockGuideModal from "../../components/StockGuideModal";
+import { useModal } from "../../context/UIContext/ModalContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const theme = useTheme(); //테마 가져오기/경험치 획득
-  const { giveReward } = useReward();
-  const { buyStock, sellStock, hasBoughtToday, isHoldingStock } = useTrade();
+  const theme = useTheme();
   const { openModal } = useModal();
-  const { money, spendMoney, addMoney } = useMoney();
-  const [period, setPeriod] = useState<"7d" | "1y">("7d");
-  const [activeTab, setActiveTab] = useState<"CHART" | "MY_STOCK">("CHART");
-  const [animateMoney, setAnimateMoney] = useState(false); //moneyBar 애니메이션효과
-  const [showMoneyEffect, setShowMoneyEffect] = useState(false); //구매시 -금액 보이는 애니메이션효과
-  const [showSellEffect, setShowSellEffect] = useState(false);
-  const [showGuideModal, setShowGuideModal] = useState(false);
-  const [hasCompletedFirstBuy, setHasCompletedFirstBuy] = useState(() => {
-    return localStorage.getItem("hasCompletedFirstBuy") === "true";
-  });
-  const [checks, setChecks] = useState({
-    rule1: false,
-    rule2: false,
-    rule3: false,
-    rule4: false,
-  }); //안내문구 확인용 체크박스
-
-  //전체 체크 여부계산
-  const isAllChecked = Object.values(checks).every(Boolean);
-  //체크 토글함수
-  const toggleCheck = (key: keyof typeof checks) => {
-    setChecks((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-  const prevMoneyRef = useRef(money); //이전 money 기억
 
   const company = marketMockData.find((s) => s.id === Number(id));
 
@@ -56,156 +23,70 @@ const StockDetail = () => {
     return <div>회사를 찾을 수 없어요 🥲</div>;
   }
 
-  //차트 데이터의 "시작값"과 "마지막 값"을 비교해, 전체 흐름이 상승인지/하락인지 판단
-  const isChartUptrend = (data: { price: number }[]) => {
-    if (data.length < 2) return true; //데이터1개이하면 비교기준x -> false(상승아님)
-    const first = data[0].price; //가장 과거 가격(차트시작 지점)
-    const last = data[data.length - 1].price; //가장 최근 가격(차트 마지막 지점)
+  /** ✅ 커스텀 훅 (핵심) */
+  const {
+    period,
+    setPeriod,
+    activeTab,
+    setActiveTab,
 
-    return last > first;
-  };
+    animateMoney,
+    showMoneyEffect,
+    showSellEffect,
 
-  //차트 흐름에 따라 아이 눈높이 설명 문구 생성
-  const getExplainTextByTrend = (
-    isUp: boolean,
-    companyName: string,
-    isHolding: boolean,
-  ) => {
-    if (isUp) {
-      return isHolding //("올랐고 + 내가 보유"):("올랐고 + 내가 미보유")
-        ? `${companyName}를 좋아하는 사람이 늘어나서, 내가 산 주식의 가치가 조금 올라간 것 같아요! 😊`
-        : `${companyName}를 찾는 사람이 많아져서, 회사의 가치가 올라간 것 같아요.`;
-    }
-    return isHolding //("내려갔고 + 내가 보유"):("내려갔고 + 내가 미보유")
-      ? `${companyName}에 대한 관심이 잠시 줄어서, 내가 가진 주식의 가격이 내려갔을 수도 있어요.`
-      : `${companyName}를 찾는 사람이 줄어서, 가격이 내려갔을 수도 있어요.`;
-  };
-  const isHolding = isHoldingStock(company.id);
-  //선택된 기간의 차트 데이터
+    showGuideModal,
+    setShowGuideModal,
+
+    checks,
+    toggleCheck,
+    isAllChecked,
+
+    money,
+    hasBoughtToday,
+    isHoldingStock,
+
+    handleBuyClick,
+    handleBuyConfirm,
+    handleSellClick,
+  } = useStockDetail(company);
+
+  /** 📊 차트 데이터 */
   const chartData = chartMock[company.id][period];
-  //상승,하락 판단
-  const isUptrend = isChartUptrend(chartData);
-  //설명 문구 생성
-  const explainText = getExplainTextByTrend(isUptrend, company.name, isHolding);
 
-  const handleBuyConfirm = () => {
-    playMoneySound(); //구매시 사운드효과
-    spendMoney(company.price); //머니 차감, 현재는 돈 부족해도 구매 막지않고, 돈쓰면 줄어든다는 경험만 제공
+  /** 📈 상승/하락 판단 (간단 유지) */
+  const isUptrend =
+    chartData.length > 1 &&
+    chartData[chartData.length - 1].price > chartData[0].price;
 
-    // 💰 이펙트 ON
-    setShowMoneyEffect(true);
-    setTimeout(() => setShowMoneyEffect(false), 900);
-
-    //주식 구매 처리 (보유 상태 기록)
-    buyStock(company);
-    localStorage.setItem("hasCompletedFirstBuy", "true");
-    setHasCompletedFirstBuy(true);
-    giveReward("BUY_STOCK");
-  };
-
-  const handleBuyClick = () => {
-    /*  // ❗(머니 부족 로직) - 추후 on  
-if (money < company.price) {
-  openModal({
-    type: "INFO",
-    title: "돈이 조금 부족해요",
-    message: "퀘스트를 하면 돈을 더 모을 수 있어요!",
-    confirmText: "알겠어요",
-  });
-  return;
-    }
-*/ if (!hasCompletedFirstBuy) {
-      setShowGuideModal(true);
-      return;
-    }
-
-    openModal({
-      type: "CONFIRM",
-      title: "구매할까요?",
-      message: `${company.name}\n${company.price}원`,
-      confirmText: "구매",
-      cancelText: "아니오",
-      onConfirm: handleBuyConfirm,
-      onCancel: () => {},
-    });
-  };
-
-  useEffect(() => {
-    // 💸 돈이 줄어들었을 때만 애니메이션
-    if (money < prevMoneyRef.current) {
-      setAnimateMoney(true);
-
-      const timer = setTimeout(() => {
-        setAnimateMoney(false);
-      }, 180); // 애니메이션 길이
-
-      return () => clearTimeout(timer);
-    }
-
-    prevMoneyRef.current = money;
-  }, [money]);
-
-  //판매 핸들러
-
-  const handleSellConfirm = () => {
-    playMoneySound(); // 판매 사운드
-
-    addMoney(company.price); // 💰 돈 증가 (spendMoney 반대)
-
-    // 💰 이펙트 ON
-    setShowSellEffect(true);
-    setTimeout(() => setShowSellEffect(false), 900);
-
-    // 주식 판매 처리
-    sellStock(company);
-
-    giveReward("SELL_STOCK");
-  };
-
-  const handleSellClick = () => {
-    if (!isHoldingStock(company.id)) {
-      openModal({
-        type: "INFO",
-        title: "판매할 주식이 없어요",
-        message: "먼저 주식을 구매해야 판매할 수 있어요!",
-        confirmText: "알겠어요",
-      });
-      return;
-    }
-
-    openModal({
-      type: "CONFIRM",
-      title: "판매할까요?",
-      message: `${company.name}\n${company.price}원`,
-      confirmText: "판매",
-      cancelText: "아니오",
-      onConfirm: handleSellConfirm,
-    });
-  };
-
+  const isHolding = isHoldingStock(company.id);
   return (
     <Wrapper>
+      {/* 🔝 헤더 */}
       <StockDetailHeader
         money={money}
         animateMoney={animateMoney}
         onBack={() => navigate(-1)}
       />
+
       <Content>
         {/* 🏢 회사 정보 */}
         <Title>
           {company.character} {company.name}
         </Title>
         <Description>{company.description}</Description>
+
         <InfoBox>
           <strong>분야</strong>
           <div>{company.category}</div>
         </InfoBox>
-        {/* 💰 가격 정보 영역 */}
+
+        {/* 💰 가격 */}
         <StockPriceSection
           price={company.price}
           changeRate={company.changeRate}
         />
-        {/* 탭 버튼 영역 */}
+
+        {/* 📊 탭 */}
         <TabHeader>
           <TabButton
             $active={activeTab === "CHART"}
@@ -220,9 +101,10 @@ if (money < company.price) {
             🧾 내 주식
           </TabButton>
         </TabHeader>
+
+        {/* 📦 탭 내용 */}
         <ContentSection>
-          {" "}
-          {/* 📊 차트 영역 */}
+          {/* 📊 차트 */}
           <ChartContent $active={activeTab === "CHART"}>
             <ChartSection>
               <ChartHeader>
@@ -230,7 +112,6 @@ if (money < company.price) {
                 <ChartPeriodToggle value={period} onChange={setPeriod} />
               </ChartHeader>
 
-              {/* 차트 컴포넌트 자리 */}
               <ChartPlaceholder>
                 <StockChart
                   data={chartData}
@@ -239,9 +120,10 @@ if (money < company.price) {
               </ChartPlaceholder>
             </ChartSection>
           </ChartContent>
-          {/* 🧾 내 주식 탭 */}
+
+          {/* 🧾 내 주식 */}
           <MyStockContent $active={activeTab === "MY_STOCK"}>
-            {isHoldingStock(company.id) ? (
+            {isHolding ? (
               <MyStockCard>
                 ⭐ 이 회사 주식을 가지고 있어요!
                 <SubText>지금은 가격의 변화를 지켜보는 단계예요 😊</SubText>
@@ -255,13 +137,12 @@ if (money < company.price) {
           </MyStockContent>
         </ContentSection>
 
-        {/* 💡 설명 카드 */}
+        {/* 💡 설명 */}
         <ExplainCard>
-          <ExplainTitle>{company?.description}</ExplainTitle>
-          <ExplainText>{explainText}</ExplainText>
+          <ExplainTitle>{company.description}</ExplainTitle>
         </ExplainCard>
 
-        {/* 🛒 구매 버튼 */}
+        {/* ⛔ 구매 제한 */}
         {hasBoughtToday && (
           <HintText>
             하루에 한 번만 구매 할 수 있어요 🙂
@@ -270,15 +151,14 @@ if (money < company.price) {
           </HintText>
         )}
 
+        {/* 🛒 구매/판매 */}
         <BuyButtonWrapper>
-          <InfoModal
+          {/* 📌 가이드 모달 */}
+          <StockGuideModal
             open={showGuideModal}
-            width="350px"
-            title="💡 투자를 할 때 약속해요!"
             onClose={() => {
-              if (!isAllChecked) return;
               setShowGuideModal(false);
-
+              // 👉 일반 구매 확인 모달
               openModal({
                 type: "CONFIRM",
                 title: "구매할까요?",
@@ -286,80 +166,26 @@ if (money < company.price) {
                 confirmText: "구매",
                 cancelText: "아니오",
                 onConfirm: handleBuyConfirm,
-                onCancel: () => {},
               });
             }}
-            buttonText={
-              isAllChecked ? "알겠어요" : "모두 체크해야 계속할 수 있어요"
-            }
-          >
-            <GuideContent>
-              <GuideItem
-                $checked={checks.rule1}
-                onClick={() => toggleCheck("rule1")}
-              >
-                <GuideText>
-                  <DangerIcon>⚠️</DangerIcon>
-                  주식은 오르기도 하고 내려가기도 해요
-                </GuideText>
+            onConfirm={handleBuyConfirm}
+            checks={checks}
+            toggleCheck={toggleCheck}
+            isAllChecked={isAllChecked}
+          />
 
-                <CheckIcon $checked={checks.rule1}>
-                  {checks.rule1 ? "✔" : ""}
-                </CheckIcon>
-              </GuideItem>
-
-              <GuideItem
-                $checked={checks.rule2}
-                onClick={() => toggleCheck("rule2")}
-              >
-                <GuideText>
-                  <DangerIcon>⚠️</DangerIcon>
-                  잃어도 괜찮은 돈으로 해야 해요
-                </GuideText>
-
-                <CheckIcon $checked={checks.rule2}>
-                  {checks.rule2 ? "✔" : ""}
-                </CheckIcon>
-              </GuideItem>
-
-              <GuideItem
-                $checked={checks.rule3}
-                onClick={() => toggleCheck("rule3")}
-              >
-                <GuideText>
-                  <DangerIcon>⚠️</DangerIcon>
-                  빚을 내서 투자하면 안 돼요
-                </GuideText>
-
-                <CheckIcon $checked={checks.rule3}>
-                  {checks.rule3 ? "✔" : ""}
-                </CheckIcon>
-              </GuideItem>
-
-              <GuideItem
-                $checked={checks.rule4}
-                onClick={() => toggleCheck("rule4")}
-              >
-                <GuideText>
-                  <DangerIcon>⚠️</DangerIcon>
-                  회사를 알아보고 투자하면 더 좋아요
-                </GuideText>
-
-                <CheckIcon $checked={checks.rule4}>
-                  {checks.rule4 ? "✔" : ""}
-                </CheckIcon>
-              </GuideItem>
-            </GuideContent>
-          </InfoModal>
           <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
             {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
           </BuyButton>
+
           <SellButton onClick={handleSellClick}>
             보유 주식 판매하기 💸
           </SellButton>
+
           {showMoneyEffect && (
             <MoneyEffect>💰 -{company.price.toLocaleString()}</MoneyEffect>
           )}
+
           {showSellEffect && (
             <SellEffect>💵 +{company.price.toLocaleString()}</SellEffect>
           )}
@@ -424,58 +250,10 @@ const SellEffect = styled.div`
   }
 `;
 
-//헤더 고정영역
-const StickyHeader = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 10;
-
-  background: ${({ theme }) => theme.colors.background};
-  padding: 12px 16px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  /* 아래 콘텐츠와 구분감 */
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-`;
-
-const BackButton = styled.button`
-  align-self: flex-start;
-  padding: 6px 10px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: none;
-
-  background: ${({ theme }) => theme.colors.surface};
-  color: ${({ theme }) => theme.colors.text};
-
-  font-size: 14px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-
-  transition:
-    background 0.15s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.card};
-    transform: translateX(-2px); /* ← 느낌 */
-  }
-
-  &:active {
-    transform: translateX(0) scale(0.97);
-    box-shadow: none;
-  }
 `;
 
 const Title = styled.h2`
@@ -493,37 +271,7 @@ const InfoBox = styled.div`
   padding: 16px;
   border-radius: ${({ theme }) => theme.radius.lg};
 `;
-const PriceSection = styled.div`
-  background: ${({ theme }) => theme.colors.card};
-  padding: 16px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
 
-const PriceInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const PriceLabel = styled.span`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const PriceValue = styled.span`
-  font-size: 22px;
-  font-weight: 700;
-`;
-
-const ChangeRate = styled.div<{ $positive: boolean }>`
-  font-size: 14px;
-  font-weight: 700;
-  color: ${({ theme, $positive }) =>
-    $positive ? theme.colors.up : theme.colors.down};
-`;
 /* =========================
    탭 버튼 영역
    ========================= */
@@ -661,12 +409,6 @@ const ExplainTitle = styled.div`
   font-weight: 700;
 `;
 
-const ExplainText = styled.p`
-  font-size: 14px;
-  line-height: 1.4;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
 /* =========================
    구매 버튼
    ========================= */
@@ -730,101 +472,4 @@ const HintText = styled.div`
   text-align: center;
 `;
 
-const MoneyBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 10px 14px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.surface},
-    ${({ theme }) => theme.colors.card}
-  );
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-
-  font-size: 14px;
-  font-weight: 700;
-
-  transition: transform 0.18s ease;
-
-  &.decrease {
-    transform: scale(0.95);
-  }
-`;
-const MoneyLabel = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-const MoneyAmount = styled.strong`
-  font-size: 18px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-//투자전 안내문구
-const GuideContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  text-align: left;
-`;
-const GuideItem = styled.div<{ $checked: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* 🔥 핵심 */
-
-  padding: 12px 14px;
-  border-radius: ${({ theme }) => theme.radius.md};
-
-  background: ${({ $checked, theme }) =>
-    $checked ? theme.colors.surface : theme.colors.card};
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-
-  transition: all 0.15s ease;
-`;
-const DangerIcon = styled.span`
-  color: ${({ theme }) => theme.colors.down};
-`;
-
-const GuideText = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-`;
-
-const CheckIcon = styled.div<{ $checked: boolean }>`
-  width: 24px;
-  height: 24px;
-
-  border-radius: 6px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 14px;
-  font-weight: bold;
-
-  background: ${({ $checked, theme }) =>
-    $checked ? theme.colors.primary : "transparent"};
-
-  border: 2px solid ${({ theme }) => theme.colors.primary};
-
-  color: white;
-
-  transition: all 0.15s ease;
-`;
 export default StockDetail;
