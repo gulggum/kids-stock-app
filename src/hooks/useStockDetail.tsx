@@ -4,6 +4,7 @@ import { useModal } from "../context/UIContext/ModalContext";
 import { useMoney } from "../context/WalletContext/MoneyContext";
 import { useReward } from "../context/RewardContext";
 import { playMoneySound } from "../utils/sounds";
+import TradeSummary from "../components/stock/TradeSummary";
 
 /**
  * 📌 useStockDetail
@@ -198,7 +199,14 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
     openModal({
       type: "CONFIRM",
       title: "구매할까요?",
-      message: `${company.name}\n${company.price}원`,
+      customContent: (
+        <TradeSummary
+          type="BUY"
+          name={company.name}
+          money={money}
+          price={company.price}
+        />
+      ),
       confirmText: "구매",
       cancelText: "아니오",
       onConfirm: handleBuyConfirm,
@@ -240,7 +248,16 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
     openModal({
       type: "CONFIRM",
       title: "판매할까요?",
-      message: `${company.name}\n${company.price}원`,
+      customContent: (
+        <TradeSummary
+          type="SELL"
+          name={company.name}
+          money={money}
+          price={company.price} //현재가격
+          buyPrice={company.price} //구매가격
+        />
+      ),
+
       confirmText: "판매",
       cancelText: "아니오",
       onConfirm: handleSellConfirm,

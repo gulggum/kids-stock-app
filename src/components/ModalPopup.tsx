@@ -11,7 +11,7 @@ type ModalPopupProps = {
   cancelText?: string;
   onConfirm: () => void; //확인 버튼 클릭시 실행
   onCancel?: () => void; //취소 버튼 클릭시 실행
-  customContent?: React.ReactNode; //옵션선택
+  customContent?: React.ReactNode; //옵션선택//텍스트 꾸며야할때 사용!
   hideActions?: boolean; //customContent가 있으면 ModalPopup의 하단 버튼 숨기기위함
 };
 
