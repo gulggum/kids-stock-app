@@ -16,7 +16,6 @@ import styled from "styled-components";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onConfirm: () => void; //모두 체크 후 확인시
 
   checks: {
     rule1: boolean;
@@ -33,7 +32,6 @@ type Props = {
 const StockGuideModal = ({
   open,
   onClose,
-  onConfirm,
   checks,
   toggleCheck,
   isAllChecked,

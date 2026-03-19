@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useNavigate } from "react-router";
-import styled, { keyframes, useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { marketMockData } from "../../data/mock/marketMock";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
 import { chartMock } from "../../data/mock/chartMock";
@@ -8,14 +8,12 @@ import StockChart from "../../components/stock/StockChart";
 import StockDetailHeader from "../../components/stock/StockDetailHeader";
 import StockPriceSection from "../../components/stock/StockPriceSection";
 import { useStockDetail } from "../../hooks/useStockDetail";
-import StockGuideModal from "../../components/StockGuideModal";
-import { useModal } from "../../context/UIContext/ModalContext";
+import BuySellSection from "../../components/stock/BuySellSection";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
-  const { openModal } = useModal();
 
   const company = marketMockData.find((s) => s.id === Number(id));
 
@@ -150,104 +148,34 @@ const StockDetail = () => {
             내일 다시 도전해보세요!
           </HintText>
         )}
+        <InvestmentNotice>
+          💡 주식은 가격이 오르기도 내려가기도 해요
+        </InvestmentNotice>
 
         {/* 🛒 구매/판매 */}
-        <BuyButtonWrapper>
-          {/* 📌 가이드 모달 */}
-          <StockGuideModal
-            open={showGuideModal}
-            onClose={() => {
-              setShowGuideModal(false);
-              // 👉 일반 구매 확인 모달
-              openModal({
-                type: "CONFIRM",
-                title: "구매할까요?",
-                message: `${company.name}\n${company.price}원`,
-                confirmText: "구매",
-                cancelText: "아니오",
-                onConfirm: handleBuyConfirm,
-              });
-            }}
-            onConfirm={handleBuyConfirm}
-            checks={checks}
-            toggleCheck={toggleCheck}
-            isAllChecked={isAllChecked}
-          />
-
-          <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
-            {hasBoughtToday ? "오늘은 이미 구매완료 🌙" : "이 주식 구매하기 🛒"}
-          </BuyButton>
-
-          <SellButton onClick={handleSellClick}>
-            보유 주식 판매하기 💸
-          </SellButton>
-
-          {showMoneyEffect && (
-            <MoneyEffect>💰 -{company.price.toLocaleString()}</MoneyEffect>
-          )}
-
-          {showSellEffect && (
-            <SellEffect>💵 +{company.price.toLocaleString()}</SellEffect>
-          )}
-        </BuyButtonWrapper>
+        <BuySellSection
+          showGuideModal={showGuideModal}
+          setShowGuideModal={setShowGuideModal}
+          checks={checks}
+          toggleCheck={toggleCheck}
+          isAllChecked={isAllChecked}
+          hasBoughtToday={hasBoughtToday}
+          handleBuyClick={handleBuyClick}
+          handleBuyConfirm={handleBuyConfirm}
+          handleSellClick={handleSellClick}
+          showMoneyEffect={showMoneyEffect}
+          showSellEffect={showSellEffect}
+          price={company.price}
+          companyName={company.name}
+        />
       </Content>
     </Wrapper>
   );
 };
-const floatUp = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(0.9);
-  }
-  20% {
-    opacity: 1;
-    transform: translateY(-4px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-24px) scale(1.05);
-  }
-`;
-
-const MoneyEffect = styled.div`
-  position: absolute;
-  left: 50%;
-  top: -8px;
-  transform: translateX(-50%);
-
-  font-size: 16px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.primary};
-
-  pointer-events: none;
-
-  animation: ${floatUp} 0.9s ease-out;
-`;
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-`;
-const SellEffect = styled.div`
-  position: absolute;
-  right: 10px;
-  top: -10px;
-
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.up};
-
-  animation: moneyFloat 1.2s ease forwards;
-
-  @keyframes moneyFloat {
-    0% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-25px);
-    }
-  }
 `;
 
 const Content = styled.div`
@@ -409,67 +337,25 @@ const ExplainTitle = styled.div`
   font-weight: 700;
 `;
 
-/* =========================
-   구매 버튼
-   ========================= */
-
-const BuyButtonWrapper = styled.div`
-  position: relative;
-  margin-top: 16px;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-`;
-const BuyButton = styled.button<{ disabled?: boolean }>`
-  flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.lg};
-
-  background: ${({ theme, disabled }) =>
-    disabled ? theme.colors.muted : theme.colors.primary};
-
-  color: white;
-  font-size: 15px;
-  font-weight: 800;
-
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-
-  transition: all 0.15s ease;
-
-  &:active {
-    transform: ${({ disabled }) => (disabled ? "none" : "scale(0.97)")};
-  }
-`;
-const SellButton = styled.button`
-  flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.lg};
-
-  font-size: 15px;
-  font-weight: 800;
-
-  background: ${({ theme }) => theme.colors.secondary};
-  color: white;
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:active {
-    transform: scale(0.97);
-  }
-`;
-
 const HintText = styled.div`
   margin-top: 8px;
   font-size: 13px;
   color: ${({ theme }) => theme.colors.muted};
   text-align: center;
+`;
+
+const InvestmentNotice = styled.div`
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 `;
 
 export default StockDetail;

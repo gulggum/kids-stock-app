@@ -112,6 +112,8 @@ export const useStockDetail = (company: any) => {
     // 첫 구매 기록
     localStorage.setItem("hasCompletedFirstBuy", "true");
     setHasCompletedFirstBuy(true);
+    //첫구매날부터 카운트계산 shouldShowGuide로직 (첫구매시만 가이드팝업 => 7일후 다시 가이드팝업 보여주기)
+    localStorage.setItem("lastGuideDate", new Date().toISOString());
 
     // 보상 지급
     giveReward("BUY_STOCK");
@@ -121,6 +123,11 @@ export const useStockDetail = (company: any) => {
   const handleBuyClick = () => {
     // 👉 첫 구매면 가이드 먼저
     if (!hasCompletedFirstBuy) {
+      setShowGuideModal(true);
+      return;
+    }
+    //👉 7일마다 가이드 다시 보여주기
+    if (shouldShowGuide()) {
       setShowGuideModal(true);
       return;
     }
@@ -175,6 +182,17 @@ export const useStockDetail = (company: any) => {
       cancelText: "아니오",
       onConfirm: handleSellConfirm,
     });
+  };
+
+  // 📌 가이드 노출 판단 (7일마다 노출)
+  const shouldShowGuide = () => {
+    const last = localStorage.getItem("lastGuideDate");
+    if (!last) return true;
+
+    const diff =
+      (Date.now() - new Date(last).getTime()) / (1000 * 60 * 60 * 24);
+
+    return diff >= 7;
   };
 
   /** =========================
