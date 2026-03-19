@@ -28,7 +28,7 @@ type GuideChecks = {
  * 📌 회사 타입 (최소한만)
  * 👉 marketMockData 구조 기반
  */
-type Company = {
+export type Company = {
   id: number;
   name: string;
   price: number;

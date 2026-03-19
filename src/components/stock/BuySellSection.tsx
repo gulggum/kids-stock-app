@@ -1,6 +1,5 @@
 import styled, { keyframes } from "styled-components";
 import StockGuideModal from "./StockGuideModal";
-import { useModal } from "../../context/UIContext/ModalContext";
 
 type GuideChecks = {
   rule1: boolean;
@@ -67,10 +66,7 @@ const BuySellSection = ({
   showMoneyEffect,
   showSellEffect,
   price,
-  companyName,
 }: Props) => {
-  const { openModal } = useModal();
-
   return (
     <Wrapper>
       {/* 📌 가이드 모달 */}
@@ -78,16 +74,6 @@ const BuySellSection = ({
         open={showGuideModal}
         onClose={() => {
           setShowGuideModal(false);
-
-          // 👉 가이드 닫고 나서 구매 확인 모달
-          openModal({
-            type: "CONFIRM",
-            title: "구매할까요?",
-            message: `${companyName}\n${price}원`,
-            confirmText: "구매",
-            cancelText: "아니오",
-            onConfirm: handleBuyConfirm,
-          });
         }}
         checks={checks}
         toggleCheck={toggleCheck}
