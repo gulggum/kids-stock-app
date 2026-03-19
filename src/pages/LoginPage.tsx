@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/images/logo.png";
+import bgImage from "../assets/images/bgImage.png";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ const LoginPage = () => {
   return (
     <Container>
       <Card>
-        <Logo src="/logo.png" alt="KidsStock Logo" />
+        <Logo src={logo} alt="KidsStock Logo" />
         <Title>로그인</Title>
         <Input type="text" placeholder="아이디를 입력하세요" />
         <Input type="password" placeholder="비밀번호를 입력하세요" />
@@ -26,7 +28,6 @@ const LoginPage = () => {
 const Container = styled.div`
   width: 100vw;
   height: 100dvh;
-  background: ${({ theme }) => theme.colors.background};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,7 +36,9 @@ const Container = styled.div`
 const Card = styled.div`
   width: 90%;
   max-width: 420px;
-  background: ${({ theme }) => theme.colors.card};
+  background-image: url(${bgImage});
+  background-size: cover;
+  background-position: center;
   padding: 40px 30px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);

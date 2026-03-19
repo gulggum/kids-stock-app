@@ -61,13 +61,6 @@ const BottomNav = () => {
 };
 
 const BottomWrapper = styled.header`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 12px 16px;
   background: ${({ theme }) => theme.colors.surface};
   box-shadow: ${({ theme }) => theme.shadows.sm};
@@ -96,10 +89,10 @@ const Nav = styled.nav`
 
   padding-bottom: calc(env(safe-area-inset-bottom) + 6px);
 
-  /* PC에서는 숨김 */
-  @media (min-width: 769px) {
-    display: none;
-  }
+  /* 🔥 iOS 버그 해결 스크롤바내릴시 하단메뉴바 찌그러지는 현상대처?*/
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
 `;
 
 const Item = styled(NavLink)`
