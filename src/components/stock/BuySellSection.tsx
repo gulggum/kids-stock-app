@@ -1,25 +1,56 @@
 import styled, { keyframes } from "styled-components";
-import StockGuideModal from "../StockGuideModal";
+import StockGuideModal from "./StockGuideModal";
 import { useModal } from "../../context/UIContext/ModalContext";
 
+type GuideChecks = {
+  rule1: boolean;
+  rule2: boolean;
+  rule3: boolean;
+  rule4: boolean;
+};
+
+/**
+ * 📌 BuySellSection Props
+ * - StockDetail에서 내려주는 값들
+ */
 type Props = {
+  /** 가이드 모달 열림 여부 */
   showGuideModal: boolean;
+
+  /** 가이드 모달 상태 변경 */
   setShowGuideModal: (v: boolean) => void;
 
-  checks: any;
-  toggleCheck: any;
+  /** 체크 상태 */
+  checks: GuideChecks;
+
+  /** 체크 토글 함수 */
+  toggleCheck: (key: keyof GuideChecks) => void;
+
+  /** 전체 체크 완료 여부 */
   isAllChecked: boolean;
 
+  /** 오늘 구매 여부 */
   hasBoughtToday: boolean;
 
+  /** 구매 버튼 클릭 */
   handleBuyClick: () => void;
+
+  /** 실제 구매 실행 */
   handleBuyConfirm: () => void;
+
+  /** 판매 버튼 클릭 */
   handleSellClick: () => void;
 
+  /** 구매 이펙트 */
   showMoneyEffect: boolean;
+
+  /** 판매 이펙트 */
   showSellEffect: boolean;
 
+  /** 가격 */
   price: number;
+
+  /** 회사 이름 */
   companyName: string;
 };
 
@@ -48,6 +79,7 @@ const BuySellSection = ({
         onClose={() => {
           setShowGuideModal(false);
 
+          // 👉 가이드 닫고 나서 구매 확인 모달
           openModal({
             type: "CONFIRM",
             title: "구매할까요?",
@@ -62,16 +94,20 @@ const BuySellSection = ({
         isAllChecked={isAllChecked}
       />
 
+      {/* 🛒 구매 버튼 */}
       <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
         {hasBoughtToday ? "오늘 구매 완료 🌙" : "이 주식 구매하기 🛒"}
       </BuyButton>
 
+      {/* 💸 판매 버튼 */}
       <SellButton onClick={handleSellClick}>보유 주식 판매 💸</SellButton>
 
+      {/* 💰 구매 이펙트 */}
       {showMoneyEffect && (
         <MoneyEffect>💰 -{price.toLocaleString()}</MoneyEffect>
       )}
 
+      {/* 💵 판매 이펙트 */}
       {showSellEffect && <SellEffect>💵 +{price.toLocaleString()}</SellEffect>}
     </Wrapper>
   );

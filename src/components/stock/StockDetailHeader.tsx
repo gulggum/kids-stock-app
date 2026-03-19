@@ -28,12 +28,12 @@ const StickyHeader = styled.div`
   top: 0;
   z-index: 10;
 
-  background: ${({ theme }) => theme.colors.background};
   padding: 12px 16px;
 
   display: flex;
   flex-direction: column;
   gap: 8px;
+  backdrop-filter: blur(6px);
 
   /* 아래 콘텐츠와 구분감 */
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
@@ -44,8 +44,8 @@ const BackButton = styled.button`
   padding: 6px 10px;
   border-radius: ${({ theme }) => theme.radius.md};
   border: none;
-
-  background: ${({ theme }) => theme.colors.surface};
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
   color: ${({ theme }) => theme.colors.text};
 
   font-size: 14px;
@@ -75,16 +75,12 @@ const MoneyBar = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: ${({ theme }) => theme.radius.lg};
 
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.surface},
-    ${({ theme }) => theme.colors.card}
-  );
+  background: ${({ theme }) => theme.colors.card};
 
-  box-shadow: ${({ theme }) => theme.shadows.sm};
+  box-shadow: ${({ theme }) => theme.shadows.md};
 
   font-size: 14px;
   font-weight: 700;
@@ -100,7 +96,7 @@ const MoneyLabel = styled.span`
   align-items: center;
   gap: 6px;
 
-  font-size: 13px;
+  font-size: 17px;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 const MoneyAmount = styled.strong`

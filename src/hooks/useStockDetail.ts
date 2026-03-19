@@ -12,7 +12,70 @@ import { playMoneySound } from "../utils/sounds";
  * 👉 UI와 로직을 분리해서
  * 페이지는 "보여주는 역할"만 하게 만들기 위함
  */
-export const useStockDetail = (company: any) => {
+
+/**
+ * 📌 체크 상태 타입
+ */
+type GuideChecks = {
+  rule1: boolean;
+  rule2: boolean;
+  rule3: boolean;
+  rule4: boolean;
+};
+
+/**
+ * 📌 회사 타입 (최소한만)
+ * 👉 marketMockData 구조 기반
+ */
+type Company = {
+  id: number;
+  name: string;
+  price: number;
+};
+
+/**
+ * 📌 useStockDetail 반환 타입
+ * 👉 페이지에서 사용하는 값들 정의
+ */
+type UseStockDetailReturn = {
+  /** 차트 기간 */
+  period: "7d" | "1y";
+  setPeriod: (v: "7d" | "1y") => void;
+
+  /** 탭 상태 */
+  activeTab: "CHART" | "MY_STOCK";
+  setActiveTab: (v: "CHART" | "MY_STOCK") => void;
+
+  /** 애니메이션 */
+  animateMoney: boolean;
+  showMoneyEffect: boolean;
+  showSellEffect: boolean;
+
+  /** 가이드 모달 */
+  showGuideModal: boolean;
+  setShowGuideModal: (v: boolean) => void;
+
+  /** 체크 */
+  checks: GuideChecks;
+  toggleCheck: (key: keyof GuideChecks) => void;
+  isAllChecked: boolean;
+
+  /** 상태 */
+  money: number;
+  hasBoughtToday: boolean;
+  isHoldingStock: (id: number) => boolean;
+
+  /** 액션 */
+  handleBuyClick: () => void;
+  handleBuyConfirm: () => void;
+  handleSellClick: () => void;
+};
+
+/**
+ * 📌 useStockDetail
+ * 👉 StockDetail의 "로직 전담"
+ */
+export const useStockDetail = (company: Company): UseStockDetailReturn => {
   /** =========================
    * 📊 UI 상태 관리
    * ========================= */
@@ -216,8 +279,6 @@ export const useStockDetail = (company: any) => {
     checks,
     toggleCheck,
     isAllChecked,
-
-    hasCompletedFirstBuy,
 
     // context 값
     money,

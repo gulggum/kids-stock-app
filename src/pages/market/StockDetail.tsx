@@ -182,6 +182,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-top: 20px;
 `;
 
 const Title = styled.h2`
@@ -346,7 +347,7 @@ const HintText = styled.div`
 
 const InvestmentNotice = styled.div`
   margin-top: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   text-align: center;
 

@@ -1,4 +1,4 @@
-import InfoModal from "./InfoModal";
+import InfoModal from "../InfoModal";
 import styled from "styled-components";
 
 /**
@@ -68,7 +68,7 @@ const StockGuideModal = ({
 
         {/* ⚠️ 3번 */}
         <GuideItem $checked={checks.rule3} onClick={() => toggleCheck("rule3")}>
-          <GuideText>⚠️ 빚을 내서 투자하면 안 돼요</GuideText>
+          <GuideText>⚠️ 돈을 빌려서 투자하면 안 돼요</GuideText>
           <CheckIcon $checked={checks.rule3}>
             {checks.rule3 ? "✔" : ""}
           </CheckIcon>
