@@ -1,5 +1,8 @@
 import styled, { keyframes } from "styled-components";
 import StockGuideModal from "./StockGuideModal";
+import { useModal } from "../../context/UIContext/ModalContext";
+import TradeSummary from "./TradeSummary";
+import type { Company } from "../../hooks/useStockDetail";
 
 type GuideChecks = {
   rule1: boolean;
@@ -46,11 +49,11 @@ type Props = {
   /** 판매 이펙트 */
   showSellEffect: boolean;
 
-  /** 가격 */
-  price: number;
+  //회사정보
+  company: Company;
 
-  /** 회사 이름 */
-  companyName: string;
+  //내가보유한 금액
+  myMoney: number;
 };
 
 const BuySellSection = ({
@@ -61,11 +64,15 @@ const BuySellSection = ({
   isAllChecked,
   hasBoughtToday,
   handleBuyClick,
+  handleBuyConfirm,
   handleSellClick,
   showMoneyEffect,
   showSellEffect,
-  price,
+  company,
+  myMoney,
 }: Props) => {
+  const { openModal } = useModal();
+
   return (
     <Wrapper>
       {/* 📌 가이드 모달 */}
@@ -73,6 +80,23 @@ const BuySellSection = ({
         open={showGuideModal}
         onClose={() => {
           setShowGuideModal(false);
+
+          // 👉 가이드 닫고 나서 구매 확인 모달
+          openModal({
+            type: "CONFIRM",
+            title: "구매할까요?",
+            customContent: (
+              <TradeSummary
+                type="BUY"
+                name={company.name}
+                money={myMoney}
+                price={company.price}
+              />
+            ),
+            confirmText: "구매",
+            cancelText: "아니오",
+            onConfirm: handleBuyConfirm,
+          });
         }}
         checks={checks}
         toggleCheck={toggleCheck}
@@ -89,11 +113,13 @@ const BuySellSection = ({
 
       {/* 💰 구매 이펙트 */}
       {showMoneyEffect && (
-        <MoneyEffect>💰 -{price.toLocaleString()}</MoneyEffect>
+        <MoneyEffect>💰 -{myMoney.toLocaleString()}</MoneyEffect>
       )}
 
       {/* 💵 판매 이펙트 */}
-      {showSellEffect && <SellEffect>💵 +{price.toLocaleString()}</SellEffect>}
+      {showSellEffect && (
+        <SellEffect>💵 +{myMoney.toLocaleString()}</SellEffect>
+      )}
     </Wrapper>
   );
 };

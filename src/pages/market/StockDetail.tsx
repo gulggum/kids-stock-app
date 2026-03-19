@@ -165,8 +165,8 @@ const StockDetail = () => {
           handleSellClick={handleSellClick}
           showMoneyEffect={showMoneyEffect}
           showSellEffect={showSellEffect}
-          price={company.price}
-          companyName={company.name}
+          company={company}
+          myMoney={money}
         />
       </Content>
     </Wrapper>
