@@ -50,6 +50,12 @@ const Row = styled.div`
   display: flex;
   gap: 10px;
   overflow-x: auto;
+  /* 스크롤바 숨기기 */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
 `;
 
 const MiniCard = styled.div`
