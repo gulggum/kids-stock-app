@@ -12,7 +12,15 @@ import legendCard from "../../assets/images/legendCardImage.png";
  * 커뮤니티에 보여지는 유저 카드
  * - 말 없이도 "누가 활동 중인지" 보여주는 용도
  */
-const CommunityCard = ({ user }: { user: CommunityUser }) => {
+const CommunityCard = ({
+  user,
+  isFriend,
+  onToggleFriend,
+}: {
+  user: CommunityUser;
+  isFriend?: boolean;
+  onToggleFriend?: (id: number) => void;
+}) => {
   const { openModal } = useModal();
   const { title: levelTitle, tier } = getLevelTier(user.level);
 
@@ -35,7 +43,21 @@ const CommunityCard = ({ user }: { user: CommunityUser }) => {
           {online && <ActiveDot />}
         </Emoji>
         <Info>
-          <Name>{user.nickname}</Name>
+          <NameRow>
+            <Name>{user.nickname}</Name>
+
+            {onToggleFriend && (
+              <FollowButton
+                $active={!!isFriend}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFriend(user.id);
+                }}
+              >
+                {isFriend ? "친구" : "팔로우"}
+              </FollowButton>
+            )}
+          </NameRow>
           <Level>Lv. {user.level}</Level>
         </Info>
         <LevelTitle>{levelTitle}</LevelTitle>
@@ -176,6 +198,34 @@ const Info = styled.div`
   flex-direction: column;
 `;
 
+const NameRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+`;
+
+const FollowButton = styled.button<{ $active: boolean }>`
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.accentGreen : theme.colors.primary};
+
+  color: white;
+
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+
+  transition: all 0.15s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
 const Name = styled.div`
   font-size: 14px;
   font-weight: 800;
