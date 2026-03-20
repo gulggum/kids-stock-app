@@ -26,11 +26,10 @@ export default CommunityFeed;
 /* ================= 스타일 ================= */
 
 const SectionBlock = styled.section`
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 18px;
   box-shadow: ${({ theme }) => theme.shadows.sm};
-  border: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -39,11 +38,11 @@ const SectionBlock = styled.section`
 const SectionTitle = styled.h4`
   font-size: 14px;
   font-weight: 800;
-  color: ${({ theme }) => theme.colors.muted};
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const List = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
 `;

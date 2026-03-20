@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { type CommunityUser } from "../../data/mock/communityMock";
 import { useEffect, useRef, useState } from "react";
+import rankBg from "../../assets/images/rankBg.png";
 
 interface CommunityRankingProps {
   allUsers: CommunityUser[];
@@ -128,11 +129,11 @@ export default CommunityRanking;
 /* ================= 스타일 ================= */
 
 const SectionBlock = styled.section`
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 18px;
   box-shadow: ${({ theme }) => theme.shadows.sm};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -141,7 +142,7 @@ const SectionBlock = styled.section`
 const SectionTitle = styled.h4`
   font-size: 14px;
   font-weight: 800;
-  color: ${({ theme }) => theme.colors.muted};
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const RankingTabWrapper = styled.div`
@@ -157,9 +158,11 @@ const RankingTab = styled.button<{ $active: boolean }>`
   border: none;
   cursor: pointer;
   font-weight: 600;
+
   background: ${({ $active, theme }) =>
-    $active ? theme.colors.primary : "#eee"};
-  color: ${({ $active }) => ($active ? "#fff" : "#555")};
+    $active ? theme.colors.primary : theme.colors.background};
+
+  color: ${({ $active, theme }) => ($active ? "#fff" : theme.colors.text)};
   transition: 0.2s;
   &:hover {
     opacity: 0.9;
@@ -178,9 +181,11 @@ const TopCard = styled.div<{ $rank: number }>`
   padding: 16px;
   border-radius: 16px;
   text-align: center;
-  background: ${({ $rank }) =>
-    $rank === 0 ? "#ffe066" : $rank === 1 ? "#e0e0e0" : "#ffd8a8"};
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  background-image: url(${rankBg});
+  background-position: ${({ $rank }) =>
+    $rank === 0 ? "top" : $rank === 1 ? "center" : "bottom"};
+
+  background-repeat: no-repeat;
   transform: ${({ $rank }) => ($rank === 0 ? "scale(1.05)" : "scale(1)")};
 `;
 
@@ -218,9 +223,11 @@ const RankingRow = styled.div<{ $isMe?: boolean }>`
   border-radius: 12px;
   margin-bottom: 8px;
   background: ${({ $isMe }) => ($isMe ? "#fff3bf" : "#f7f7f7")};
+
   transition: 0.2s;
   &:hover {
     background: #ececec;
+    cursor: pointer;
   }
 `;
 
@@ -233,7 +240,7 @@ const RankNumber = styled.div`
 const MyRankSticky = styled.div`
   position: sticky;
   bottom: 0;
-  background: #fff9db;
+
   padding: 12px;
   border-top: 2px solid #ffd43b;
   font-weight: bold;

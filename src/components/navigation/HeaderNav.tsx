@@ -14,7 +14,7 @@ import {
 const HeaderNav = () => {
   return (
     <HeaderWrapper>
-      <Logo>KidsStock</Logo>
+      <Logo to="/"> KidsStock</Logo>
 
       <Nav>
         <NavItem to="/">
@@ -73,7 +73,7 @@ const HeaderWrapper = styled.header`
   }
 `;
 
-const Logo = styled.div`
+const Logo = styled(NavLink)`
   font-weight: 800;
   font-size: 20px;
   color: ${({ theme }) => theme.colors.primary};

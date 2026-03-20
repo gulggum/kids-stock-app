@@ -61,7 +61,7 @@ const MyStatusSection = ({
       <CommunityCard
         user={{
           id: 0,
-          nickname: "나",
+          nickname: "가온",
           level: myUser.level,
           levelTitle: "",
           emoji: "🐣",
@@ -97,11 +97,11 @@ const MyStatusSection = ({
 
 export default MyStatusSection;
 const SectionBlock = styled.section`
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 18px;
   box-shadow: ${({ theme }) => theme.shadows.sm};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -145,7 +145,11 @@ const StickyMyStatus = styled.div`
   right: 0;
   z-index: 20;
   padding: 12px 16px;
-  background: ${({ theme }) => theme.colors.background};
+
+  border: none;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
+  color: ${({ theme }) => theme.colors.text};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   box-shadow: 0 3px 3px -3px rgba(0, 0, 0, 0.12);
   display: flex;

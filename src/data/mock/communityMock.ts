@@ -20,7 +20,7 @@ export const communityMock: CommunityUser[] = [
   {
     id: 1,
     nickname: "민수",
-    level: 20,
+    level: 5,
     levelTitle: "🦊 침착한 투자자",
     emoji: "🦊",
     status: "🔥 오늘도 기록했어요!",
@@ -42,7 +42,7 @@ export const communityMock: CommunityUser[] = [
   {
     id: 3,
     nickname: "현우",
-    level: 30,
+    level: 12,
     levelTitle: "🦁 시장을 아는 아이",
     emoji: "🦁",
     status: "🏆 출석 7일 성공!",
@@ -64,7 +64,7 @@ export const communityMock: CommunityUser[] = [
   {
     id: 5,
     nickname: "준호",
-    level: 15,
+    level: 12,
     levelTitle: "🐯 도전하는 투자자",
     emoji: "🐯",
     status: "💰 수익률 상승중!",
@@ -86,7 +86,7 @@ export const communityMock: CommunityUser[] = [
   {
     id: 7,
     nickname: "도윤",
-    level: 18,
+    level: 14,
     levelTitle: "🦉 분석가 타입",
     emoji: "🦉",
     status: "📈 오늘은 상승장!",
@@ -107,7 +107,7 @@ export const communityMock: CommunityUser[] = [
   },
   {
     id: 9,
-    nickname: "시우",
+    nickname: "희연",
     level: 25,
     levelTitle: "🦅 공격형 투자자",
     emoji: "🦅",
@@ -152,7 +152,7 @@ export const communityMock: CommunityUser[] = [
   {
     id: 13,
     nickname: "건우",
-    level: 22,
+    level: 11,
     levelTitle: "🦁 성장형 투자자",
     emoji: "🦁",
     status: "🔥 오늘도 거래 성공!",
@@ -174,7 +174,7 @@ export const communityMock: CommunityUser[] = [
   {
     id: 15,
     nickname: "이든",
-    level: 17,
+    level: 10,
     levelTitle: "🐺 집중형 투자자",
     emoji: "🐺",
     status: "📊 오늘은 하락장 분석!",

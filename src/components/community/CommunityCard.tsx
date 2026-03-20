@@ -5,6 +5,8 @@ import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { isUserOnline } from "../../utils/isUserOnline";
+import bgImage from "../../assets/images/bgImage.png";
+import legendCard from "../../assets/images/legendCardImage.png";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -83,15 +85,15 @@ const Card = styled.div<{
   $isMe?: boolean;
   $tier?: "COMMON" | "RARE" | "EPIC" | "LEGEND";
 }>`
-  background: ${({ theme }) => theme.colors.surface};
+  background-image: url(${bgImage});
+  background-size: cover;
+  background-position: top;
   border-radius: ${({ theme }) => theme.radius.sm};
   padding: 16px;
 
   display: flex;
   flex-direction: column;
   gap: 12px;
-
-  border: 1px solid ${({ theme }) => theme.colors.border};
 
   /* ⭐ 카드 입체감 */
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
@@ -120,8 +122,11 @@ const Card = styled.div<{
   ${({ $tier }) =>
     $tier === "LEGEND" &&
     css`
-      background: linear-gradient(135deg, #fff8dc, #ffe066, #ffd700);
-      border: 2px solid #ffb703;
+      background-image:
+         linear-gradient(rgba(0, 0, 0, 0.11), rgba(0, 0, 0, 0.10)),
+        url(${legendCard});,
+      background-size: cover;
+      background-position: top;
       animation: ${goldShine} 2.5s infinite;
     `}
 `;
@@ -162,7 +167,7 @@ const ActiveDot = styled.div`
   bottom: -2px;
 
   border: 2px solid white;
-
+  z-index: 5555;
   box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.surface};
 `;
 
@@ -193,8 +198,6 @@ const Status = styled.div`
 
   position: relative;
 
-  border: 1px solid ${({ theme }) => theme.colors.border};
-
   /* 말풍선 꼬리 */
   &::before {
     content: "";
@@ -205,10 +208,7 @@ const Status = styled.div`
     width: 10px;
     height: 10px;
 
-    background: ${({ theme }) => theme.colors.background};
-
-    border-left: 1px solid ${({ theme }) => theme.colors.border};
-    border-top: 1px solid ${({ theme }) => theme.colors.border};
+    background: ${({ theme }) => theme.colors.card};
 
     transform: rotate(45deg);
   }

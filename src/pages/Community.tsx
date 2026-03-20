@@ -17,7 +17,6 @@ const Community = () => {
   const { achieved } = useAchievement();
   const { character } = useCharacter();
   const { score } = useScore();
-
   const [myStatus, setMyStatus] = useState(() => {
     const saved = localStorage.getItem("myStatus");
     return saved ?? "😄 오늘도 참여했어요!";
@@ -30,7 +29,7 @@ const Community = () => {
   // 🔥 내 유저 데이터 구성
   const myUser: CommunityUser = {
     id: 0,
-    nickname: "나",
+    nickname: "가온",
     level: character.level,
     emoji: "🐣",
     score,
@@ -89,4 +88,5 @@ const Title = styled.h2`
 const Description = styled.p`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.muted};
+  margin-top: -6px;
 `;
