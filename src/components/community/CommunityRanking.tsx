@@ -186,7 +186,6 @@ const TopCard = styled.div<{ $rank: number }>`
     $rank === 0 ? "top" : $rank === 1 ? "center" : "bottom"};
 
   background-repeat: no-repeat;
-  transform: ${({ $rank }) => ($rank === 0 ? "scale(1.05)" : "scale(1)")};
 `;
 
 const Medal = styled.div`

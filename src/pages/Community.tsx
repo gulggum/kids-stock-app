@@ -116,6 +116,7 @@ const Wrapper = styled.div`
   gap: 20px;
   padding-bottom: 80px;
   overflow-x: hidden;
+  box-sizing: border-box;
 `;
 
 const Title = styled.h2`
