@@ -1,153 +1,205 @@
-// 캐릭터 아이템 관련
-//📦 보유 아이템 목록
-//🛒 아이템 구매 함수
-//🔍 이미 보유 여부 확인
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCoin } from "../WalletContext/CoinContext";
 import {
-  characterItems,
-  type CharacterItem,
-  type ItemRarity,
-} from "../../data/static/characterItems";
+  cardSkins,
+  type CardRarity,
+  type CardSkin,
+} from "../../data/static/cardSkins";
 
-// localStorage에 저장할 key 이름
-const OWNED_KEY = "owned_items";
-const EQUIPPED_KEY = "equipped_items";
+// -----------------------------
+// 📌 localStorage 키
+// -----------------------------
+const OWNED_KEY = "owned_skins"; // 보유 스킨 목록
+const SELECTED_KEY = "selected_skin"; // 현재 선택된 스킨
 
-// 장착 가능한 슬롯 타입
-export type EquipSlot = "hair" | "hat" | "top" | "accessory";
-
-//아이템 장작 슬롯 상태
-export type EquipSlots = Record<EquipSlot, string | null>;
-
-const DEFAULT_EQUIP: EquipSlots = {
-  hair: null,
-  hat: null,
-  top: null,
-  accessory: null,
-};
+// -----------------------------
+// 📌 구매 결과 타입
+// -----------------------------
+type BuyResult =
+  | "SUCCESS" // 구매 성공
+  | "ALREADY_OWNED" // 이미 보유
+  | "NOT_ENOUGH_COIN"; // 코인 부족
 
 //미스터리박스 반환타입
-type MysteryBoxResult = CharacterItem & {
+type MysteryBoxResult = CardSkin & {
   duplicate?: boolean;
 };
 
-//아이템 구매결과 별 토스트메세지
-type BuyItemResult = "SUCCESS" | "ALREADY_OWNED" | "NOT_ENOUGH_COIN";
-
+// -----------------------------
+// 📌 Context 타입 정의
+// -----------------------------
 type ItemContextType = {
-  ownedItems: string[]; //보유한 아이템 id 목록
-  equippedItems: EquipSlots;
+  ownedSkins: string[]; // 내가 가진 카드 스킨 목록
+  selectedSkin: string | null; // 현재 적용된 카드 스킨
   openMysteryBox: () => MysteryBoxResult | null;
-  buyItem: (id: string, price: number) => BuyItemResult; //아이템 구매
-  isOwned: (id: string) => boolean; //보유 여부 확인
-  toggleEquip: (slot: keyof EquipSlots, id: string) => void; //장착토글
+
+  buySkin: (id: string, price: number) => BuyResult; // 구매 함수
+  selectSkin: (id: string) => void; // 스킨 적용 함수
+  isOwned: (id: string) => boolean; // 보유 여부 확인
 };
 
-// {} as 타입 단언: 반드시 Provider 안에서만 사용한다는 약속
+// -----------------------------
+// 📌 Context 생성
+// -----------------------------
 const ItemContext = createContext<ItemContextType>({} as ItemContextType);
 
+// -----------------------------
+// 📌 Provider (전역 상태 관리)
+// -----------------------------
 export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
-  const { spendCoin, addCoin } = useCoin();
-  const [ownedItems, setOwnedItems] = useState<string[]>(() => {
-    //처음 렌더될 때 한번만 실행, 렌더링마다 localStorage 읽지않음
-    const saved = localStorage.getItem(OWNED_KEY);
-    // 값이 없거나, 잘못된 값이면 기본값 반환
-    if (!saved || saved === "undefined") {
-      return [];
-    }
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [equippedItems, setEquippedItems] = useState<EquipSlots>(() => {
-    const saved = localStorage.getItem(EQUIPPED_KEY);
+  const { spendCoin } = useCoin(); // 코인 차감 함수
 
-    if (!saved || saved === "undefined") {
-      return DEFAULT_EQUIP;
-    }
+  // -----------------------------
+  // 🎒 보유 스킨 상태
+  // -----------------------------
+  const [ownedSkins, setOwnedSkins] = useState<string[]>(() => {
+    const saved = localStorage.getItem(OWNED_KEY);
+
+    // 처음 실행이면 기본 카드 지급
+    if (!saved) return ["basic"];
+
     return JSON.parse(saved);
   });
 
-  //아이템 구매함수 / 코인차감 / 성공시 아이템 보유 목록에 추가
+  // -----------------------------
+  // 🎨 현재 선택된 스킨
+  // -----------------------------
+  const [selectedSkin, setSelectedSkin] = useState<string | null>(() => {
+    const saved = localStorage.getItem(SELECTED_KEY);
 
-  const buyItem = (id: string, price: number): BuyItemResult => {
-    if (ownedItems.includes(id)) return "ALREADY_OWNED"; //이미보유
+    // 기본값: basic 카드
+    return saved || "basic";
+  });
 
-    const success = spendCoin(price); //코인부족
-    if (!success) return "NOT_ENOUGH_COIN";
+  // -----------------------------
+  // 💰 스킨 구매 함수
+  // -----------------------------
+  const buySkin = (id: string, price: number): BuyResult => {
+    // 이미 가지고 있는 경우
+    if (ownedSkins.includes(id)) {
+      return "ALREADY_OWNED";
+    }
 
-    setOwnedItems((prev) => [...prev, id]); //구매성공
+    // 코인 차감 시도
+    const success = spendCoin(price);
+
+    // 코인 부족
+    if (!success) {
+      return "NOT_ENOUGH_COIN";
+    }
+
+    // 구매 성공 → 보유 목록 추가
+    setOwnedSkins((prev) => [...prev, id]);
+
     return "SUCCESS";
   };
-  //아이템 보유 여부 확인
-  const isOwned = (id: string) => {
-    return ownedItems.includes(id);
+
+  // -----------------------------
+  // 🎨 스킨 적용 함수
+  // -----------------------------
+  const selectSkin = (id: string) => {
+    // 보유하지 않은 스킨이면 적용 불가
+    if (!ownedSkins.includes(id)) return;
+
+    setSelectedSkin(id);
   };
 
-  //아이템 장작 및 해제
-  const toggleEquip = (slot: keyof EquipSlots, id: string) => {
-    setEquippedItems((prev) => {
-      //이미 해당 슬롯에 장착되어 있으면 ->해제
-      if (prev[slot] === id) {
-        return { ...prev, [slot]: null };
-      }
-      //아니면 -> 해당 슬롯에 장착
-      return { ...prev, [slot]: id };
-    });
+  // -----------------------------
+  // 🔍 보유 여부 확인
+  // -----------------------------
+  const isOwned = (id: string) => {
+    return ownedSkins.includes(id);
   };
-  // ownedItems가 바뀌면 localStorage에 저장
+
+  // -----------------------------
+  // 💾 localStorage 저장 (보유 스킨)
+  // -----------------------------
   useEffect(() => {
-    localStorage.setItem(OWNED_KEY, JSON.stringify(ownedItems));
-  }, [ownedItems]);
-  // equippedItems가 바뀌면 localStorage에 저장
+    localStorage.setItem(OWNED_KEY, JSON.stringify(ownedSkins));
+  }, [ownedSkins]);
+
+  // -----------------------------
+  // 💾 localStorage 저장 (선택된 스킨)
+  // -----------------------------
   useEffect(() => {
-    localStorage.setItem(EQUIPPED_KEY, JSON.stringify(equippedItems));
-  }, [equippedItems]);
+    if (selectedSkin) {
+      localStorage.setItem(SELECTED_KEY, selectedSkin);
+    }
+  }, [selectedSkin]);
 
   //미스터리박스 함수
+  // -----------------------------
+  // 📌 반환 타입
+  // -----------------------------
+  type MysteryBoxResult = CardSkin & {
+    duplicate?: boolean; // 중복 여부
+  };
+
+  // -----------------------------
+  // 🎁 미스터리 박스 열기
+  // -----------------------------
   const openMysteryBox = (): MysteryBoxResult | null => {
+    // -----------------------------
+    // 🎲 확률로 등급 결정
+    // -----------------------------
     const roll = Math.random() * 100;
 
-    let rarity: ItemRarity;
+    let rarity: CardRarity;
 
-    if (roll < 5) rarity = "LEGEND";
-    else if (roll < 30) rarity = "RARE";
-    else rarity = "COMMON";
+    if (roll < 5)
+      rarity = "LEGEND"; // 5%
+    else if (roll < 30)
+      rarity = "SPECIAL"; // 25%
+    else rarity = "COMMON"; // 70%
 
-    // 기본머리는 제외 (price 0)
-    const candidates = characterItems.filter(
+    // -----------------------------
+    // 🎯 해당 등급 카드만 필터
+    // (기본카드 제외 price 0)
+    // -----------------------------
+    const candidates = cardSkins.filter(
       (item) => item.rarity === rarity && item.price > 0,
     );
 
-    const item = candidates[Math.floor(Math.random() * candidates.length)];
+    // 👉 안전 처리 (없을 경우)
+    if (candidates.length === 0) return null;
 
-    // ⭐ 이미 가진 아이템인지 체크
-    const alreadyOwned = ownedItems.includes(item.id);
+    // -----------------------------
+    // 🎲 랜덤 카드 선택
+    // -----------------------------
+    const random = candidates[Math.floor(Math.random() * candidates.length)];
 
-    if (alreadyOwned) {
-      // 중복 → 코인 지급
-      addCoin(50);
+    // -----------------------------
+    // 🎒 이미 가지고 있는지 체크
+    // -----------------------------
+    const alreadyOwned = ownedSkins.includes(random.id);
 
-      return {
-        ...item,
-        duplicate: true,
-      };
+    // -----------------------------
+    // 🆕 새로운 카드면 추가
+    // -----------------------------
+    if (!alreadyOwned) {
+      setOwnedSkins((prev) => [...prev, random.id]);
     }
 
-    // 신규 아이템이면 추가
-    setOwnedItems((prev) => [...prev, item.id]);
-
-    return item;
+    // -----------------------------
+    // 🎁 결과 반환
+    // -----------------------------
+    return {
+      ...random,
+      duplicate: alreadyOwned,
+    };
   };
 
+  // -----------------------------
+  // 📦 Provider 반환
+  // -----------------------------
   return (
     <ItemContext.Provider
       value={{
-        ownedItems,
-        equippedItems,
-        buyItem,
+        ownedSkins,
+        selectedSkin,
+        buySkin,
+        selectSkin,
         isOwned,
-        toggleEquip,
         openMysteryBox,
       }}
     >
@@ -156,6 +208,9 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// -----------------------------
+// 📌 커스텀 훅
+// -----------------------------
 export const useItem = () => {
   return useContext(ItemContext);
 };

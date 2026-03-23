@@ -4,7 +4,7 @@ import { useItem } from "../../context/UserContext/ItemContext";
 import { useToast } from "../../context/UIContext/ToastContext";
 import { playCoinSound } from "../../utils/sounds";
 import { useModal } from "../../context/UIContext/ModalContext";
-import { MYSTERY_BOX_PRICE } from "../../data/static/characterItems";
+import { MYSTERY_BOX_PRICE } from "../../data/static/cardSkins";
 
 export const MysteryBox = () => {
   const { openMysteryBox } = useItem();
@@ -90,12 +90,18 @@ export const MysteryBox = () => {
           )}
 
           <RewardCard>
-            <RewardEmoji>{reward.emoji}</RewardEmoji>
-            <RewardName>{reward.name}</RewardName>
+            {/* ❌ 제거 */}
+            {/* <RewardEmoji>{reward.emoji}</RewardEmoji> */}
+
+            <PreviewCard>
+              <CardImage $skin={reward} />
+              <PreviewName>{reward.name}</PreviewName>
+            </PreviewCard>
+
             <RewardText>획득했습니다!</RewardText>
 
             <ConfirmButton onClick={() => setReward(null)}>확인</ConfirmButton>
-            {/* ⭐ 카드 빛 회오리도 LEGEND만 */}
+
             {reward.rarity === "LEGEND" && <BorderLight />}
           </RewardCard>
         </Overlay>
@@ -289,4 +295,42 @@ const BorderLight = styled.div`
 
   opacity: 0.6;
   z-index: 0;
+`;
+
+const PreviewCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 8px;
+`;
+
+const PreviewName = styled.div`
+  font-size: 13px;
+  font-weight: 700;
+`;
+
+const CardImage = styled.div<{ $skin: any }>`
+  width: 120px;
+  height: 80px;
+  border-radius: 12px;
+
+  background: ${({ $skin }) =>
+    $skin.gradient
+      ? $skin.gradient
+      : `url(${$skin.image}) center/cover no-repeat`};
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  position: relative;
+  overflow: hidden;
+
+  /* ✨ 살짝 어둡게 (텍스트 대비용) */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.1);
+  }
 `;

@@ -30,12 +30,12 @@ const ModalPopup = ({
     <Overlay>
       <Modal>
         {title && <Title>{title}</Title>}
-        {message && <Message>{message}</Message>}
-
         {/* 선택옵션 */}
         {customContent && (
           <CustomContentWrapper>{customContent}</CustomContentWrapper>
         )}
+        {message && <Message>{message}</Message>}
+
         {!hideActions && (
           <ButtonGroup>
             {type === "CONFIRM" && onCancel && (
