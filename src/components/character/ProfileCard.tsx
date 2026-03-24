@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import type { ProfileAvatarType } from "../../data/static/profileAvatars";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
+import { getTextColorFromSkin } from "../../utils/getTextColor";
 
 /**
  * 👤 프로필 카드
@@ -24,8 +25,11 @@ const ProfileCard = ({
   level,
   currentSkin,
 }: Props) => {
+  //배경밝기 계산해서 색 바꾸기
+  const textColor = getTextColorFromSkin(currentSkin);
+
   return (
-    <Wrapper $skin={currentSkin}>
+    <Wrapper $skin={currentSkin} $text={textColor}>
       <ImageWrapper onClick={onClick}>
         {profileImage ? (
           <img src={profileImage} />
@@ -47,13 +51,13 @@ export default ProfileCard;
 
 /* ================= 스타일 ================= */
 
-const Wrapper = styled.div<{ $skin: any }>`
+const Wrapper = styled.div<{ $skin: any; $text: string }>`
   border-radius: ${({ theme }) => theme.radius.md};
   padding: 20px;
   background: ${({ $skin }) =>
     $skin?.gradient ? $skin.gradient : `url(${$skin?.image}) center/cover`};
 
-  color: white;
+  color: ${({ $text }) => $text};
   display: flex;
   align-items: center;
   gap: 16px;

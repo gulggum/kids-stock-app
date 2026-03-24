@@ -314,7 +314,7 @@ const CardImage = styled.div<{ $skin: any }>`
 
   position: relative;
   overflow: hidden;
-
+  z-index: 555;
   /* ✨ 살짝 어둡게 (텍스트 대비용) */
   &::after {
     content: "";

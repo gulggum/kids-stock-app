@@ -5,10 +5,10 @@ import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { isUserOnline } from "../../utils/isUserOnline";
-import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import { cardSkins } from "../../data/static/cardSkins";
 import { useItem } from "../../context/UserContext/ItemContext";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
+import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -49,8 +49,7 @@ const CommunityCard = ({
           ) : user.profileAvatar ? (
             <Sprite $x={user.profileAvatar.x} $y={user.profileAvatar.y} />
           ) : (
-            // 📌 아래 ""에 기본유저사진 넣어주기
-            ""
+            <Emoji>{user.emoji}</Emoji>
           )}
           {online && <ActiveDot />}
         </AvatarWrapper>
@@ -133,7 +132,7 @@ const Card = styled.div<{
   background-size: cover;
   background-position: top;
   border-radius: ${({ theme }) => theme.radius.sm};
-  padding: 16px;
+  padding: 10px;
 
   display: flex;
   flex-direction: column;
@@ -176,8 +175,25 @@ const Card = styled.div<{
 `;
 const Top = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
+`;
+
+const Emoji = styled.div`
+  font-size: 28px;
+
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: ${({ theme }) => theme.colors.background};
+
+  position: relative;
 `;
 
 const ActiveDot = styled.div`
@@ -317,8 +333,8 @@ const MoreBadgeButton = styled.button`
 `;
 const AvatarWrapper = styled.div`
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   border-radius: 12px;
   overflow: hidden;
 
@@ -338,5 +354,5 @@ const Sprite = styled.div<{ $x: number; $y: number }>`
   background-image: url(${avatarSprite});
   background-size: 500% 300%;
   background-position: ${({ $x, $y }) =>
-    `${($x / 4) * 100}% ${($y / 2) * 100}%`};
+    `${($x / 3.8999) * 100}% ${($y / 2) * 100}%`};
 `;

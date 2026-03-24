@@ -14,6 +14,7 @@ import { cardSkins } from "../data/static/cardSkins";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
 import styled from "styled-components";
+import { useNavigate } from "react-router";
 
 const CharacterPage = () => {
   const {
@@ -30,6 +31,7 @@ const CharacterPage = () => {
   const { character } = useCharacter();
   const { achieved } = useAchievement(); //업적
   const { fileInputRef, cameraInputRef } = useCharacterProfile(); //프로필사진첨부
+  const navigate = useNavigate();
 
   const filteredSkins = ownedSkins
     .map((id) => cardSkins.find((s) => s.id === id))
@@ -151,15 +153,26 @@ const CharacterPage = () => {
       </ProfileSection>
 
       {/* 내카드스킨 보유 목록 */}
-      <SkinSection
-        skins={filteredSkins}
-        selectedSkin={selectedSkin ?? ""}
-        characterLevel={character.level}
-        onSelect={(id) => {
-          selectSkin(id);
-          createToast("카드 변경 완료 🎉");
-        }}
-      />
+
+      {filteredSkins.length === 0 ? (
+        <Empty>
+          아직 보유한 카드 스킨이 없어요 🥲
+          <SmallHint>상점에서 새로운 스킨을 구매해보세요!</SmallHint>
+          <GoMarketButton onClick={() => navigate("/shop")}>
+            🎨 스킨 보러가기
+          </GoMarketButton>
+        </Empty>
+      ) : (
+        <SkinSection
+          skins={filteredSkins}
+          selectedSkin={selectedSkin ?? ""}
+          characterLevel={character.level}
+          onSelect={(id) => {
+            selectSkin(id);
+            createToast("카드 변경 완료 🎉");
+          }}
+        />
+      )}
     </PageWrapper>
   );
 };
@@ -256,4 +269,49 @@ const CloseButton = styled.button`
   font-size: 18px;
   z-index: 10000;
   cursor: pointer;
+`;
+
+//마켓가기 스타일
+
+const Empty = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 24px;
+  text-align: center;
+  font-size: 15px;
+`;
+
+const SmallHint = styled.div`
+  margin-top: 8px;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+const GoMarketButton = styled.button`
+  margin-top: 15px;
+
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: none;
+
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: ${({ theme }) => theme.shadows.sm};
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
 `;
