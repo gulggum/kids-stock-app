@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 
-export type ModalType = "CONFIRM" | "INFO";
+export type ModalType = "CONFIRM" | "INFO" | "SELECT";
 
 type ModalState = {
   type: ModalType;

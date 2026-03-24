@@ -74,7 +74,9 @@ const Main = styled.main`
   padding: 16px;
   padding-bottom: 90px;
   overflow-x: hidden;
+  overflow-y: hidden;
   width: 100%;
+  height: 100vh;
 `;
 
 const Footer = styled.footer`
