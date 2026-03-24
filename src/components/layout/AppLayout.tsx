@@ -59,8 +59,6 @@ const Layout = styled.div<{ $variant?: "home" | "default" }>`
   min-height: 100vh;
   min-height: 100dvh;
 
-  max-width: 600px; // 아이패드 느낌
-  margin: 0 auto; // 가운데 정렬
   width: 100%;
 
   background-image: ${({ $variant }) =>
