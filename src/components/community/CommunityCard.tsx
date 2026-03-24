@@ -5,8 +5,9 @@ import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { isUserOnline } from "../../utils/isUserOnline";
-import bgImage from "../../assets/images/bgImage.png";
 import legendCard from "../../assets/images/legendCardImage.png";
+import { cardSkins } from "../../data/static/cardSkins";
+import { useItem } from "../../context/UserContext/ItemContext";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -23,6 +24,9 @@ const CommunityCard = ({
 }) => {
   const { openModal } = useModal();
   const { title: levelTitle, tier } = getLevelTier(user.level);
+  const { selectedSkin } = useItem();
+
+  const skin = cardSkins.find((skin) => skin.id === selectedSkin);
 
   const openBadgeModal = () => {
     openModal({
@@ -36,7 +40,7 @@ const CommunityCard = ({
   const online = isUserOnline(user.lastActive);
 
   return (
-    <Card $tier={tier}>
+    <Card $tier={tier} $skin={skin}>
       <Top>
         <Emoji>
           {user.emoji}
@@ -104,10 +108,27 @@ const goldShine = keyframes`
 `;
 
 const Card = styled.div<{
+  $skin?: any;
   $isMe?: boolean;
   $tier?: "COMMON" | "RARE" | "EPIC" | "LEGEND";
 }>`
-  background-image: url(${bgImage});
+  background: ${({ $skin }) =>
+    $skin?.gradient
+      ? $skin.gradient
+      : $skin?.image
+        ? `url(${$skin.image}) center/cover`
+        : "#fff"};
+
+  position: relative;
+  overflow: hidden;
+
+  /* 가독성 */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.15);
+  }
   background-size: cover;
   background-position: top;
   border-radius: ${({ theme }) => theme.radius.sm};

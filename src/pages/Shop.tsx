@@ -12,6 +12,8 @@ import { useReward } from "../context/RewardContext";
 // 👉 새로 만든 카드 데이터
 import { cardSkins, type CardSkin } from "../data/static/cardSkins";
 import { MysteryBox } from "../components/shop/mysteryBox";
+import { isCardUnlocked } from "../utils/getLevelTier";
+import { useCharacter } from "../context/UserContext/CharacterContext";
 
 // -----------------------------
 // 📌 탭 타입 (필터용)
@@ -27,6 +29,7 @@ const Shop = () => {
   const { buySkin, isOwned, selectedSkin } = useItem(); // 스킨 관련
   const { openModal } = useModal(); // 확인 모달
   const { giveReward } = useReward();
+  const { character } = useCharacter();
 
   // -----------------------------
   // 📌 UI 상태
@@ -133,7 +136,9 @@ const Shop = () => {
         {filteredSkins.map((item) => {
           const owned = isOwned(item.id); // 보유 여부
           const selected = selectedSkin === item.id; // 현재 적용 여부
-
+          //캐릭터레벨별 상점잠금
+          const unlocked = isCardUnlocked(character.level, item.unlockLevel);
+          const locked = !unlocked;
           return (
             <Card
               key={item.id}
@@ -141,6 +146,11 @@ const Shop = () => {
               $rarity={item.rarity}
               $sparkle={sparkleId === item.id}
               onClick={() => {
+                if (locked) {
+                  createToast(`Lv.${item.unlockLevel} 이상 필요해요 🔒`);
+                  return;
+                }
+
                 // 👉 이미 가지고 있으면 안내
                 if (owned) {
                   createToast("이미 보유한 카드예요 😊");
@@ -166,6 +176,7 @@ const Shop = () => {
                 });
               }}
             >
+              {locked && <LockText>🔒 Lv.{item.unlockLevel}</LockText>}
               {/* 카드 이미지 */}
               <CardImage $skin={item} />
 
@@ -393,4 +404,11 @@ const PreviewImage = styled.div<{ $skin: any }>`
     inset: 0;
     background: rgba(0, 0, 0, 0.1);
   }
+`;
+
+const LockText = styled.div`
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.muted};
 `;

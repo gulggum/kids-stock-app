@@ -28,3 +28,8 @@ export const getLevelTier = (level: number) => {
 
   return { title, tier };
 };
+
+//경험치별 locked 함수
+export const isCardUnlocked = (userLevel: number, unlockLevel?: number) => {
+  return userLevel >= (unlockLevel ?? 0);
+};

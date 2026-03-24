@@ -1,30 +1,36 @@
 import styled, { keyframes } from "styled-components";
 import { useCoin } from "../context/WalletContext/CoinContext";
-import { characterItems } from "../data/static/characterItems";
 import { useToast } from "../context/UIContext/ToastContext";
-import { useItem, type EquipSlot } from "../context/UserContext/ItemContext";
+import { useItem } from "../context/UserContext/ItemContext";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
 import { useCharacter } from "../context/UserContext/CharacterContext";
 import { LEVEL_RULES } from "../data/rules/levelTitles";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
-import { getActiveSetBonus } from "../utils/setItemBonus";
+import { cardSkins } from "../data/static/cardSkins";
 
 const CharacterPage = () => {
   const { createToast } = useToast();
-  const { coins } = useCoin(); //전역 코인 상태 연결
-  const { isOwned, equippedItems, toggleEquip } = useItem();
+  const { coins } = useCoin();
   const { character, currentTitle } = useCharacter();
   const { achieved } = useAchievement();
-  const navigate = useNavigate();
-  const [animate, setAnimate] = useState(false); //착장애니메이션
-  const [activeSlot, setActiveSlot] = useState<EquipSlot>("hat"); // 현재 선택된 슬롯 상태
-  const [levelUp, setLevelUp] = useState(false);
+  const { ownedSkins, selectedSkin, selectSkin } = useItem();
 
+  const [activeTab, setActiveTab] = useState<
+    "ALL" | "COMMON" | "SPECIAL" | "LEGEND"
+  >("ALL");
+
+  const [levelUp, setLevelUp] = useState(false);
   const prevLevel = useRef(character.level); //이전 레벨 기억용(리렌더링 방지)
 
-  //--------LEVEL RULE 관련 함수---------
+  // -----------------------------
+  // 🎯 현재 선택 카드
+  // -----------------------------
+  const currentSkin = cardSkins.find((s) => s.id === selectedSkin);
+
+  // -----------------------------
+  // 📊 레벨 계산
+  // -----------------------------
 
   // 현재 레벨 룰
   const currentLevelRule = LEVEL_RULES.find(
@@ -53,20 +59,9 @@ const CharacterPage = () => {
     ? (currentLevelExp / neededExp) * 100
     : 100;
 
-  //--------LEVEL RULE 관련 함수---------
-
-  useEffect(() => {
-    // 장착 상태가 바뀔 때마다 애니메이션 ON
-    setAnimate(true);
-
-    // 0.4초 뒤 애니메이션 OFF
-    const timer = setTimeout(() => {
-      setAnimate(false);
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [equippedItems]);
-
+  // -----------------------------
+  // 🔼 레벨업 애니메이션
+  // -----------------------------
   useEffect(() => {
     if (character.level > prevLevel.current) {
       setLevelUp(true);
@@ -77,234 +72,168 @@ const CharacterPage = () => {
     }
   }, [character.level]);
 
-  // 선택된 슬롯에 해당하는 아이템만 보여줌
-  const filteredItems = characterItems.filter(
-    (item) => item.slot === activeSlot && isOwned(item.id),
-  );
-
-  // -------------------------------------
-  // 🎒 장착 아이템 기반 세트 효과 계산
-  // -------------------------------------
-  const activeSets = getActiveSetBonus(equippedItems);
+  //스킨필터함수
+  const filteredSkins = ownedSkins
+    .map((id) => cardSkins.find((s) => s.id === id))
+    .filter((skin) => {
+      if (!skin) return false;
+      if (activeTab === "ALL") return true;
+      return skin.rarity === activeTab;
+    });
 
   return (
     <Wrapper>
-      {/* 👦 캐릭터 영역 */}
+      {/* =========================
+          👦 캐릭터 영역
+      ========================= */}
       <CharacterCard>
-        {/* 기본 캐릭터 */}
+        <Name $level={character.level}>{currentTitle}</Name>
+
         <CharacterArea>
-          <Avatar
-            $animate={animate}
-            $levelUp={levelUp}
-            $setActive={Object.keys(activeSets).length > 0} //세트 하나라도 있으면 glow효과
-          >
-            {" "}
-            <BaseCharacter>🧒</BaseCharacter>
-            {/* 장착된 아이템들 */}
-            {equippedItems.hair && (
-              <Hair>
-                {" "}
-                {characterItems.find((i) => i.id === equippedItems.hair)?.emoji}
-              </Hair>
-            )}
-            {equippedItems.hat && (
-              <Hat>
-                {" "}
-                {characterItems.find((i) => i.id === equippedItems.hat)?.emoji}
-              </Hat>
-            )}
-            {equippedItems.top && (
-              <Top>
-                {" "}
-                {characterItems.find((i) => i.id === equippedItems.top)?.emoji}
-              </Top>
-            )}
-            {equippedItems.accessory && (
-              <Accessory>
-                {" "}
-                {
-                  characterItems.find((i) => i.id === equippedItems.accessory)
-                    ?.emoji
-                }
-              </Accessory>
-            )}
-          </Avatar>
+          <Avatar $levelUp={levelUp}>🧒</Avatar>
         </CharacterArea>
 
-        <Name>{currentTitle}</Name>
+        {/* 📊 레벨 */}
         <Level>
-          {" "}
           <LevelText>⭐ Lv.{character.level}</LevelText>
+
           <ExpBar>
             <ExpFill $value={progressPercent} />
           </ExpBar>
+
           {nextLevelRule ? (
             <ExpText>
               {currentLevelExp} / {neededExp} EXP
-              {"  "} (다음 레벨까지 {nextRequiredExp - character.exp} EXP)
+              {"  "}
+              (다음 레벨까지 {nextRequiredExp - character.exp} EXP)
             </ExpText>
           ) : (
             <ExpText>최고 레벨 🎉</ExpText>
           )}
         </Level>
-        {Object.entries(activeSets).map(([setId, set]) => (
-          <SetBonus key={setId}>✨ {set.name} 세트 효과 발동!!</SetBonus>
-        ))}
+
+        {/* =========================
+            🪙 상태 카드
+        ========================= */}
+        <StatusCard>
+          <StatusHeader>
+            <span>🪙 보유 코인</span>
+            <strong>{coins}</strong>
+          </StatusHeader>
+
+          <Divider />
+
+          <BadgeSection>
+            {achieved.length === 0 ? (
+              <EmptyBadge>아직 업적이 없어요 🐣</EmptyBadge>
+            ) : (
+              achieved.map((id: string) => {
+                const a = ACHIEVEMENTS.find((x) => x.id === id);
+                if (!a) return null;
+
+                return (
+                  <Badge key={id}>
+                    <span>{a.badge.emoji}</span>
+                    <small>{a.badge.title}</small>
+                  </Badge>
+                );
+              })
+            )}
+          </BadgeSection>
+        </StatusCard>
       </CharacterCard>
 
-      {/* 🪙 코인 상태 */}
-      <StatusCard>
-        <StatusRow>
-          <span>🪙 보유 코인</span>
-          <strong>{coins}</strong>
-        </StatusRow>
-        <BadgeSection>
-          {achieved.map((id: string) => {
-            const achievement = ACHIEVEMENTS.find((a) => a.id === id);
-            if (!achievement) return null;
+      {/* =========================
+          💳 내 투자 카드
+      ========================= */}
+      <PortfolioCard>
+        <CardPreviewBig $skin={currentSkin} />
+
+        <CardContent>
+          <CardTitle>내 투자 카드 💳</CardTitle>
+
+          <CardInfo>
+            <div>총 자산</div>
+            <strong>{"13,501"}원</strong>
+          </CardInfo>
+
+          <CardSub>오늘도 투자 공부 중 📈</CardSub>
+        </CardContent>
+      </PortfolioCard>
+
+      {/* =========================
+          🎴 카드 선택 영역
+      ========================= */}
+      <ItemSection>
+        <SectionTitle>내 카드</SectionTitle>
+
+        {/* 탭 */}
+        <TabRow>
+          {["ALL", "COMMON", "SPECIAL", "LEGEND"].map((tab) => (
+            <TabButton
+              key={tab}
+              $active={activeTab === tab}
+              onClick={() => setActiveTab(tab as any)}
+            >
+              {tab === "ALL"
+                ? "전체"
+                : tab === "COMMON"
+                  ? "기본"
+                  : tab === "SPECIAL"
+                    ? "스페셜"
+                    : "레전드"}
+            </TabButton>
+          ))}
+        </TabRow>
+
+        {/* 카드 리스트 */}
+        <HorizontalList>
+          {filteredSkins.map((skin) => {
+            if (!skin) return null;
+
+            const isSelected = selectedSkin === skin.id;
+            const usable = character.level >= (skin.unlockLevel ?? 0);
 
             return (
-              <Badge key={id}>
-                <span>{achievement.badge.emoji}</span>
-                <small>{achievement.badge.title}</small>
-              </Badge>
+              <Item
+                key={skin.id}
+                $selected={isSelected}
+                $locked={!usable}
+                onClick={() => {
+                  if (!usable) {
+                    createToast(`Lv.${skin.unlockLevel} 이상부터 착용 가능 🔒`);
+                    return;
+                  }
+
+                  selectSkin(skin.id);
+                  createToast("카드 변경 완료 🎉");
+                }}
+              >
+                <CardPreview $skin={skin} />
+
+                <ItemName>{skin.name}</ItemName>
+
+                <ItemStatus>
+                  {!usable
+                    ? `🔒 Lv.${skin.unlockLevel}`
+                    : isSelected
+                      ? "⭐ 사용중"
+                      : "적용하기"}
+                </ItemStatus>
+              </Item>
             );
           })}
-        </BadgeSection>
-      </StatusCard>
-
-      {/* 🧢 꾸미기 아이템 */}
-      <ItemSection>
-        <SectionTitle>꾸미기 아이템</SectionTitle>
-
-        <ItemGrid>
-          {filteredItems.length === 0 ? (
-            <EmptyState>
-              {/* 슬롯별 안내 문구 */}
-              <Message>
-                {activeSlot === "hair" && "💇 아직 가진 헤어가 없어요"}
-                {activeSlot === "hat" && "🧢 아직 가진 모자가 없어요"}
-                {activeSlot === "top" && "👕 아직 가진 옷이 없어요"}
-                {activeSlot === "accessory" && "🎒 아직 가진 악세서리가 없어요"}
-              </Message>
-              {/* 상점 바로가기 버튼 */}
-              <GoShopButton onClick={() => navigate("/shop")}>
-                🛍 아이템 보러가기
-              </GoShopButton>
-            </EmptyState>
-          ) : (
-            filteredItems.map((item) => {
-              const owned = isOwned(item.id);
-              const isEquipped = equippedItems[item.slot] === item.id;
-              return (
-                <Item
-                  key={item.id}
-                  $locked={!owned}
-                  $equipped={isEquipped} //착장 상태 전달
-                  onClick={() => {
-                    if (!owned) {
-                      createToast("먼저 아이템을 구매해주세요!");
-                      return;
-                    }
-                    //이미 가지고 있으면 ->장착 /해제 토글
-                    toggleEquip(item.slot, item.id);
-                  }}
-                >
-                  <ItemEmoji>{item.emoji}</ItemEmoji>
-                  <ItemName>{item.name}</ItemName>
-                  {!owned && <ItemPrice>{item.price}코인</ItemPrice>}
-                  <Lock>
-                    {" "}
-                    {!owned && "🔒"}
-                    {owned && !isEquipped && "🎒"} {/* 보유만 */}
-                    {isEquipped && "⭐"} {/* 착용 중 */}
-                  </Lock>
-                  {/* 🏷 상태 텍스트 (아이 UX용) */}
-                  <ItemStatus>
-                    {!owned && "구매하기"}
-                    {owned && !isEquipped && "착용하기"}
-                    {isEquipped && "착용중"}
-                  </ItemStatus>
-                </Item>
-              );
-            })
-          )}
-        </ItemGrid>
+        </HorizontalList>
       </ItemSection>
-      {/* 슬롯 선택 버튼 */}
-      <SlotTabs>
-        <SlotButton
-          $active={activeSlot === "hair"}
-          onClick={() => setActiveSlot("hair")}
-        >
-          💇 헤어
-        </SlotButton>
-        <SlotButton
-          $active={activeSlot === "hat"}
-          onClick={() => setActiveSlot("hat")}
-        >
-          🧢 모자
-        </SlotButton>
-
-        <SlotButton
-          $active={activeSlot === "top"}
-          onClick={() => setActiveSlot("top")}
-        >
-          👕 옷
-        </SlotButton>
-
-        <SlotButton
-          $active={activeSlot === "accessory"}
-          onClick={() => setActiveSlot("accessory")}
-        >
-          👟 악세서리
-        </SlotButton>
-      </SlotTabs>
     </Wrapper>
   );
 };
-// 캐릭터가 통통 튀는 애니메이션
-const pop = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.08);
-  }
-  100% {
-    transform: scale(1);
-  }
-`;
-//세트효과 애니메이션(배찌)
-const sparkle = keyframes`
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(255,255,255,0);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 14px rgba(255,255,255,0.8);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(255,255,255,0);
-  }
-`;
-//세트효과 애니메이션(캐릭터)
-const glow = keyframes`
-  0% {
-    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9),
-                0 0 40px rgba(255, 215, 0, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
-  }
-`;
+export default CharacterPage;
 
-//레벨업 애니메이션
+/////////////////////////////////////////////////////////
+// 🎨 스타일
+/////////////////////////////////////////////////////////
+
 const levelUpAnim = keyframes`
   0% { transform: scale(1); }
   40% { transform: scale(1.15); }
@@ -318,7 +247,6 @@ const Wrapper = styled.div`
   gap: 20px;
 `;
 
-/* 👦 캐릭터 카드 */
 const CharacterCard = styled.div`
   background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -326,322 +254,232 @@ const CharacterCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
 `;
 
 const CharacterArea = styled.div`
-  position: relative;
   margin: 20px 0;
   padding: 24px 0;
-  border-radius: ${({ theme }) => theme.radius.lg};
+  width: 100%;
+  display: flex;
+  justify-content: center;
 
-  /* 파스텔 배경 */
   background: linear-gradient(
     180deg,
     ${({ theme }) => theme.colors.accentBlue},
     ${({ theme }) => theme.colors.background}
   );
-
-  display: flex;
-  justify-content: center;
+  border-radius: ${({ theme }) => theme.radius.lg};
 `;
 
-const Avatar = styled.div<{
-  $animate: boolean;
-  $levelUp?: boolean;
-  $setActive?: boolean;
-}>`
-  font-size: 64px;
-  position: relative;
+const Avatar = styled.div<{ $levelUp?: boolean }>`
   font-size: 72px;
-  transition: transform 0.2s;
-  /* 장착 시에만 애니메이션 실행 */
-  animation:
-    ${({ $animate }) => ($animate ? pop : "none")} 0.4s ease,
-    ${({ $levelUp }) => ($levelUp ? levelUpAnim : "none")} 0.6s ease,
-    ${({ $setActive }) => ($setActive ? glow : "none")} 1.8s infinite;
+  animation: ${({ $levelUp }) => ($levelUp ? levelUpAnim : "none")} 0.6s ease;
 `;
-const BaseCharacter = styled.div``;
+
+const Name = styled.div<{ $level: number }>`
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+
+  background: ${({ $level, theme }) =>
+    $level >= 10
+      ? "linear-gradient(135deg, gold, orange)"
+      : $level >= 5
+        ? `linear-gradient(135deg, ${theme.colors.accentPurple}, ${theme.colors.primary})`
+        : theme.colors.primary};
+`;
 
 const Level = styled.div`
-  font-size: 13px;
   width: 100%;
-  margin-bottom: 16px;
   padding: 14px;
-
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.card};
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
 `;
+
 const LevelText = styled.div`
-  font-size: 16px;
   font-weight: 800;
-  margin-bottom: 8px;
 `;
-const ExpBar = styled.div`
-  width: 100%;
-  height: 10px;
 
+const ExpBar = styled.div`
+  height: 10px;
   background: ${({ theme }) => theme.colors.border};
   border-radius: 999px;
   overflow: hidden;
 `;
+
 const ExpFill = styled.div<{ $value: number }>`
   height: 100%;
   width: ${({ $value }) => `${$value}%`};
-
-  background: linear-gradient(
-    90deg,
-    ${({ theme }) => theme.colors.accentBlue},
-    ${({ theme }) => theme.colors.primary}
-  );
-
-  transition: width 0.3s ease; /* 경험치 오를 때 부드럽게 */
+  background: ${({ theme }) => theme.colors.primary};
 `;
+
 const ExpText = styled.div`
-  margin-top: 6px;
   font-size: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
   text-align: right;
 `;
 
-/* 🪙 상태 카드 */
 const StatusCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.lg};
+  width: 100%;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.surface};
 `;
 
-const StatusRow = styled.div`
+const StatusHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: 15px;
+  font-weight: 700;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  margin: 10px 0;
+  background: ${({ theme }) => theme.colors.border};
 `;
 
 const BadgeSection = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-top: 16px;
 `;
 
 const Badge = styled.div`
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.colors.card};
-  font-size: 13px;
-  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: #fff;
+  font-size: 12px;
+`;
 
+const EmptyBadge = styled.div`
+  font-size: 12px;
+`;
+
+const PortfolioCard = styled.div`
+  position: relative;
+  height: 160px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  overflow: hidden;
+`;
+
+const CardPreviewBig = styled.div<{ $skin: any }>`
+  position: absolute;
+  inset: 0;
+  background: ${({ $skin }) =>
+    $skin?.gradient ? $skin.gradient : `url(${$skin?.image}) center/cover`};
+  filter: brightness(0.7);
+`;
+
+const CardContent = styled.div`
+  position: relative;
+  padding: 16px;
+  color: #fff;
+`;
+
+const CardTitle = styled.div`
+  font-weight: 700;
+`;
+
+const CardInfo = styled.div`
+  strong {
+    font-size: 20px;
+  }
+`;
+
+const CardSub = styled.div`
+  font-size: 12px;
+`;
+
+const ItemSection = styled.div`
+  border-radius: ${({ theme }) => theme.radius.md};
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 16px; /* 🔥 탭이랑 리스트 간격 */
+`;
+
+const SectionTitle = styled.div`
+  font-weight: 800;
+  margin-bottom: 4px;
+`;
+
+const TabRow = styled.div`
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+`;
+
+const TabButton = styled.button<{ $active: boolean }>`
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.primary : theme.colors.surface};
+  color: ${({ $active }) => ($active ? "#fff" : "inherit")};
+  cursor: pointer;
+  font-weight: 500;
+`;
+
+const HorizontalList = styled.div`
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 0px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+`;
+
+const Item = styled.div<{ $selected?: boolean; $locked?: boolean }>`
+  min-width: 140px;
+  padding: 10px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.card};
+
+  cursor: pointer;
+  border: ${({ $selected, theme }) =>
+    $selected ? `2px solid ${theme.colors.primary}` : "none"};
+  /* 🔥 선택 glow */
+  ${({ $selected }) =>
+    $selected &&
+    `
+    box-shadow:
+      0 0 0 2px rgba(80, 120, 255, 0.3),
+      0 8px 20px rgba(80, 120, 255, 0.35);
+    transform: translateY(-2px) scale(1.03);
+  `}
+
+  ${({ $locked }) =>
+    $locked &&
+    `
+    opacity: 0.6;
+    filter: grayscale(0.8);
+  `}
+   &:hover {
+    transform: translateY(-3px);
+    box-shadow: ${({ theme }) => theme.shadows.md};
+  }
+`;
+
+const CardPreview = styled.div<{ $skin: any }>`
+  width: 100%;
+  height: 80px;
+  border-radius: ${({ theme }) => theme.radius.sm};
+
+  background: ${({ $skin }) =>
+    $skin?.gradient ? $skin.gradient : `url(${$skin?.image}) center/cover`};
+
+  position: relative;
+  overflow: hidden;
 
   box-shadow: ${({ theme }) => theme.shadows.sm};
 `;
 
-/* 🧢 아이템 카드*/
-const ItemSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const SectionTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 700;
-`;
-
-const ItemGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-`;
-
-const Item = styled.div<{ $locked?: boolean; $equipped?: boolean }>`
-  background: ${({ theme }) => theme.colors.card};
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-
-  /* 장착 중인 아이템은 테두리 강조 */
-  border: ${({ $equipped, theme }) =>
-    $equipped ? `3px solid ${theme.colors.primary}` : "none"};
-
-  opacity: ${({ $locked }) => ($locked ? 0.6 : 1)};
-  cursor: ${({ $locked }) => ($locked ? "not-allowed" : "pointer")};
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-
-  &:hover {
-    ${({ $locked }) =>
-      !$locked &&
-      `
-      transform: translateY(-4px);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-    `}
-  }
-`;
-
-const ItemEmoji = styled.div`
-  font-size: 28px;
-`;
-
 const ItemName = styled.div`
   font-size: 13px;
-`;
-
-const ItemPrice = styled.div`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.muted};
-`;
-
-const Lock = styled.div`
-  font-size: 14px;
-`;
-const Hat = styled.div`
-  position: absolute;
-  top: -18px;
-  left: 20px;
-`;
-
-const Top = styled.div`
-  position: absolute;
-  top: 40px;
-  left: 20px;
-`;
-
-const Accessory = styled.div`
-  position: absolute;
-  top: 90px;
-  left: 20px;
-`;
-
-const Hair = styled.div`
-  position: absolute;
-  top: -8px;
-  left: 20px;
-`;
-
-const Name = styled.div`
-  font-size: 16px;
   font-weight: 700;
 `;
 
 const ItemStatus = styled.div`
-  margin-top: 6px;
   font-size: 12px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.textSecondary};
 `;
-//Slot탭
-const SlotTabs = styled.div`
-  display: flex;
-  gap: 10px;
-  margin: 12px 0 20px;
-`;
-const SlotButton = styled.button<{ $active: boolean }>`
-  flex: 1; /* 버튼 너비 균등 */
-  padding: 12px 0;
-  border-radius: 999px; /* 알약 모양 */
-
-  font-size: 12px;
-  font-weight: 700;
-
-  border: none;
-  cursor: pointer;
-
-  /* 기본 상태 */
-  background: ${({ theme }) => theme.colors.surface};
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  /* 선택된 슬롯 */
-  background: ${({ $active, theme }) =>
-    $active ? theme.colors.primary : theme.colors.surface};
-  color: ${({ $active }) => ($active ? "#fff" : "inherit")};
-
-  /* 살짝 떠있는 느낌 */
-  box-shadow: ${({ $active }) =>
-    $active ? "0 6px 0 rgba(0,0,0,0.15)" : "0 3px 0 rgba(0,0,0,0.08)"};
-
-  /* 눌렀을 때 */
-  &:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
-  }
-
-  transition: all 0.15s ease;
-`;
-
-const EmptyState = styled.div`
-  grid-column: 1 / -1;
-  padding: 32px 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  text-align: center;
-`;
-const Message = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.muted};
-
-  margin-bottom: 12px;
-`;
-
-const GoShopButton = styled.button`
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: none;
-
-  font-size: 13px;
-  font-weight: 700;
-
-  background: ${({ theme }) => theme.colors.primary};
-  color: #fff;
-
-  cursor: pointer;
-
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
-
-  &:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
-  }
-
-  transition: all 0.15s ease;
-`;
-const SetBonus = styled.div`
-  position: absolute;
-  top: 40px;
-  right: 45px;
-
-  padding: 8px 14px;
-  border-radius: 999px;
-
-  font-size: 10px;
-  font-weight: 800;
-
-  background: linear-gradient(135deg, #ffd84d, #ff9f43);
-
-  color: #fff;
-
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  animation: ${sparkle} 1.6s infinite;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-`;
-
-export default CharacterPage;

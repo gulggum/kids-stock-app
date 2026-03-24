@@ -1,3 +1,5 @@
+import legendImage from "../../assets/images/legendCardImage.png";
+
 export type CardRarity = "COMMON" | "SPECIAL" | "LEGEND";
 
 export type CardSkin = {
@@ -9,6 +11,7 @@ export type CardSkin = {
   // 👉 선택적으로 사용
   gradient?: string; // 기본 카드용
   image?: string; // 레전드/스페셜용
+  unlockLevel?: number; //레벨제한
 };
 
 //랜덤박스
@@ -157,6 +160,7 @@ export const cardSkins: CardSkin[] = [
     price: 1000,
     rarity: "LEGEND",
     image: "/cards/legend1.png",
+    unlockLevel: 15,
   },
   {
     id: "legend2",
@@ -164,5 +168,6 @@ export const cardSkins: CardSkin[] = [
     price: 1200,
     rarity: "LEGEND",
     image: "/cards/legend2.png",
+    unlockLevel: 15,
   },
 ];
