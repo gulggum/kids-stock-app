@@ -1,3 +1,5 @@
+import type { ProfileAvatarType } from "../static/profileAvatars";
+
 /**
  * 커뮤니티에 노출될 유저 정보 (더미)
  *  * 🧪 UI 테스트용 더미 유저 데이터
@@ -14,6 +16,8 @@ export type CommunityUser = {
   score: number;
   lastActive: number;
   badges: string[];
+  profileImage?: string; //사진첩등..url
+  profileAvatar?: ProfileAvatarType | null; //기본캐릭터 (좌표로 적용 SpriteAvater사용)
 };
 
 export const communityMock: CommunityUser[] = [
@@ -27,6 +31,8 @@ export const communityMock: CommunityUser[] = [
     score: 120,
     lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 2,
@@ -38,6 +44,8 @@ export const communityMock: CommunityUser[] = [
     score: 105,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 3,
@@ -49,6 +57,8 @@ export const communityMock: CommunityUser[] = [
     score: 50,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 4,
@@ -60,6 +70,8 @@ export const communityMock: CommunityUser[] = [
     score: 98,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 5,
@@ -71,6 +83,8 @@ export const communityMock: CommunityUser[] = [
     score: 134,
     lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "ASSET_120"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 6,
@@ -82,6 +96,8 @@ export const communityMock: CommunityUser[] = [
     score: 76,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 7,
@@ -93,6 +109,8 @@ export const communityMock: CommunityUser[] = [
     score: 150,
     lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS", "TRADE_10"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 8,
@@ -104,6 +122,8 @@ export const communityMock: CommunityUser[] = [
     score: 45,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 9,
@@ -115,6 +135,8 @@ export const communityMock: CommunityUser[] = [
     score: 210,
     lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "ASSET_120", "LEVEL_10", "TRADE_10"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 10,
@@ -126,6 +148,8 @@ export const communityMock: CommunityUser[] = [
     score: 33,
     lastActive: Date.now() - 1000 * 60 * 10,
     badges: [],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 11,
@@ -137,6 +161,8 @@ export const communityMock: CommunityUser[] = [
     score: 111,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ASSET_120"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 12,
@@ -148,6 +174,8 @@ export const communityMock: CommunityUser[] = [
     score: 67,
     lastActive: Date.now() - 1000 * 60 * 10,
     badges: ["FIRST_BUY", "TRADE_10"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 13,
@@ -159,6 +187,8 @@ export const communityMock: CommunityUser[] = [
     score: 175,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "LEVEL_10"],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 14,
@@ -170,6 +200,8 @@ export const communityMock: CommunityUser[] = [
     score: 22,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: [],
+    profileImage: "",
+    profileAvatar: null,
   },
   {
     id: 15,
@@ -181,5 +213,7 @@ export const communityMock: CommunityUser[] = [
     score: 140,
     lastActive: Date.now() - 1000 * 60 * 2,
     badges: ["FIRST_BUY", "ATTEND_7_DAYS"],
+    profileImage: "",
+    profileAvatar: null,
   },
 ];

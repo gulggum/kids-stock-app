@@ -56,7 +56,7 @@ export default MyFriendsSection;
 
 /* 스타일 */
 const Section = styled.section`
-  background: ${({ theme }) => theme.colors.card};
+  background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 18px;
   box-shadow: ${({ theme }) => theme.shadows.sm};

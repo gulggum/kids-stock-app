@@ -226,17 +226,6 @@ const RewardCard = styled.div`
   overflow: hidden;
 `;
 
-const RewardEmoji = styled.div`
-  font-size: 64px;
-  z-index: 1;
-`;
-
-const RewardName = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  z-index: 1;
-`;
-
 const RewardText = styled.div`
   font-size: 14px;
   color: #666;

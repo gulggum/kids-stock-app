@@ -11,6 +11,8 @@ type Props = {
   nickname: string;
   profileAvatar: ProfileAvatarType | null;
   profileImage: string | null;
+  level: number;
+  currentSkin: any;
   onClick: () => void;
 };
 
@@ -19,9 +21,11 @@ const ProfileCard = ({
   profileAvatar,
   profileImage,
   onClick,
+  level,
+  currentSkin,
 }: Props) => {
   return (
-    <Wrapper>
+    <Wrapper $skin={currentSkin}>
       <ImageWrapper onClick={onClick}>
         {profileImage ? (
           <img src={profileImage} />
@@ -31,7 +35,9 @@ const ProfileCard = ({
           <Default>🧒</Default>
         )}
       </ImageWrapper>
-
+      <Top>
+        <Level>Lv.{level}</Level>
+      </Top>
       <Nickname>{nickname}</Nickname>
     </Wrapper>
   );
@@ -41,11 +47,13 @@ export default ProfileCard;
 
 /* ================= 스타일 ================= */
 
-const Wrapper = styled.div`
-  background: ${({ theme }) => theme.colors.card};
+const Wrapper = styled.div<{ $skin: any }>`
   border-radius: ${({ theme }) => theme.radius.md};
   padding: 20px;
+  background: ${({ $skin }) =>
+    $skin?.gradient ? $skin.gradient : `url(${$skin?.image}) center/cover`};
 
+  color: white;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -88,4 +96,13 @@ const Sprite = styled.div<{ $x: number; $y: number }>`
   background-size: 500% 300%;
   background-position: ${({ $x, $y }) =>
     `${($x / 3.95) * 100}% ${($y / 2) * 100}%`};
+`;
+const Top = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Level = styled.div`
+  font-size: 14px;
+  font-weight: 700;
 `;

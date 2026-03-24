@@ -8,6 +8,7 @@ import { useModal } from "../../context/UIContext/ModalContext";
 import { useEffect, useRef, useState } from "react";
 import SelectStatusModal from "./SelectStatusModal";
 import type { CommunityUser } from "../../data/mock/communityMock";
+import { useProfile } from "../../context/UserContext/ProfileContext";
 
 interface MyStatusSectionProps {
   myUser: CommunityUser;
@@ -22,6 +23,7 @@ const MyStatusSection = ({
   const { openModal, closeModal } = useModal();
   const myCardEndRef = useRef<HTMLDivElement | null>(null);
   const [showSticky, setShowSticky] = useState(false);
+  const { profileImage, profileAvatar } = useProfile();
 
   useEffect(() => {
     const target = myCardEndRef.current;
@@ -69,6 +71,8 @@ const MyStatusSection = ({
           score: myUser.score,
           lastActive: Date.now() - 1000 * 60 * 2,
           badges: myUser.badges,
+          profileImage,
+          profileAvatar,
         }}
       />
 

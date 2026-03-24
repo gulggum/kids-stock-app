@@ -34,7 +34,7 @@ export default SuggestionSection;
 
 /* 스타일 */
 const Section = styled.section`
-  background: ${({ theme }) => theme.colors.card};
+  background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 16px;
   box-shadow: ${({ theme }) => theme.shadows.sm};
@@ -50,10 +50,6 @@ const Row = styled.div`
   display: flex;
   gap: 10px;
   overflow-x: auto;
-  /* 스크롤바 숨기기 */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
-  }
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
 `;
@@ -62,7 +58,7 @@ const MiniCard = styled.div`
   min-width: 80px;
   padding: 10px;
   border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme }) => theme.colors.background};
+  background: ${({ theme }) => theme.colors.card};
 
   display: flex;
   flex-direction: column;

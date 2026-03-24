@@ -1,5 +1,6 @@
 import { CharacterProvider } from "./CharacterContext";
 import { ItemProvider } from "./ItemContext";
+import { ProfileProvider } from "./ProfileContext";
 
 export const UserProgressProvider = ({
   children,
@@ -8,7 +9,9 @@ export const UserProgressProvider = ({
 }) => {
   return (
     <CharacterProvider>
-      <ItemProvider>{children}</ItemProvider>
+      <ItemProvider>
+        <ProfileProvider>{children}</ProfileProvider>
+      </ItemProvider>
     </CharacterProvider>
   );
 };

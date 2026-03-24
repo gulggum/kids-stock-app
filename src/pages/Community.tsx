@@ -9,6 +9,7 @@ import CommunityRanking from "../components/community/CommunityRanking";
 import CommunityFeed from "../components/community/CommunityFeed";
 import MyFriendsSection from "../components/community/MyFriendsSection";
 import SuggestionSection from "../components/community/SuggestionSection";
+import { useProfile } from "../context/UserContext/ProfileContext";
 
 /**
  * 커뮤니티 메인 화면
@@ -23,6 +24,7 @@ const Community = () => {
     const saved = localStorage.getItem("myStatus");
     return saved ?? "😄 오늘도 참여했어요!";
   });
+  const { profileImage, profileAvatar } = useProfile();
 
   useEffect(() => {
     localStorage.setItem("myStatus", myStatus);
@@ -39,6 +41,8 @@ const Community = () => {
     badges: achieved,
     levelTitle: "",
     status: "",
+    profileImage,
+    profileAvatar,
   };
 
   // 🔥 전체 유저 리스트 (내 정보 + mock)

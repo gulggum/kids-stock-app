@@ -5,9 +5,10 @@ import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { isUserOnline } from "../../utils/isUserOnline";
-import legendCard from "../../assets/images/legendCardImage.png";
+import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import { cardSkins } from "../../data/static/cardSkins";
 import { useItem } from "../../context/UserContext/ItemContext";
+import avatarSprite from "../../assets/avatars/avatarSprite.png";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -42,10 +43,17 @@ const CommunityCard = ({
   return (
     <Card $tier={tier} $skin={skin}>
       <Top>
-        <Emoji>
-          {user.emoji}
+        <AvatarWrapper>
+          {user.profileImage ? (
+            <img src={user.profileImage} />
+          ) : user.profileAvatar ? (
+            <Sprite $x={user.profileAvatar.x} $y={user.profileAvatar.y} />
+          ) : (
+            // 📌 아래 ""에 기본유저사진 넣어주기
+            ""
+          )}
           {online && <ActiveDot />}
-        </Emoji>
+        </AvatarWrapper>
         <Info>
           <NameRow>
             <Name>{user.nickname}</Name>
@@ -122,13 +130,6 @@ const Card = styled.div<{
   position: relative;
   overflow: hidden;
 
-  /* 가독성 */
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.15);
-  }
   background-size: cover;
   background-position: top;
   border-radius: ${({ theme }) => theme.radius.sm};
@@ -179,23 +180,6 @@ const Top = styled.div`
   align-items: center;
 `;
 
-const Emoji = styled.div`
-  font-size: 28px;
-
-  width: 42px;
-  height: 42px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 12px;
-
-  background: ${({ theme }) => theme.colors.background};
-
-  position: relative;
-`;
-
 const ActiveDot = styled.div`
   position: absolute;
 
@@ -210,7 +194,7 @@ const ActiveDot = styled.div`
   bottom: -2px;
 
   border: 2px solid white;
-  z-index: 5555;
+  z-index: 555;
   box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.surface};
 `;
 
@@ -330,4 +314,29 @@ const MoreBadgeButton = styled.button`
   font-weight: 700;
 
   cursor: pointer;
+`;
+const AvatarWrapper = styled.div`
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+const Sprite = styled.div<{ $x: number; $y: number }>`
+  width: 100%;
+  height: 100%;
+
+  background-image: url(${avatarSprite});
+  background-size: 500% 300%;
+  background-position: ${({ $x, $y }) =>
+    `${($x / 4) * 100}% ${($y / 2) * 100}%`};
 `;

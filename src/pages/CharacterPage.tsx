@@ -14,7 +14,6 @@ import { cardSkins } from "../data/static/cardSkins";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
 import styled from "styled-components";
-import MyCardPreview from "../components/character/MyCardPreview";
 
 const CharacterPage = () => {
   const {
@@ -79,32 +78,39 @@ const CharacterPage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
+    const reader = new FileReader(); // 🔥 이게 필요
 
-    openModal({
-      type: "CONFIRM",
-      title: "프로필 변경",
-      confirmText: "적용",
-      cancelText: "취소",
+    reader.onloadend = () => {
+      const base64 = reader.result as string; // 🔥 여기서 생성됨
 
-      customContent: (
-        <ConfirmImage>
-          <PreviewImage src={url} />
-          <Text>이 사진으로 변경할까요?</Text>
-        </ConfirmImage>
-      ),
+      openModal({
+        type: "CONFIRM",
+        title: "프로필 변경",
+        confirmText: "적용",
+        cancelText: "취소",
 
-      onConfirm: () => {
-        setProfileImage(url);
-        setProfileAvatar(null);
-        createToast("프로필 변경 완료 📸");
-      },
-    });
-    e.target.value = "";
+        customContent: (
+          <ConfirmImage>
+            <PreviewImage src={base64} /> {/* 🔥 url 말고 base64 */}
+            <Text>이 사진으로 변경할까요?</Text>
+          </ConfirmImage>
+        ),
+
+        onConfirm: () => {
+          setProfileImage(base64); // 🔥 이제 정상 작동
+          setProfileAvatar(null);
+          createToast("프로필 변경 완료 📸");
+        },
+      });
+    };
+
+    reader.readAsDataURL(file); // 🔥 여기서 실행됨
   };
 
   return (
     <PageWrapper>
+      <Title>🙌 나의 정보</Title>
+      <Description>나의 프로필사진과 스킨을 꾸며보세요 😊</Description>
       {/* 📸 카메라 */}
       <input
         ref={cameraInputRef}
@@ -124,29 +130,27 @@ const CharacterPage = () => {
         onChange={handleImageChange}
       />
       <ProfileSection>
-        <ProfileCard
-          nickname={nickname}
-          profileAvatar={profileAvatar}
-          profileImage={profileImage}
-          onClick={openProfileModal}
-        />
-
-        <LevelSection level={1} currentExp={30} neededExp={100} percent={30} />
-
+        {/* 내상태 (보유코인 및 뱃지모음) */}
         <StatusCard
           coins={1000}
           achievements={achieved
             .map((id) => ACHIEVEMENTS.find((a) => a.id === id))
             .filter(Boolean)}
         />
+
+        <ProfileCard
+          nickname={nickname}
+          profileAvatar={profileAvatar}
+          profileImage={profileImage}
+          currentSkin={currentSkin}
+          level={character.level}
+          onClick={openProfileModal}
+        />
+        {/* 레벨상태 */}
+        <LevelSection level={1} currentExp={30} neededExp={100} percent={30} />
       </ProfileSection>
-      {/* ⭐ 내 카드미리보기 */}
-      <MyCardPreview
-        nickname={nickname}
-        level={character.level}
-        emoji="🐣"
-        currentSkin={currentSkin}
-      />
+
+      {/* 내카드스킨 보유 목록 */}
       <SkinSection
         skins={filteredSkins}
         selectedSkin={selectedSkin ?? ""}
@@ -167,6 +171,17 @@ const PageWrapper = styled.div`
   flex-direction: column;
   gap: 20px;
   padding: 16px;
+`;
+
+const Title = styled.h2`
+  font-size: 22px;
+  font-weight: 900;
+`;
+
+const Description = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin-top: -6px;
 `;
 
 const ProfileSection = styled.div`

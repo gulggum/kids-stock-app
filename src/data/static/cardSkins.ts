@@ -1,4 +1,6 @@
-import legendImage from "../../assets/images/legendCardImage.png";
+import legendSkinGold from "../../assets/cardSkins/legendSkinGold.png";
+import specialSkin_1 from "../../assets/cardSkins/specialSkin_1.png";
+import specialSkin_2 from "../../assets/cardSkins/specialSkin_2.png";
 
 export type CardRarity = "COMMON" | "SPECIAL" | "LEGEND";
 
@@ -145,10 +147,17 @@ export const cardSkins: CardSkin[] = [
   // -----------------------------
   {
     id: "special1",
-    name: "이벤트 카드",
+    name: "스페셜 파스텔 카드",
     price: 500,
     rarity: "SPECIAL",
-    image: "/cards/special1.png", // 👉 너가 넣으면 됨
+    image: specialSkin_1,
+  },
+  {
+    id: "special2",
+    name: "스페셜 컬러플 카드",
+    price: 500,
+    rarity: "SPECIAL",
+    image: specialSkin_2,
   },
 
   // -----------------------------
@@ -159,7 +168,7 @@ export const cardSkins: CardSkin[] = [
     name: "골드 레전드",
     price: 1000,
     rarity: "LEGEND",
-    image: "/cards/legend1.png",
+    image: legendSkinGold,
     unlockLevel: 15,
   },
   {
