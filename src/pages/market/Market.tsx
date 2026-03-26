@@ -18,6 +18,7 @@ import StockCard from "../../components/stock/StockCard";
 import ExchangeRateInfo from "../../components/stock/ExchangeRateInfo";
 
 import { krwToUsd } from "../../utils/currency";
+import { getStorage, setStorage } from "../../utils/storage";
 
 type FilterType = "ALL" | "KR" | "US" | "FAVORITE";
 
@@ -38,10 +39,9 @@ const Market = () => {
   const exchangeRate = 1320;
 
   // 즐겨찾기 저장
-  const [favoriteIds, setFavoriteIds] = useState<number[]>(() => {
-    const saved = localStorage.getItem(FAVORITE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [favoriteIds, setFavoriteIds] = useState<number[]>(() =>
+    getStorage(FAVORITE_KEY, []),
+  );
 
   /* ================= 데이터 가공 ================= */
 
@@ -95,7 +95,7 @@ const Market = () => {
   /* ================= 로컬스토리지 저장 ================= */
 
   useEffect(() => {
-    localStorage.setItem(FAVORITE_KEY, JSON.stringify(favoriteIds));
+    setStorage(FAVORITE_KEY, favoriteIds);
   }, [favoriteIds]);
 
   /* ================= 카드 렌더 함수 ================= */

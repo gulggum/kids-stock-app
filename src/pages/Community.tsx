@@ -10,6 +10,7 @@ import CommunityFeed from "../components/community/CommunityFeed";
 import MyFriendsSection from "../components/community/MyFriendsSection";
 import SuggestionSection from "../components/community/SuggestionSection";
 import { useUser } from "../context/UserContext";
+import { getStorage, setStorage } from "../utils/storage";
 
 /**
  * 커뮤니티 메인 화면
@@ -19,13 +20,12 @@ import { useUser } from "../context/UserContext";
 const Community = () => {
   const { achieved } = useAchievement();
   const { user } = useUser();
-  const [myStatus, setMyStatus] = useState(() => {
-    const saved = localStorage.getItem("myStatus");
-    return saved ?? "😄 오늘도 참여했어요!";
-  });
+  const [myStatus, setMyStatus] = useState<string>(() =>
+    getStorage("myStatus", "😄 오늘도 참여했어요!"),
+  );
 
   useEffect(() => {
-    localStorage.setItem("myStatus", myStatus);
+    setStorage("myStatus", myStatus);
   }, [myStatus]);
 
   // ✅ 변경 - User → RankingUser로 변환 후 넣기
@@ -45,14 +45,13 @@ const Community = () => {
   // 🔥 전체 유저 리스트 (내 정보 + mock)
   const allUsers = [myRankingUser, ...publicUserMock];
   // 🔥 친구 상태
-  const [friends, setFriends] = useState<number[]>(() => {
-    const saved = localStorage.getItem("myFriends");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [friends, setFriends] = useState<number[]>(() =>
+    getStorage("myFriends", []),
+  );
 
   // 🔥 저장 동기화
   useEffect(() => {
-    localStorage.setItem("myFriends", JSON.stringify(friends));
+    setStorage("myFriends", JSON.stringify(friends));
   }, [friends]);
 
   // 🔥 토글 함수 (핵심)
