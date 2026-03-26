@@ -4,13 +4,13 @@ import styled from "styled-components";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useTrade } from "../../context/TradeContext";
 import { chartMock } from "../../data/mock/chartMock";
-import { useMoney } from "../../context/WalletContext/MoneyContext";
+import { useUser } from "../../context/UserContext/UserContext";
 
 const BASE_MONEY = 1000000; //초기 사이버 머니(고정값)
 const PortfolioSummaryCard = () => {
   const { portfolio } = usePortfolio();
   const { hasBoughtToday } = useTrade();
-  const { money } = useMoney();
+  const { user } = useUser();
 
   //보유 종목 수
   const stockCount = portfolio.length;
@@ -25,7 +25,7 @@ const PortfolioSummaryCard = () => {
   }, 0);
 
   //총 자산 = 초기머니(BASE_MONEY) +현재 평가 금액(evaluationAmount)
-  const totalAsset = money + evaluationAmount;
+  const totalAsset = user.money + evaluationAmount;
 
   // ⭐ 수익 계산
   const profit = totalAsset - BASE_MONEY;

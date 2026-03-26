@@ -69,6 +69,10 @@ type UserContextType = {
   expProgress: number; // 경험치 %
 
   addAchievement: (id: string) => void; //업적리스트추가
+
+  //가상머니
+  addMoney: (amount: number) => void;
+  spendMoney: (amount: number) => boolean;
 };
 
 /**
@@ -85,8 +89,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     exp: 0,
     score: 0,
 
-    coin: 1000,
-    money: 100000,
+    coin: 1000, //개발용
+    money: 1000000, //개발용
 
     ownedSkins: ["basic"],
     selectedSkin: "basic",
@@ -103,7 +107,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     quizProgress: [],
 
     friends: [],
-    status: "🙂 아직 초보",
+    status: "🙂 초보 투자자",
 
     profileImage: "",
     profileAvatar: null,
@@ -211,6 +215,18 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  // 💰 머니 추가
+  const addMoney = (amount: number) => {
+    setUser((prev) => ({ ...prev, money: prev.money + amount }));
+  };
+
+  // 💰 머니 차감 (부족하면 false)
+  const spendMoney = (amount: number): boolean => {
+    if (user.money < amount) return false;
+    setUser((prev) => ({ ...prev, money: prev.money - amount }));
+    return true;
+  };
+
   /**
    * 💾 저장
    */
@@ -230,6 +246,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         expProgress,
         currentTitle,
         addAchievement,
+        addMoney,
+        spendMoney,
       }}
     >
       {children}

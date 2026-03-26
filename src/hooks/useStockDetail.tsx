@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useTrade } from "../context/TradeContext";
 import { useModal } from "../context/UIContext/ModalContext";
-import { useMoney } from "../context/WalletContext/MoneyContext";
 import { useReward } from "../context/RewardContext";
 import { playMoneySound } from "../utils/sounds";
 import TradeSummary from "../components/stock/TradeSummary";
+import { useUser } from "../context/UserContext/UserContext";
 
 /**
  * 📌 useStockDetail
@@ -123,7 +123,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
 
   const { buyStock, sellStock, hasBoughtToday, isHoldingStock } = useTrade();
   const { openModal } = useModal();
-  const { money, spendMoney, addMoney } = useMoney();
+  const { user, spendMoney, addMoney } = useUser();
   const { giveReward } = useReward();
 
   /** =========================
@@ -139,10 +139,10 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   /** =========================
    * 💰 돈 변화 감지 (애니메이션)
    * ========================= */
-  const prevMoneyRef = useRef(money);
+  const prevMoneyRef = useRef(user.money);
 
   useEffect(() => {
-    if (money < prevMoneyRef.current) {
+    if (user.money < prevMoneyRef.current) {
       setAnimateMoney(true);
 
       const timer = setTimeout(() => {
@@ -152,8 +152,8 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
       return () => clearTimeout(timer);
     }
 
-    prevMoneyRef.current = money;
-  }, [money]);
+    prevMoneyRef.current = user.money;
+  }, [user.money]);
 
   /** =========================
    * 🛒 구매 로직
@@ -203,7 +203,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
         <TradeSummary
           type="BUY"
           name={company.name}
-          money={money}
+          money={user.money}
           price={company.price}
         />
       ),
@@ -252,7 +252,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
         <TradeSummary
           type="SELL"
           name={company.name}
-          money={money}
+          money={user.money}
           price={company.price} //현재가격
           buyPrice={company.price} //구매가격
         />
@@ -298,7 +298,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
     isAllChecked,
 
     // context 값
-    money,
+    money: user.money,
     hasBoughtToday,
     isHoldingStock,
 
