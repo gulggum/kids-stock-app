@@ -1,7 +1,7 @@
 // 캐릭터 페이지 -> 미니상점
 // 상점 페이지 -> 전체목록 + 설명
 import { useToast } from "../context/UIContext/ToastContext";
-import { useSkinItem } from "../context/UserContext/SkinItemContext";
+import { useSkinItem } from "../context/SkinItemContext";
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useModal } from "../context/UIContext/ModalContext";
@@ -11,7 +11,7 @@ import { useReward } from "../context/RewardContext";
 import { cardSkins, type CardSkin } from "../data/static/cardSkins";
 import { MysteryBox } from "../components/shop/mysteryBox";
 import { isCardUnlocked } from "../utils/getLevelTier";
-import { useUser } from "../context/UserContext/UserContext";
+import { useUser } from "../context/UserContext";
 
 // -----------------------------
 // 📌 탭 타입 (필터용)

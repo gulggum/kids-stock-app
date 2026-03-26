@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { useSkinItem } from "../../context/UserContext/SkinItemContext";
+import { useSkinItem } from "../../context/SkinItemContext";
 import { useToast } from "../../context/UIContext/ToastContext";
 import { playCoinSound } from "../../utils/sounds";
 import { useModal } from "../../context/UIContext/ModalContext";

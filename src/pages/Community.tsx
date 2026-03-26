@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { publicUserMock } from "../data/mock/PublicUserMock";
 import { useEffect, useState } from "react";
-import { useAchievement } from "../context/AchievementContext/AchievementContext";
+import { useAchievement } from "../context/AchievementContext";
 import MyStatusSection from "../components/community/MyStatusSection";
 import CommunityRanking, {
   type RankingUser,
@@ -9,7 +9,7 @@ import CommunityRanking, {
 import CommunityFeed from "../components/community/CommunityFeed";
 import MyFriendsSection from "../components/community/MyFriendsSection";
 import SuggestionSection from "../components/community/SuggestionSection";
-import { useUser } from "../context/UserContext/UserContext";
+import { useUser } from "../context/UserContext";
 
 /**
  * 커뮤니티 메인 화면

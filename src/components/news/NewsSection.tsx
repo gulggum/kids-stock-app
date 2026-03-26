@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { type HomeNews } from "../../data/mock/homeNewsMockData";
 import { marketMockData } from "../../data/mock/marketMock";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../../context/UserContext/UserContext";
+import { useUser } from "../../context/UserContext";
 
 type Props = {
   news: HomeNews[];

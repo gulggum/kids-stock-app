@@ -13,7 +13,7 @@ import {
   cardSkins,
   type CardRarity,
   type CardSkin,
-} from "../../data/static/cardSkins";
+} from "../data/static/cardSkins";
 import { useUser } from "./UserContext";
 
 // ─────────────────────────────────────────

@@ -20,7 +20,7 @@ import {
   type RewardType,
   type RewardRule,
 } from "../data/rules/rewardRules";
-import { useUser } from "./UserContext/UserContext";
+import { useUser } from "./UserContext";
 import type { ReactNode } from "react";
 
 // ─────────────────────────────────────────

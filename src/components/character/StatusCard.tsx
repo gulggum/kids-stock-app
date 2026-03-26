@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useUser } from "../../context/UserContext/UserContext";
+import { useUser } from "../../context/UserContext";
 
 /**
  * 🪙 상태 카드

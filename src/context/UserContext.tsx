@@ -1,10 +1,10 @@
 //CharacterContext,ScoreContext 정리예정
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { getStorage, setStorage } from "../../utils/storage";
-import { LEVEL_RULES } from "../../data/rules/levelTitles";
-import { getDateKey } from "../../utils/date";
-import type { RewardType } from "../../data/rules/rewardRules";
+import { getStorage, setStorage } from "../utils/storage";
+import { LEVEL_RULES } from "../data/rules/levelTitles";
+import { getDateKey } from "../utils/date";
+import type { RewardType } from "../data/rules/rewardRules";
 
 /**
  * 📌 localStorage 키

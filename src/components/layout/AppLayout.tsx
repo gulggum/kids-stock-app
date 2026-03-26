@@ -4,7 +4,7 @@ import HeaderNav from "../navigation/HeaderNav";
 import BottomNav from "../navigation/BottomNav";
 import ModalPopup from "../ModalPopup";
 import { useModal } from "../../context/UIContext/ModalContext";
-import { useAchievement } from "../../context/AchievementContext/AchievementContext";
+import { useAchievement } from "../../context/AchievementContext";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import bgImage from "../../assets/images/bgImage.png";
 

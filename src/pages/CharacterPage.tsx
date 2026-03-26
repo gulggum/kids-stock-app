@@ -6,13 +6,13 @@ import { useCharacterProfile } from "../hooks/useCharacterProfile";
 import { useModal } from "../context/UIContext/ModalContext";
 import { useToast } from "../context/UIContext/ToastContext";
 import SkinSection from "../components/character/SkinSection";
-import { useSkinItem } from "../context/UserContext/SkinItemContext";
+import { useSkinItem } from "../context/SkinItemContext";
 import { cardSkins } from "../data/static/cardSkins";
-import { useAchievement } from "../context/AchievementContext/AchievementContext";
+import { useAchievement } from "../context/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
-import { useUser } from "../context/UserContext/UserContext";
+import { useUser } from "../context/UserContext";
 import ExpBarCard from "../components/character/ExpBarCard";
 
 const CharacterPage = () => {

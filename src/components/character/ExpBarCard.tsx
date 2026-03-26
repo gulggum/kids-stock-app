@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useUser } from "../../context/UserContext/UserContext";
+import { useUser } from "../../context/UserContext";
 
 type ExpBarCardProps = {
   level: number;

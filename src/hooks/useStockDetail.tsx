@@ -4,7 +4,7 @@ import { useModal } from "../context/UIContext/ModalContext";
 import { useReward } from "../context/RewardContext";
 import { playMoneySound } from "../utils/sounds";
 import TradeSummary from "../components/stock/TradeSummary";
-import { useUser } from "../context/UserContext/UserContext";
+import { useUser } from "../context/UserContext";
 
 /**
  * 📌 useStockDetail

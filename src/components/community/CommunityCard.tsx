@@ -5,7 +5,7 @@ import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { isUserOnline } from "../../utils/isUserOnline";
 import { cardSkins } from "../../data/static/cardSkins";
-import { useSkinItem } from "../../context/UserContext/SkinItemContext";
+import { useSkinItem } from "../../context/SkinItemContext";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import type { PublicUser } from "../../data/mock/PublicUserMock";

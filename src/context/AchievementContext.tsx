@@ -1,11 +1,23 @@
-// 언제 보상을 줄지 판단하는 감시자
+/**
+ * 📦 AchievementContext
+ *
+ * 역할: 업적 조건 감시 및 보상 지급
+ * - 주식/게임 상태 변화를 감지
+ * - 업적 조건 충족 시 RewardContext를 통해 보상 지급
+ *
+ * 의존성
+ * - TradeContext   : 거래 횟수 감지
+ * - PortfolioContext: 총자산 감지
+ * - RewardContext  : 보상 지급
+ * - useUser        : 업적 저장 (user.achievements)
+ */
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
-import { useReward } from "../RewardContext";
-import { useTrade } from "../TradeContext";
-import { usePortfolio } from "../PortfolioContext";
-import { useUser } from "../UserContext/UserContext";
+import { ACHIEVEMENTS } from "../data/rules/achievementRules";
+import { useReward } from "./RewardContext";
+import { useTrade } from "./TradeContext";
+import { usePortfolio } from "./PortfolioContext";
+import { useUser } from "./UserContext";
 import type { ReactNode } from "react";
 
 type AchievementContextType = {

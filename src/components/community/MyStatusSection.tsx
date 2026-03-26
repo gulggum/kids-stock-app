@@ -7,8 +7,8 @@ import CommunityCard from "./CommunityCard";
 import { useModal } from "../../context/UIContext/ModalContext";
 import { useEffect, useRef, useState } from "react";
 import SelectStatusModal from "./SelectStatusModal";
-import { useAchievement } from "../../context/AchievementContext/AchievementContext";
-import { useUser } from "../../context/UserContext/UserContext";
+import { useAchievement } from "../../context/AchievementContext";
+import { useUser } from "../../context/UserContext";
 
 interface MyStatusSectionProps {
   myStatus: string;

@@ -7,7 +7,7 @@ import { playCoinSound } from "../utils/sounds";
 import { useNewsQuery } from "../hooks/useNewsQuery";
 import NewsSection from "../components/news/NewsSection";
 import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
-import { useUser } from "../context/UserContext/UserContext";
+import { useUser } from "../context/UserContext";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useReward } from "../context/RewardContext";
 import ExpBarCard from "../components/character/ExpBarCard";

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useTrade } from "../../context/TradeContext";
 import { chartMock } from "../../data/mock/chartMock";
-import { useUser } from "../../context/UserContext/UserContext";
+import { useUser } from "../../context/UserContext";
 
 const BASE_MONEY = 1000000; //초기 사이버 머니(고정값)
 const PortfolioSummaryCard = () => {

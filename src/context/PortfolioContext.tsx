@@ -13,7 +13,7 @@
 import { useContext, createContext, useMemo } from "react";
 import { useTrade } from "./TradeContext";
 import { chartMock } from "../data/mock/chartMock";
-import { useUser } from "./UserContext/UserContext";
+import { useUser } from "./UserContext";
 
 type PortfolioItem = {
   id: number; //회사id

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { getDateKey } from "../utils/date";
-import { useUser } from "../context/UserContext/UserContext";
+import { useUser } from "../context/UserContext";
 
 /**
  * 📅 월간 출석 달력
