@@ -1,7 +1,7 @@
 // 캐릭터 페이지 -> 미니상점
 // 상점 페이지 -> 전체목록 + 설명
 import { useToast } from "../context/UIContext/ToastContext";
-import { useItem } from "../context/UserContext/ItemContext";
+import { useSkinItem } from "../context/UserContext/SkinItemContext";
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useModal } from "../context/UIContext/ModalContext";
@@ -23,7 +23,7 @@ const Shop = () => {
   // 📌 전역 상태 가져오기
   // -----------------------------
   const { createToast } = useToast(); // 토스트 메시지
-  const { buySkin, isOwned, selectedSkin } = useItem(); // 스킨 관련
+  const { buySkin, isOwned, selectedSkin } = useSkinItem(); // 스킨 관련
   const { openModal } = useModal(); // 확인 모달
   const { giveReward } = useReward();
   const { user } = useUser();

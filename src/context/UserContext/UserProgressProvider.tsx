@@ -1,4 +1,4 @@
-import { ItemProvider } from "./ItemContext";
+import { SkinItemProvider } from "./SkinItemContext";
 import { UserProvider } from "./UserContext";
 
 export const UserProgressProvider = ({
@@ -8,7 +8,7 @@ export const UserProgressProvider = ({
 }) => {
   return (
     <UserProvider>
-      <ItemProvider>{children}</ItemProvider>
+      <SkinItemProvider>{children}</SkinItemProvider>
     </UserProvider>
   );
 };

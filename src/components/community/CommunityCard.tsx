@@ -5,7 +5,7 @@ import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { isUserOnline } from "../../utils/isUserOnline";
 import { cardSkins } from "../../data/static/cardSkins";
-import { useItem } from "../../context/UserContext/ItemContext";
+import { useSkinItem } from "../../context/UserContext/SkinItemContext";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import type { PublicUser } from "../../data/mock/PublicUserMock";
@@ -25,7 +25,7 @@ const CommunityCard = ({
 }) => {
   const { openModal } = useModal();
   const { title: levelTitle, tier } = getLevelTier(user.level);
-  const { selectedSkin } = useItem();
+  const { selectedSkin } = useSkinItem();
 
   const skin = cardSkins.find((skin) => skin.id === selectedSkin);
 

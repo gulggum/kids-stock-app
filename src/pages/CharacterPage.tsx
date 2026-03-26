@@ -7,7 +7,7 @@ import { useCharacterProfile } from "../hooks/useCharacterProfile";
 import { useModal } from "../context/UIContext/ModalContext";
 import { useToast } from "../context/UIContext/ToastContext";
 import SkinSection from "../components/character/SkinSection";
-import { useItem } from "../context/UserContext/ItemContext";
+import { useSkinItem } from "../context/UserContext/SkinItemContext";
 import { cardSkins } from "../data/static/cardSkins";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
@@ -26,7 +26,7 @@ const CharacterPage = () => {
 
   const { openModal, closeModal } = useModal();
   const { createToast } = useToast();
-  const { selectSkin, selectedSkin, ownedSkins } = useItem();
+  const { selectSkin, selectedSkin, ownedSkins } = useSkinItem();
   const { achieved } = useAchievement(); //업적
   const { fileInputRef, cameraInputRef } = useCharacterProfile(); //프로필사진첨부
   const navigate = useNavigate();

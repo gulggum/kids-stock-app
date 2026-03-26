@@ -1,13 +1,13 @@
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { useItem } from "../../context/UserContext/ItemContext";
+import { useSkinItem } from "../../context/UserContext/SkinItemContext";
 import { useToast } from "../../context/UIContext/ToastContext";
 import { playCoinSound } from "../../utils/sounds";
 import { useModal } from "../../context/UIContext/ModalContext";
 import { MYSTERY_BOX_PRICE } from "../../data/static/cardSkins";
 
 export const MysteryBox = () => {
-  const { openMysteryBox } = useItem();
+  const { openMysteryBox } = useSkinItem();
   const { createToast } = useToast();
   const { openModal } = useModal();
 

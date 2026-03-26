@@ -80,8 +80,7 @@ const UserContext = createContext<UserContextType>({} as UserContextType);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const defaultUser: User = {
     id: 1,
-    nickname: "희연",
-
+    nickname: "가온",
     level: 1,
     exp: 0,
     score: 0,
