@@ -1,9 +1,9 @@
 //추천친구
 import styled from "styled-components";
-import { type CommunityUser } from "../../data/mock/PublicUserMock";
+import { type PublicUser } from "../../data/mock/PublicUserMock";
 
 interface Props {
-  users: CommunityUser[];
+  users: PublicUser[];
   friends: number[];
   onToggleFriend: (id: number) => void;
 }
