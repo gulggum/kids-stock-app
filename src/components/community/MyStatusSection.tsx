@@ -7,16 +7,16 @@ import CommunityCard from "./CommunityCard";
 import { useModal } from "../../context/UIContext/ModalContext";
 import { useEffect, useRef, useState } from "react";
 import SelectStatusModal from "./SelectStatusModal";
-import type { CommunityUser } from "../../data/mock/communityMock";
 import { useProfile } from "../../context/UserContext/ProfileContext";
+import { useCharacter } from "../../context/UserContext/CharacterContext";
+import { useAchievement } from "../../context/AchievementContext/AchievementContext";
+import { useScore } from "../../context/ScoreContext";
 
 interface MyStatusSectionProps {
-  myUser: CommunityUser;
   myStatus: string;
   onStatusChange: (status: string) => void;
 }
 const MyStatusSection = ({
-  myUser,
   myStatus,
   onStatusChange,
 }: MyStatusSectionProps) => {
@@ -24,6 +24,9 @@ const MyStatusSection = ({
   const myCardEndRef = useRef<HTMLDivElement | null>(null);
   const [showSticky, setShowSticky] = useState(false);
   const { profileImage, profileAvatar } = useProfile();
+  const { character } = useCharacter();
+  const { achieved } = useAchievement();
+  const { score } = useScore();
 
   useEffect(() => {
     const target = myCardEndRef.current;
@@ -64,13 +67,13 @@ const MyStatusSection = ({
         user={{
           id: 0,
           nickname: "가온",
-          level: myUser.level,
+          level: character.level,
           levelTitle: "",
           emoji: "🐣",
           status: myStatus,
-          score: myUser.score,
+          score,
           lastActive: Date.now() - 1000 * 60 * 2,
-          badges: myUser.badges,
+          badges: achieved,
           profileImage,
           profileAvatar,
         }}

@@ -44,7 +44,6 @@ const Community = () => {
     profileImage,
     profileAvatar,
   };
-
   // 🔥 전체 유저 리스트 (내 정보 + mock)
   const allUsers = [myUser, ...communityMock];
   // 🔥 친구 상태
@@ -73,11 +72,7 @@ const Community = () => {
       <Description>다른 친구들은 이렇게 활동하고 있어요 😊</Description>
 
       {/* ⭐ 내 카드 섹션 */}
-      <MyStatusSection
-        myUser={myUser}
-        myStatus={myStatus}
-        onStatusChange={setMyStatus}
-      />
+      <MyStatusSection myStatus={myStatus} onStatusChange={setMyStatus} />
 
       {/* 🏆 랭킹 섹션 */}
       <CommunityRanking

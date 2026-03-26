@@ -39,7 +39,6 @@ const CommunityCard = ({
   };
   //온라인 여부
   const online = isUserOnline(user.lastActive);
-
   return (
     <Card $tier={tier} $skin={skin}>
       <Top>

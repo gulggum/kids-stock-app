@@ -9,12 +9,12 @@ import { useModal } from "../context/UIContext/ModalContext";
 import { useToast } from "../context/UIContext/ToastContext";
 import SkinSection from "../components/character/SkinSection";
 import { useItem } from "../context/UserContext/ItemContext";
-import { useCharacter } from "../context/UserContext/CharacterContext";
 import { cardSkins } from "../data/static/cardSkins";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
+import { useUser } from "../context/UserContext/UserContext";
 
 const CharacterPage = () => {
   const {
@@ -28,10 +28,10 @@ const CharacterPage = () => {
   const { openModal, closeModal } = useModal();
   const { createToast } = useToast();
   const { selectSkin, selectedSkin, ownedSkins } = useItem();
-  const { character } = useCharacter();
   const { achieved } = useAchievement(); //업적
   const { fileInputRef, cameraInputRef } = useCharacterProfile(); //프로필사진첨부
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const filteredSkins = ownedSkins
     .map((id) => cardSkins.find((s) => s.id === id))
@@ -64,7 +64,6 @@ const CharacterPage = () => {
                 customContent: <ConfirmAvatar avatar={avatar} />,
                 onConfirm: () => {
                   setProfileAvatar(avatar);
-                  setProfileImage(null);
                   createToast("캐릭터 선택 완료 🎉");
                 },
               });
@@ -100,7 +99,6 @@ const CharacterPage = () => {
 
         onConfirm: () => {
           setProfileImage(base64); // 🔥 이제 정상 작동
-          setProfileAvatar(null);
           createToast("프로필 변경 완료 📸");
         },
       });
@@ -134,7 +132,6 @@ const CharacterPage = () => {
       <ProfileSection>
         {/* 내상태 (보유코인 및 뱃지모음) */}
         <StatusCard
-          coins={1000}
           achievements={achieved
             .map((id) => ACHIEVEMENTS.find((a) => a.id === id))
             .filter(Boolean)}
@@ -145,7 +142,7 @@ const CharacterPage = () => {
           profileAvatar={profileAvatar}
           profileImage={profileImage}
           currentSkin={currentSkin}
-          level={character.level}
+          level={user.level}
           onClick={openProfileModal}
         />
         {/* 레벨상태 */}
@@ -166,7 +163,7 @@ const CharacterPage = () => {
         <SkinSection
           skins={filteredSkins}
           selectedSkin={selectedSkin ?? ""}
-          characterLevel={character.level}
+          characterLevel={user.level}
           onSelect={(id) => {
             selectSkin(id);
             createToast("카드 변경 완료 🎉");

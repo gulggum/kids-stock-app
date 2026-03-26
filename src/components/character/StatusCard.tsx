@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useUser } from "../../context/UserContext/UserContext";
 
 /**
  * 🪙 상태 카드
@@ -6,16 +7,16 @@ import styled from "styled-components";
  * - 업적
  */
 type Props = {
-  coins: number;
   achievements: any[];
 };
 
-const StatusCard = ({ coins, achievements }: Props) => {
+const StatusCard = ({ achievements }: Props) => {
+  const { user } = useUser();
   return (
     <Wrapper>
       <Header>
         <span>🪙 보유 코인</span>
-        <strong>{coins}</strong>
+        <strong>{user.coin}</strong>
       </Header>
 
       <Divider />
