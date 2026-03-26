@@ -5,7 +5,6 @@ import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { useReward } from "../RewardContext";
 import { useTrade } from "../TradeContext";
 import { usePortfolio } from "../PortfolioContext";
-import { useAttendance } from "../AttendanceContext";
 import { useUser } from "../UserContext/UserContext";
 import type { ReactNode } from "react";
 
@@ -23,8 +22,6 @@ export const AchievementProvider = ({ children }: { children: ReactNode }) => {
   const { trades } = useTrade();
   const { totalAsset } = usePortfolio();
   const { giveCustomReward } = useReward();
-  const { streak } = useAttendance();
-
   // ✅ user.achievements를 단일 출처로 사용
   const { user, addAchievement } = useUser();
 
@@ -38,7 +35,7 @@ export const AchievementProvider = ({ children }: { children: ReactNode }) => {
       totalTrades: trades.length,
       totalAsset,
       level: user.level,
-      streak,
+      streak: user.streak,
     };
 
     ACHIEVEMENTS.forEach((achievement) => {
@@ -56,7 +53,7 @@ export const AchievementProvider = ({ children }: { children: ReactNode }) => {
         setPopupAchievement(achievement.id);
       }
     });
-  }, [trades, totalAsset, user.level, streak]);
+  }, [trades, totalAsset, user.level, user.streak]);
 
   return (
     <AchievementContext.Provider

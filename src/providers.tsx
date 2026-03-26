@@ -1,7 +1,6 @@
 import AppThemeProvider from "./theme/ThemeProvider";
 import { UIProvider } from "./context/UIContext/UIProvider";
 import { UserProgressProvider } from "./context/UserContext/UserProgressProvider";
-import { AttendanceProvider } from "./context/AttendanceContext";
 import { QuizProvider } from "./context/QuizContext/QuizProvider";
 import { PortfolioProvider } from "./context/PortfolioContext";
 import { TradeProvider } from "./context/TradeContext";
@@ -22,13 +21,11 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
             <UserProgressProvider>
               <RewardProvider>
                 <QuizProvider>
-                  <AttendanceProvider>
-                    <TradeProvider>
-                      <AchievementProvider>
-                        <PortfolioProvider>{children}</PortfolioProvider>
-                      </AchievementProvider>
-                    </TradeProvider>
-                  </AttendanceProvider>
+                  <TradeProvider>
+                    <AchievementProvider>
+                      <PortfolioProvider>{children}</PortfolioProvider>
+                    </AchievementProvider>
+                  </TradeProvider>
                 </QuizProvider>
               </RewardProvider>
             </UserProgressProvider>

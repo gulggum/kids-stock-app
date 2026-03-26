@@ -3,6 +3,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getStorage, setStorage } from "../../utils/storage";
 import { LEVEL_RULES } from "../../data/rules/levelTitles";
+import { getDateKey } from "../../utils/date";
+import { useReward } from "../RewardContext";
+import type { RewardType } from "../../data/rules/rewardRules";
 
 /**
  * 📌 localStorage 키
@@ -38,6 +41,7 @@ export type User = {
   badges: string[]; // 뱃지
 
   attendance: string[]; // 출석 기록
+  streak: number; //연속 출석 일 수
   quizProgress: string[]; // 퀴즈 진행
 
   friends: number[]; // 친구 목록 (id)
@@ -73,6 +77,10 @@ type UserContextType = {
   //가상머니
   addMoney: (amount: number) => void;
   spendMoney: (amount: number) => boolean;
+
+  //출석관련
+  checkToday: (giveReward: (type: RewardType) => void) => void;
+  isCheckedToday: boolean;
 };
 
 /**
@@ -104,6 +112,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     badges: [],
 
     attendance: [],
+    streak: 0,
     quizProgress: [],
 
     friends: [],
@@ -112,7 +121,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     profileImage: "",
     profileAvatar: null,
   };
-
   /**
    * 🔥 storage에서 불러오기
    */
@@ -227,6 +235,39 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     return true;
   };
 
+  const today = getDateKey(); // import { getDateKey } from "../../utils/date"
+
+  const getYesterdayKey = () => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return getDateKey(d);
+  };
+
+  // ✅ giveReward를 파라미터로 받음 (순환 참조 방지)
+  // 사용하는 곳에서: checkToday(giveReward)
+  const checkToday = (giveReward: (type: RewardType) => void) => {
+    if (user.attendance.includes(today)) return; // 이미 출석했으면 리턴
+
+    const yesterday = getYesterdayKey();
+    const nextStreak = user.attendance.includes(yesterday)
+      ? user.streak + 1
+      : 1;
+
+    setUser((prev) => ({
+      ...prev,
+      attendance: [...prev.attendance, today],
+      streak: nextStreak,
+    }));
+
+    giveReward("ATTENDANCE_DAILY");
+
+    if (nextStreak % 7 === 0) {
+      giveReward("ATTENDANCE_STREAK_7");
+    }
+  };
+  // 오늘 출석 여부 (UI 버튼 비활성화용)
+  const isCheckedToday = user.attendance.includes(today);
+
   /**
    * 💾 저장
    */
@@ -248,6 +289,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         addAchievement,
         addMoney,
         spendMoney,
+        checkToday,
+        isCheckedToday,
       }}
     >
       {children}

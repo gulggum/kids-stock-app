@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useAttendance } from "../context/AttendanceContext";
 import { useMemo, useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
@@ -11,6 +10,7 @@ import NewsSection from "../components/news/NewsSection";
 import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
 import { useUser } from "../context/UserContext/UserContext";
 import AttendanceCalendar from "../components/AttendanceCalendar";
+import { useReward } from "../context/RewardContext";
 
 /**
  * 🏠 홈 화면
@@ -23,8 +23,8 @@ import AttendanceCalendar from "../components/AttendanceCalendar";
  */
 
 const Home = () => {
-  const { checkToday, streak } = useAttendance();
-  const { user, expProgress } = useUser();
+  const { user, checkToday, expProgress } = useUser();
+  const { giveReward } = useReward();
   const { openModal } = useModal();
   const { isSolved, markSolved } = useQuizProgress();
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
@@ -73,7 +73,7 @@ const Home = () => {
   };
 
   const handleReadNews = () => {
-    checkToday(); // ✅ 뉴스 1개라도 읽으면 출석
+    checkToday(giveReward); // ✅ 뉴스 1개라도 읽으면 출석
   };
 
   const handleGoQuiz = (news: HomeNews) => {
@@ -207,7 +207,7 @@ const Home = () => {
           {" "}
           <span>오늘의 출석</span>
           <StreakText>
-            🔥 <StreakNumber>{streak}</StreakNumber>일 연속
+            🔥 <StreakNumber>{user.streak}</StreakNumber>일 연속
           </StreakText>
         </AttendanceBox>
         <AttendanceCalendar />

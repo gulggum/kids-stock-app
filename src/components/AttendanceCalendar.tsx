@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { useAttendance } from "../context/AttendanceContext";
 import { getDateKey } from "../utils/date";
+import { useUser } from "../context/UserContext/UserContext";
 
 /**
  * 📅 월간 출석 달력
@@ -9,7 +9,7 @@ import { getDateKey } from "../utils/date";
  */
 
 const AttendanceCalendar = () => {
-  const { checkedDates } = useAttendance();
+  const { user } = useUser();
 
   const today = new Date();
   const year = today.getFullYear();
@@ -22,7 +22,7 @@ const AttendanceCalendar = () => {
     <Calendar>
       {Array.from({ length: daysInMonth }, (_, i) => {
         const date = getDateKey(new Date(year, month, i + 1));
-        const checked = checkedDates.includes(date);
+        const checked = user.attendance.includes(date);
         const isToday = i + 1 === today.getDate();
 
         return (
