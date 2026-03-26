@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { getStorage } from "../utils/storage";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -8,9 +9,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// TODO: Supabase 연동 시 전체 교체 예정
+// Supabase Auth로 로그인/로그아웃 처리
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") === "true",
+  const [isLoggedIn, setIsLoggedIn] = useState(() =>
+    getStorage("isLoggedIn", false),
   );
   const login = () => {
     localStorage.setItem("isLoggedIn", "true");
