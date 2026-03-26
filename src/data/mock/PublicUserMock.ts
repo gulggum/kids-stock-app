@@ -16,8 +16,8 @@ export type PublicUser = {
   score: number;
   lastActive: number;
   badges: string[];
-  profileImage?: string; //사진첩등..url
-  profileAvatar?: ProfileAvatarType | null; //기본캐릭터 (좌표로 적용 SpriteAvater사용)
+  profileImage: string | null; //사진첩등..url
+  profileAvatar: ProfileAvatarType | null; //기본캐릭터 (좌표로 적용 SpriteAvater사용)
 };
 
 export const publicUserMock: PublicUser[] = [

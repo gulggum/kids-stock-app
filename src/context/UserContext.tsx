@@ -5,6 +5,7 @@ import { getStorage, setStorage } from "../utils/storage";
 import { LEVEL_RULES } from "../data/rules/levelTitles";
 import { getDateKey } from "../utils/date";
 import type { RewardType } from "../data/rules/rewardRules";
+import type { ProfileAvatarType } from "../data/static/profileAvatars";
 
 /**
  * 📌 localStorage 키
@@ -46,8 +47,8 @@ export type User = {
   friends: number[]; // 친구 목록 (id)
   status: string; // 한줄 상태
 
-  profileImage?: string; // 프로필 이미지
-  profileAvatar?: any; // 기본 아바타
+  profileImage: string | null; // 프로필 이미지
+  profileAvatar: ProfileAvatarType | null; // 기본 아바타
 };
 
 type ExpInfo = {
@@ -135,7 +136,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     friends: [],
     status: "🙂 초보 투자자",
 
-    profileImage: "",
+    profileImage: null,
     profileAvatar: null,
   };
   /**
