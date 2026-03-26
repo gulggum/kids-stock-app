@@ -4,13 +4,13 @@ import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
 import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
-import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
 import { useNewsQuery } from "../hooks/useNewsQuery";
 import NewsSection from "../components/news/NewsSection";
 import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
 import { useUser } from "../context/UserContext/UserContext";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useReward } from "../context/RewardContext";
+import ExpBarCard from "../components/character/ExpBarCard";
 
 /**
  * 🏠 홈 화면
@@ -23,17 +23,14 @@ import { useReward } from "../context/RewardContext";
  */
 
 const Home = () => {
-  const { user, checkToday, expProgress } = useUser();
+  const { user, checkToday, expInfo } = useUser();
   const { giveReward } = useReward();
   const { openModal } = useModal();
-  const { isSolved, markSolved } = useQuizProgress();
+  const { isSolved, markSolved } = useUser();
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<NewsQuiz | null>(null);
   const [newsTab, setNewsTab] = useState<"today" | "yesterday">("today"); //뉴스탭
   const [countryTab, setCountryTab] = useState<"KR" | "US">("KR");
-
-  //로컬스토리지의 캐릭터상태 불러오기
-  const character = JSON.parse(localStorage.getItem("character_state") || "{}");
 
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading } = useNewsQuery();
@@ -104,7 +101,7 @@ const Home = () => {
   };
   const handleQuizCorrect = (newsId: string) => {
     //퀴즈 푼 기록
-    markSolved(newsId); //기록 + 보상
+    markSolved(newsId, giveReward); //기록 + 보상
 
     //정답 결과 팝업
     openModal({
@@ -135,13 +132,12 @@ const Home = () => {
       <Section>
         <SectionTitle>🏆 나의 경제 활동</SectionTitle>
         <CharacterBox>
-          <LevelRow>
-            <Level>🐻 레벨 {character.level}</Level>
-            <Exp>EXP {character.exp}</Exp>
-          </LevelRow>
-          <ExpBar>
-            <ExpFill style={{ width: `${expProgress}%` }} />
-          </ExpBar>
+          <ExpBarCard
+            level={expInfo.level}
+            currentExp={expInfo.currentExp}
+            neededExp={expInfo.neededExp}
+            progress={expInfo.progress}
+          />
 
           <ScoreRow>
             <ScoreNumber>{user.score}</ScoreNumber>

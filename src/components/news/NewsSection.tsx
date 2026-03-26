@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { type HomeNews } from "../../data/mock/homeNewsMockData";
-import { useQuizProgress } from "../../context/QuizContext/QuizProgressContext";
 import { marketMockData } from "../../data/mock/marketMock";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../context/UserContext/UserContext";
 
 type Props = {
   news: HomeNews[];
@@ -11,7 +11,7 @@ type Props = {
 
 const NewsSection = ({ news, onClick }: Props) => {
   const navigate = useNavigate();
-  const { isSolved } = useQuizProgress();
+  const { isSolved } = useUser();
 
   return (
     <Section>

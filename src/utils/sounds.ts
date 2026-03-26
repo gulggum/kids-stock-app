@@ -1,5 +1,6 @@
 import coinSound from "../assets/sounds/coin.mp3";
 import moneySound from "../assets/sounds/money.mp3";
+import levelUpSound from "../assets/sounds/levelUp.mp3";
 
 const DEFAULT_VOLUME = 0.5;
 
@@ -21,4 +22,8 @@ export const playMoneySound = () => {
  */
 export const playCoinSound = () => {
   playSound(coinSound);
+};
+
+export const LevelUpSound = () => {
+  playSound(levelUpSound);
 };

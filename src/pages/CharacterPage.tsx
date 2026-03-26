@@ -145,7 +145,12 @@ const CharacterPage = () => {
           onClick={openProfileModal}
         />
         {/* 레벨상태 */}
-        <LevelSection level={1} currentExp={30} neededExp={100} percent={30} />
+        <LevelSection
+          level={user.level}
+          currentExp={user.exp}
+          neededExp={100}
+          percent={user.exp}
+        />
       </ProfileSection>
 
       {/* 내카드스킨 보유 목록 */}

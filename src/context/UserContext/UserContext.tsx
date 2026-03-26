@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getStorage, setStorage } from "../../utils/storage";
 import { LEVEL_RULES } from "../../data/rules/levelTitles";
 import { getDateKey } from "../../utils/date";
-import { useReward } from "../RewardContext";
 import type { RewardType } from "../../data/rules/rewardRules";
 
 /**
@@ -40,9 +39,9 @@ export type User = {
   achievements: string[]; // 업적목록
   badges: string[]; // 뱃지
 
-  attendance: string[]; // 출석 기록
+  attendance: string[]; // 출석한 날짜 목록
   streak: number; //연속 출석 일 수
-  quizProgress: string[]; // 퀴즈 진행
+  quizProgress: string[]; // 푼 퀴즈 ID 목록
 
   friends: number[]; // 친구 목록 (id)
   status: string; // 한줄 상태
@@ -51,6 +50,12 @@ export type User = {
   profileAvatar?: any; // 기본 아바타
 };
 
+type ExpInfo = {
+  level: number;
+  currentExp: number;
+  neededExp: number;
+  progress: number;
+};
 /**
  * 📦 Context에서 제공할 값들
  */
@@ -70,7 +75,8 @@ type UserContextType = {
   addCoin: (amount: number) => void; // 코인 추가
 
   currentTitle: string; // 칭호
-  expProgress: number; // 경험치 %
+  expProgress: number; // 경험치 %게이지
+  expInfo: ExpInfo;
 
   addAchievement: (id: string) => void; //업적리스트추가
 
@@ -79,8 +85,19 @@ type UserContextType = {
   spendMoney: (amount: number) => boolean;
 
   //출석관련
+  // giveReward를 파라미터로 받는 이유:
+  // UserContext에서 useReward를 직접 쓰면 순환 참조 발생
+  // → 호출하는 쪽에서 giveReward 주입 ex) checkToday(giveReward)
   checkToday: (giveReward: (type: RewardType) => void) => void;
   isCheckedToday: boolean;
+  //퀴즈관련
+  // 동일한 이유로 giveReward 파라미터로 주입
+  // ex) markSolved(quizId, giveReward)
+  isSolved: (quizId: string) => boolean;
+  markSolved: (
+    quizId: string,
+    giveReward: (type: RewardType) => void,
+  ) => boolean;
 };
 
 /**
@@ -191,7 +208,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       .find((rule) => user.exp >= rule.requiredExp)?.title || "🐣 투자 새싹";
 
   /**
-   * 📊 경험치 진행률 (%)
+   * 📊 경험치 진행률 (%) //게이지 채우는용도 ((progress %) = 현재레벨에서 쌓은 경험치 / 다음레벨까지 필요한 경험치)
    */
   const expProgress = (() => {
     const currentRule =
@@ -207,6 +224,39 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const neededExp = nextRule.requiredExp - currentRule.requiredExp;
 
     return (currentLevelExp / neededExp) * 100;
+  })();
+
+  // 경험치 UI용
+  //   level,  // 현재 레벨
+  //   currentExp  // 현재 레벨에서 쌓은 경험치
+  //   neededExp  // 다음 레벨까지 필요한 경험치
+  //   progress  // 퍼센트 (기존 expProgress)
+  const expInfo = (() => {
+    const currentRule =
+      LEVEL_RULES.slice()
+        .reverse()
+        .find((r) => user.exp >= r.requiredExp) ?? LEVEL_RULES[0];
+
+    const nextRule = LEVEL_RULES.find((r) => r.level === currentRule.level + 1);
+
+    if (!nextRule) {
+      return {
+        level: currentRule.level,
+        currentExp: 0,
+        neededExp: 1,
+        progress: 100,
+      };
+    }
+
+    const currentLevelExp = user.exp - currentRule.requiredExp;
+    const neededExp = nextRule.requiredExp - currentRule.requiredExp;
+
+    return {
+      level: currentRule.level,
+      currentExp: currentLevelExp,
+      neededExp,
+      progress: (currentLevelExp / neededExp) * 100,
+    };
   })();
 
   /**
@@ -267,6 +317,25 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
   // 오늘 출석 여부 (UI 버튼 비활성화용)
   const isCheckedToday = user.attendance.includes(today);
+  // ─── 퀴즈 ────────────────────────────────
+  // 이미 푼 퀴즈인지 확인
+  const isSolved = (quizId: string) => user.quizProgress.includes(quizId);
+
+  // 퀴즈 완료 처리 + 보상 지급
+  const markSolved = (
+    quizId: string,
+    giveReward: (type: RewardType) => void,
+  ): boolean => {
+    if (user.quizProgress.includes(quizId)) return false; // 이미 푼 퀴즈
+
+    setUser((prev) => ({
+      ...prev,
+      quizProgress: [...prev.quizProgress, quizId],
+    }));
+
+    giveReward("QUIZ_CORRECT");
+    return true;
+  };
 
   /**
    * 💾 저장
@@ -285,12 +354,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         addExp,
         addScore,
         expProgress,
+        expInfo,
         currentTitle,
         addAchievement,
         addMoney,
         spendMoney,
         checkToday,
         isCheckedToday,
+        isSolved,
+        markSolved,
       }}
     >
       {children}
