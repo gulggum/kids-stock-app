@@ -81,10 +81,9 @@ const AdminNewsCreate = () => {
       summary: item.summary,
       image: item.image,
 
-      stockId: "1",
-
-      type: "today",
-      country: "KR",
+      stockIds: [], // ✅ number[] (나중에 연결)
+      type: "today" as const, // ✅ NewsType으로 고정
+      country: "KR" as const, // ✅ NewsCountry로 고정
 
       createdAt: new Date().toISOString(),
     }));
