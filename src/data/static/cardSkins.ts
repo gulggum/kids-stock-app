@@ -1,3 +1,17 @@
+/**
+ * 🎨 카드 스킨 데이터
+ *
+ * 등급 기준
+ * - COMMON  : 일반 구매 가능 (그라디언트)
+ * - SPECIAL : 미스터리 박스 or 구매 (이미지)
+ * - LEGEND  : level 10 달성 후 언락 (이미지)
+ *
+ * 미스터리 박스 확률
+ * - COMMON  70%
+ * - SPECIAL 25%
+ * - LEGEND   5%
+ */
+
 import legendSkinGold from "../../assets/cardSkins/legendSkinGold.png";
 import specialSkin_1 from "../../assets/cardSkins/specialSkin_1.png";
 import specialSkin_2 from "../../assets/cardSkins/specialSkin_2.png";
@@ -9,25 +23,23 @@ export type CardSkin = {
   name: string;
   price: number;
   rarity: CardRarity;
-
-  // 👉 선택적으로 사용
-  gradient?: string; // 기본 카드용
-  image?: string; // 레전드/스페셜용
-  unlockLevel?: number; //레벨제한
+  gradient?: string; // COMMON 카드용
+  image?: string; // SPECIAL/LEGEND 카드용
+  unlockLevel?: number; // 레벨 제한 (없으면 누구나 가능)
 };
 
-//랜덤박스
+// 미스터리 박스 가격
 export const MYSTERY_BOX_PRICE = 100;
-//랜덤 대상 아이템 필터 함수
-export function getRandomItem(items: CardSkin[]) {
-  const index = Math.floor(Math.random() * items.length);
-  return items[index];
-}
+
+// 미스터리 박스 랜덤 아이템 뽑기
+export const getRandomItem = (items: CardSkin[]) => {
+  return items[Math.floor(Math.random() * items.length)];
+};
 
 export const cardSkins: CardSkin[] = [
-  // -----------------------------
-  // 🎨 COMMON (부드러운 색감)
-  // -----------------------------
+  // ─────────────────────────────────────────
+  // 🎨 COMMON - 파스텔 (100~120코인)
+  // ─────────────────────────────────────────
   {
     id: "skyblue",
     name: "스카이블루",
@@ -64,9 +76,9 @@ export const cardSkins: CardSkin[] = [
     gradient: "linear-gradient(135deg, #f8fafc, #e2e8f0)",
   },
 
-  // -----------------------------
-  // 🎨 COMMON (조금 더 진한 톤)
-  // -----------------------------
+  // ─────────────────────────────────────────
+  // 🎨 COMMON - 비비드 (150코인)
+  // ─────────────────────────────────────────
   {
     id: "blue",
     name: "코발트 블루",
@@ -103,9 +115,9 @@ export const cardSkins: CardSkin[] = [
     gradient: "linear-gradient(135deg, #f87171, #dc2626)",
   },
 
-  // -----------------------------
-  // ⭐ COMMON (살짝 고급 느낌)
-  // -----------------------------
+  // ─────────────────────────────────────────
+  // ⭐ COMMON - 프리미엄 (300~350코인)
+  // ─────────────────────────────────────────
   {
     id: "purple",
     name: "딥 퍼플",
@@ -142,9 +154,9 @@ export const cardSkins: CardSkin[] = [
     gradient: "linear-gradient(135deg, #fb7185, #f59e0b)",
   },
 
-  // -----------------------------
-  // 🌈 SPECIAL (이미지 넣는 영역)
-  // -----------------------------
+  // ─────────────────────────────────────────
+  // 🌈 SPECIAL (500코인 or 미스터리 박스)
+  // ─────────────────────────────────────────
   {
     id: "special1",
     name: "스페셜 파스텔 카드",
@@ -160,23 +172,23 @@ export const cardSkins: CardSkin[] = [
     image: specialSkin_2,
   },
 
-  // -----------------------------
-  // 👑 LEGEND (이미지)
-  // -----------------------------
+  // ─────────────────────────────────────────
+  // 👑 LEGEND (level 10 달성 후 언락)
+  // ─────────────────────────────────────────
   {
     id: "legend1",
     name: "골드 레전드",
     price: 1000,
     rarity: "LEGEND",
     image: legendSkinGold,
-    unlockLevel: 15,
+    unlockLevel: 10, // ✅ 15 → 10으로 변경 (levelTitles 최대 레벨과 통일)
   },
   {
     id: "legend2",
     name: "블랙 레전드",
     price: 1200,
     rarity: "LEGEND",
-    image: "/cards/legend2.png",
-    unlockLevel: 15,
+    image: legendSkinGold, // TODO: 블랙 레전드 이미지 추가 시 교체
+    unlockLevel: 10, // ✅ 15 → 10으로 변경
   },
 ];

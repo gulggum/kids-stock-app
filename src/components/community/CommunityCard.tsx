@@ -2,13 +2,13 @@ import styled, { css, keyframes } from "styled-components";
 import { useModal } from "../../context/UIContext/ModalContext";
 import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
-import { getLevelTier } from "../../utils/getLevelTier";
 import { isUserOnline } from "../../utils/isUserOnline";
 import { cardSkins } from "../../data/static/cardSkins";
 import { useSkinItem } from "../../context/SkinItemContext";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import type { PublicUser } from "../../data/mock/PublicUserMock";
+import { getLevelTier } from "../../utils/getLevelTier";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -24,8 +24,8 @@ const CommunityCard = ({
   onToggleFriend?: (id: number) => void;
 }) => {
   const { openModal } = useModal();
-  const { title: levelTitle, tier } = getLevelTier(user.level);
   const { selectedSkin } = useSkinItem();
+  const { title, tier } = getLevelTier(user.level);
 
   const skin = cardSkins.find((skin) => skin.id === selectedSkin);
 
@@ -70,7 +70,7 @@ const CommunityCard = ({
           </NameRow>
           <Level>Lv. {user.level}</Level>
         </Info>
-        <LevelTitle>{levelTitle}</LevelTitle>
+        <LevelTitle>{title}</LevelTitle>
       </Top>
 
       <BadgeRow>

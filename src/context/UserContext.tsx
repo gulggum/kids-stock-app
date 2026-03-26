@@ -2,10 +2,11 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { getStorage, setStorage } from "../utils/storage";
-import { LEVEL_RULES } from "../data/rules/levelTitles";
+import { LEVEL_RULES, type LevelTier } from "../data/rules/levelTitles";
 import { getDateKey } from "../utils/date";
 import type { RewardType } from "../data/rules/rewardRules";
 import type { ProfileAvatarType } from "../data/static/profileAvatars";
+import { getLevelTier } from "../utils/getLevelTier";
 
 /**
  * 📌 localStorage 키
@@ -75,7 +76,8 @@ type UserContextType = {
   spendCoin: (amount: number) => boolean; // 코인 사용
   addCoin: (amount: number) => void; // 코인 추가
 
-  currentTitle: string; // 칭호
+  currentTitle: string; // 칭호 텍스트
+  currentTier: LevelTier;
   expProgress: number; // 경험치 %게이지
   expInfo: ExpInfo;
 
@@ -147,6 +149,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   /**
+   * 🏷 현재 칭호 계산
+   */
+  const { title: currentTitle, tier: currentTier } = getLevelTier(user.level);
+
+  /**
    * 🔥 코인 차감
    */
   const spendCoin = (amount: number) => {
@@ -199,14 +206,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       score: prev.score + amount,
     }));
   };
-
-  /**
-   * 🏷 현재 칭호 계산
-   */
-  const currentTitle =
-    LEVEL_RULES.slice()
-      .reverse()
-      .find((rule) => user.exp >= rule.requiredExp)?.title || "🐣 투자 새싹";
 
   /**
    * 📊 경험치 진행률 (%) //게이지 채우는용도 ((progress %) = 현재레벨에서 쌓은 경험치 / 다음레벨까지 필요한 경험치)
@@ -357,6 +356,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         expProgress,
         expInfo,
         currentTitle,
+        currentTier,
         addAchievement,
         addMoney,
         spendMoney,
