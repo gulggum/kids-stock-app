@@ -2,6 +2,7 @@
 // 언제,어떤종목을,어떻게 거래했는지 전부 기록하는 곳(구매,매도,히스토리)
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { getStorage, setStorage } from "../utils/storage";
 
 type TradeType = "BUY" | "SELL";
 
@@ -29,10 +30,9 @@ const TradeContext = createContext<TradeContextType>({} as TradeContextType);
 const TRADE_KEY = `trade_history`;
 
 export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [trades, setTrades] = useState<Trade[]>(() => {
-    const saved = localStorage.getItem(TRADE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [trades, setTrades] = useState<Trade[]>(() =>
+    getStorage(TRADE_KEY, []),
+  );
 
   //오늘 구매했는지 확인
   const hasBoughtToday = useMemo(() => {
@@ -94,8 +94,10 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
 
     return quantity > 0;
   };
+
+  // TODO: Supabase 연동 시 localStorage 저장 제거, DB로 이전
   useEffect(() => {
-    localStorage.setItem(TRADE_KEY, JSON.stringify(trades));
+    setStorage(TRADE_KEY, trades);
   }, [trades]);
 
   return (

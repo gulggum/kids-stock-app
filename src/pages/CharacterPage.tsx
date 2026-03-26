@@ -1,7 +1,6 @@
 import ProfileCard from "../components/character/ProfileCard";
 import AvatarGrid from "../components/character/AvatarGrid";
 import ConfirmAvatar from "../components/character/ConfirmAvatar";
-import LevelSection from "../components/character/LevelSection";
 import StatusCard from "../components/character/StatusCard";
 import { useCharacterProfile } from "../hooks/useCharacterProfile";
 import { useModal } from "../context/UIContext/ModalContext";
@@ -14,6 +13,7 @@ import { ACHIEVEMENTS } from "../data/rules/achievementRules";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext/UserContext";
+import ExpBarCard from "../components/character/ExpBarCard";
 
 const CharacterPage = () => {
   const {
@@ -30,7 +30,7 @@ const CharacterPage = () => {
   const { achieved } = useAchievement(); //업적
   const { fileInputRef, cameraInputRef } = useCharacterProfile(); //프로필사진첨부
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, expInfo } = useUser();
 
   const filteredSkins = ownedSkins
     .map((id) => cardSkins.find((s) => s.id === id))
@@ -145,11 +145,11 @@ const CharacterPage = () => {
           onClick={openProfileModal}
         />
         {/* 레벨상태 */}
-        <LevelSection
-          level={user.level}
-          currentExp={user.exp}
-          neededExp={100}
-          percent={user.exp}
+        <ExpBarCard
+          level={expInfo.level}
+          currentExp={expInfo.currentExp}
+          neededExp={expInfo.neededExp}
+          progress={expInfo.progress}
         />
       </ProfileSection>
 

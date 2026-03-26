@@ -13,6 +13,7 @@
 import { useContext, createContext, useMemo } from "react";
 import { useTrade } from "./TradeContext";
 import { chartMock } from "../data/mock/chartMock";
+import { useUser } from "./UserContext/UserContext";
 
 type PortfolioItem = {
   id: number; //회사id
@@ -35,6 +36,7 @@ export const PortfolioProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { user } = useUser();
   const { trades } = useTrade(); //// 🔹 TradeContext에서 거래 원본 데이터 가져옴
 
   // portfolio 계산 , trades가 바뀔 때만 다시 계산됨,렌더링마다 반복 계산되는 것을 방지하기 위해 useMemo 사용
@@ -89,8 +91,6 @@ export const PortfolioProvider = ({
   // 2️⃣ totalAsset 계산 (portfolio 기반)
 
   const totalAsset = useMemo(() => {
-    const BASE_MONEY = 100000;
-
     // 7일 차트
     // → 마지막 가격
     // → 현재가격
@@ -103,7 +103,8 @@ export const PortfolioProvider = ({
       return total + currentPrice * item.quantity;
     }, 0);
 
-    return BASE_MONEY + evaluationAmount;
+    const money = user.money;
+    return money + evaluationAmount;
   }, [portfolio]);
 
   return (

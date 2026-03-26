@@ -334,35 +334,6 @@ const CharacterBox = styled.div`
   gap: 12px;
 `;
 
-const LevelRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-`;
-
-const Level = styled.div`
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.accentPurple};
-`;
-
-const Exp = styled.div`
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-const ExpBar = styled.div`
-  height: 8px;
-  background: rgba(0, 0, 0, 0.08);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-top: 6px;
-`;
-
-const ExpFill = styled.div`
-  height: 100%;
-  background: ${({ theme }) => theme.colors.primary};
-  transition: width 0.3s ease;
-`;
-
 const ScoreRow = styled.div`
   display: flex;
   align-items: baseline;
