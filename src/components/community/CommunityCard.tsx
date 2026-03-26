@@ -1,5 +1,4 @@
 import styled, { css, keyframes } from "styled-components";
-import { type CommunityUser } from "../../data/mock/communityMock";
 import { useModal } from "../../context/UIContext/ModalContext";
 import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
@@ -9,6 +8,7 @@ import { cardSkins } from "../../data/static/cardSkins";
 import { useItem } from "../../context/UserContext/ItemContext";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
+import type { PublicUser } from "../../data/mock/PublicUserMock";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -19,7 +19,7 @@ const CommunityCard = ({
   isFriend,
   onToggleFriend,
 }: {
-  user: CommunityUser;
+  user: PublicUser;
   isFriend?: boolean;
   onToggleFriend?: (id: number) => void;
 }) => {

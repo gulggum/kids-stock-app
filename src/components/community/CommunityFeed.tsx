@@ -1,12 +1,12 @@
 //친구 활동 피드 담당
 
 import { useState } from "react";
-import { type CommunityUser } from "../../data/mock/communityMock";
+import { type PublicUser } from "../../data/mock/PublicUserMock";
 import CommunityCard from "./CommunityCard";
 import styled from "styled-components";
 
 interface CommunityFeedProps {
-  users: CommunityUser[];
+  users: PublicUser[];
   friends: number[];
   onToggleFriend: (id: number) => void;
 }

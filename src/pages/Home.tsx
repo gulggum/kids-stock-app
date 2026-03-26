@@ -1,7 +1,5 @@
 import styled from "styled-components";
 import { useAttendance } from "../context/AttendanceContext";
-import AttendanceCalendar from "../components/AttendanceCalendar";
-import { useScore } from "../context/ScoreContext";
 import { useMemo, useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
@@ -11,7 +9,8 @@ import { useQuizProgress } from "../context/QuizContext/QuizProgressContext";
 import { useNewsQuery } from "../hooks/useNewsQuery";
 import NewsSection from "../components/news/NewsSection";
 import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
-import { useCharacter } from "../context/UserContext/CharacterContext";
+import { useUser } from "../context/UserContext/UserContext";
+import AttendanceCalendar from "../components/AttendanceCalendar";
 
 /**
  * 🏠 홈 화면
@@ -25,12 +24,11 @@ import { useCharacter } from "../context/UserContext/CharacterContext";
 
 const Home = () => {
   const { checkToday, streak } = useAttendance();
-  const { score } = useScore();
+  const { user, expProgress } = useUser();
   const { openModal } = useModal();
   const { isSolved, markSolved } = useQuizProgress();
   const [activeNews, setActiveNews] = useState<HomeNews | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<NewsQuiz | null>(null);
-  const { expProgress } = useCharacter();
   const [newsTab, setNewsTab] = useState<"today" | "yesterday">("today"); //뉴스탭
   const [countryTab, setCountryTab] = useState<"KR" | "US">("KR");
 
@@ -146,7 +144,7 @@ const Home = () => {
           </ExpBar>
 
           <ScoreRow>
-            <ScoreNumber>{score}</ScoreNumber>
+            <ScoreNumber>{user.score}</ScoreNumber>
             <ScoreLabel>오늘 점수</ScoreLabel>
           </ScoreRow>
         </CharacterBox>

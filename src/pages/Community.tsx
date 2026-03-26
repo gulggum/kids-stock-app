@@ -1,15 +1,15 @@
 import styled from "styled-components";
-import { communityMock, type CommunityUser } from "../data/mock/communityMock";
+import { publicUserMock } from "../data/mock/PublicUserMock";
 import { useEffect, useState } from "react";
 import { useAchievement } from "../context/AchievementContext/AchievementContext";
-import { useCharacter } from "../context/UserContext/CharacterContext";
-import { useScore } from "../context/ScoreContext";
 import MyStatusSection from "../components/community/MyStatusSection";
-import CommunityRanking from "../components/community/CommunityRanking";
+import CommunityRanking, {
+  type RankingUser,
+} from "../components/community/CommunityRanking";
 import CommunityFeed from "../components/community/CommunityFeed";
 import MyFriendsSection from "../components/community/MyFriendsSection";
 import SuggestionSection from "../components/community/SuggestionSection";
-import { useProfile } from "../context/UserContext/ProfileContext";
+import { useUser } from "../context/UserContext/UserContext";
 
 /**
  * 커뮤니티 메인 화면
@@ -18,34 +18,32 @@ import { useProfile } from "../context/UserContext/ProfileContext";
 
 const Community = () => {
   const { achieved } = useAchievement();
-  const { character } = useCharacter();
-  const { score } = useScore();
+  const { user } = useUser();
   const [myStatus, setMyStatus] = useState(() => {
     const saved = localStorage.getItem("myStatus");
     return saved ?? "😄 오늘도 참여했어요!";
   });
-  const { profileImage, profileAvatar } = useProfile();
 
   useEffect(() => {
     localStorage.setItem("myStatus", myStatus);
   }, [myStatus]);
 
-  // 🔥 내 유저 데이터 구성
-  const myUser: CommunityUser = {
-    id: 0,
-    nickname: "가온",
-    level: character.level,
-    emoji: "🐣",
-    score,
-    lastActive: Date.now() - 1000 * 60 * 10,
-    badges: achieved,
-    levelTitle: "",
-    status: "",
-    profileImage,
-    profileAvatar,
+  // ✅ 변경 - User → RankingUser로 변환 후 넣기
+  const myRankingUser: RankingUser = {
+    id: user.id,
+    nickname: user.nickname,
+    level: user.level,
+    score: user.score,
+    badges: user.badges,
+    profileImage: user.profileImage,
+    profileAvatar: user.profileAvatar,
+    // TODO: Supabase 연동 시 제거
+    // 프로필 이미지(profileImage) 또는 아바타(profileAvatar) 사용 예정
+    emoji: "🙂",
   };
+
   // 🔥 전체 유저 리스트 (내 정보 + mock)
-  const allUsers = [myUser, ...communityMock];
+  const allUsers = [myRankingUser, ...publicUserMock];
   // 🔥 친구 상태
   const [friends, setFriends] = useState<number[]>(() => {
     const saved = localStorage.getItem("myFriends");
@@ -77,26 +75,26 @@ const Community = () => {
       {/* 🏆 랭킹 섹션 */}
       <CommunityRanking
         allUsers={allUsers}
-        myUserId={myUser.id}
-        myScore={score}
+        myUserId={user.id}
+        myScore={user.score}
         myAchievedCount={achieved.length}
       />
       {/* 👥 내친구 섹션 */}
       <MyFriendsSection
-        users={communityMock}
+        users={publicUserMock}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />
       {/* 👥 친구추천 섹션 */}
       <SuggestionSection
-        users={communityMock}
+        users={publicUserMock}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />
 
       {/* 👥 친구 피드 섹션 */}
       <CommunityFeed
-        users={communityMock}
+        users={publicUserMock}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />

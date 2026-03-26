@@ -7,10 +7,8 @@ import CommunityCard from "./CommunityCard";
 import { useModal } from "../../context/UIContext/ModalContext";
 import { useEffect, useRef, useState } from "react";
 import SelectStatusModal from "./SelectStatusModal";
-import { useProfile } from "../../context/UserContext/ProfileContext";
-import { useCharacter } from "../../context/UserContext/CharacterContext";
 import { useAchievement } from "../../context/AchievementContext/AchievementContext";
-import { useScore } from "../../context/ScoreContext";
+import { useUser } from "../../context/UserContext/UserContext";
 
 interface MyStatusSectionProps {
   myStatus: string;
@@ -23,10 +21,8 @@ const MyStatusSection = ({
   const { openModal, closeModal } = useModal();
   const myCardEndRef = useRef<HTMLDivElement | null>(null);
   const [showSticky, setShowSticky] = useState(false);
-  const { profileImage, profileAvatar } = useProfile();
-  const { character } = useCharacter();
   const { achieved } = useAchievement();
-  const { score } = useScore();
+  const { user } = useUser();
 
   useEffect(() => {
     const target = myCardEndRef.current;
@@ -65,17 +61,17 @@ const MyStatusSection = ({
       <SectionHeader>내 이야기</SectionHeader>
       <CommunityCard
         user={{
-          id: 0,
-          nickname: "가온",
-          level: character.level,
+          id: user.id,
+          nickname: user.nickname,
+          level: user.level,
           levelTitle: "",
-          emoji: "🐣",
+          emoji: "🐣", // TODO: Supabase 연동 시 제거, profileImage/profileAvatar 사용 예정
           status: myStatus,
-          score,
+          score: user.score,
           lastActive: Date.now() - 1000 * 60 * 2,
           badges: achieved,
-          profileImage,
-          profileAvatar,
+          profileImage: user.profileImage,
+          profileAvatar: user.profileAvatar ?? null,
         }}
       />
 

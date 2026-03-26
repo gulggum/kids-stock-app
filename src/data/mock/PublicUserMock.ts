@@ -6,7 +6,7 @@ import type { ProfileAvatarType } from "../static/profileAvatars";
  * - 서버 연동 전 임시 데이터
  * - 레벨, 점수, 뱃지는 실제 로직과 무관
  */
-export type CommunityUser = {
+export type PublicUser = {
   id: number;
   nickname: string;
   level: number;
@@ -20,7 +20,7 @@ export type CommunityUser = {
   profileAvatar?: ProfileAvatarType | null; //기본캐릭터 (좌표로 적용 SpriteAvater사용)
 };
 
-export const communityMock: CommunityUser[] = [
+export const publicUserMock: PublicUser[] = [
   {
     id: 1,
     nickname: "민수",

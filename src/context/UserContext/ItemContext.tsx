@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useCoin } from "../WalletContext/CoinContext";
 import {
   cardSkins,
   type CardRarity,
   type CardSkin,
 } from "../../data/static/cardSkins";
+import { useUser } from "./UserContext";
 
 // -----------------------------
 // 📌 localStorage 키
@@ -47,7 +47,7 @@ const ItemContext = createContext<ItemContextType>({} as ItemContextType);
 // 📌 Provider (전역 상태 관리)
 // -----------------------------
 export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
-  const { spendCoin } = useCoin(); // 코인 차감 함수
+  const { spendCoin } = useUser(); // 코인 차감 함수
 
   // -----------------------------
   // 🎒 보유 스킨 상태

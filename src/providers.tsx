@@ -7,7 +7,6 @@ import { QuizProvider } from "./context/QuizContext/QuizProvider";
 import { PortfolioProvider } from "./context/PortfolioContext";
 import { TradeProvider } from "./context/TradeContext";
 import { RewardProvider } from "./context/RewardContext";
-import { ScoreProvider } from "./context/ScoreContext";
 import { AchievementProvider } from "./context/AchievementContext/AchievementContext";
 import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -22,21 +21,19 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
         <AuthProvider>
           <UIProvider>
             <WalletProvider>
-              <ScoreProvider>
-                <UserProgressProvider>
-                  <RewardProvider>
-                    <QuizProvider>
-                      <AttendanceProvider>
-                        <TradeProvider>
-                          <AchievementProvider>
-                            <PortfolioProvider>{children}</PortfolioProvider>
-                          </AchievementProvider>
-                        </TradeProvider>
-                      </AttendanceProvider>
-                    </QuizProvider>
-                  </RewardProvider>
-                </UserProgressProvider>
-              </ScoreProvider>
+              <UserProgressProvider>
+                <RewardProvider>
+                  <QuizProvider>
+                    <AttendanceProvider>
+                      <TradeProvider>
+                        <AchievementProvider>
+                          <PortfolioProvider>{children}</PortfolioProvider>
+                        </AchievementProvider>
+                      </TradeProvider>
+                    </AttendanceProvider>
+                  </QuizProvider>
+                </RewardProvider>
+              </UserProgressProvider>
             </WalletProvider>
           </UIProvider>
         </AuthProvider>

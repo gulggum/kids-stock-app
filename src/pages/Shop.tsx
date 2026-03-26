@@ -1,7 +1,5 @@
 // 캐릭터 페이지 -> 미니상점
 // 상점 페이지 -> 전체목록 + 설명
-
-import { useCoin } from "../context/WalletContext/CoinContext";
 import { useToast } from "../context/UIContext/ToastContext";
 import { useItem } from "../context/UserContext/ItemContext";
 import { useState } from "react";
@@ -13,7 +11,7 @@ import { useReward } from "../context/RewardContext";
 import { cardSkins, type CardSkin } from "../data/static/cardSkins";
 import { MysteryBox } from "../components/shop/mysteryBox";
 import { isCardUnlocked } from "../utils/getLevelTier";
-import { useCharacter } from "../context/UserContext/CharacterContext";
+import { useUser } from "../context/UserContext/UserContext";
 
 // -----------------------------
 // 📌 탭 타입 (필터용)
@@ -24,12 +22,11 @@ const Shop = () => {
   // -----------------------------
   // 📌 전역 상태 가져오기
   // -----------------------------
-  const { coins } = useCoin(); // 보유 코인
   const { createToast } = useToast(); // 토스트 메시지
   const { buySkin, isOwned, selectedSkin } = useItem(); // 스킨 관련
   const { openModal } = useModal(); // 확인 모달
   const { giveReward } = useReward();
-  const { character } = useCharacter();
+  const { user } = useUser();
 
   // -----------------------------
   // 📌 UI 상태
@@ -88,7 +85,7 @@ const Shop = () => {
       {/* 🪙 보유 코인 표시 */}
       {/* ----------------------------- */}
       <CoinBar>
-        🪙 보유 코인 <strong>{coins}</strong>
+        🪙 보유 코인 <strong>{user.coin}</strong>
       </CoinBar>
 
       {/* ----------------------------- */}
@@ -137,7 +134,7 @@ const Shop = () => {
           const owned = isOwned(item.id); // 보유 여부
           const selected = selectedSkin === item.id; // 현재 적용 여부
           //캐릭터레벨별 상점잠금
-          const unlocked = isCardUnlocked(character.level, item.unlockLevel);
+          const unlocked = isCardUnlocked(user.level, item.unlockLevel);
           const locked = !unlocked;
           return (
             <Card

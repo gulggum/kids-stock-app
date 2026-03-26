@@ -3,7 +3,6 @@ import AvatarGrid from "../components/character/AvatarGrid";
 import ConfirmAvatar from "../components/character/ConfirmAvatar";
 import LevelSection from "../components/character/LevelSection";
 import StatusCard from "../components/character/StatusCard";
-
 import { useCharacterProfile } from "../hooks/useCharacterProfile";
 import { useModal } from "../context/UIContext/ModalContext";
 import { useToast } from "../context/UIContext/ToastContext";

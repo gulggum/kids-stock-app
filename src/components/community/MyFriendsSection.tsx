@@ -1,7 +1,7 @@
 //나의 친구목록
 
 import styled from "styled-components";
-import { type CommunityUser } from "../../data/mock/communityMock";
+import { type CommunityUser } from "../../data/mock/PublicUserMock";
 import CommunityCard from "./CommunityCard";
 import { useState } from "react";
 
