@@ -205,8 +205,8 @@ const ActiveDot = styled.div`
 
   background: #2ecc71;
 
-  right: -2px;
-  bottom: -2px;
+  right: 3px;
+  bottom: 2px;
 
   border: 2px solid white;
   z-index: 555;

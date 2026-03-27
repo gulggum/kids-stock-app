@@ -29,6 +29,11 @@ export const MysteryBox = () => {
             onConfirm: () => {
               const item = openMysteryBox();
 
+              if (item === "NOT_ENOUGH_COIN") {
+                createToast("코인이 부족해요 🥲");
+                return;
+              }
+
               if (!item) {
                 createToast("더 이상 얻을 아이템이 없어요!");
                 return;

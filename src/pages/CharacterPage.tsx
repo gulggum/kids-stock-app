@@ -47,11 +47,11 @@ const CharacterPage = () => {
           <UploadWrapper>
             <CloseButton onClick={closeModal}>✖</CloseButton>
             {/* 📸 업로드 버튼 */}
-            <UploadButton onClick={() => fileInputRef.current?.click()}>
+            <UploadButton onClick={() => cameraInputRef.current?.click()}>
               📸 사진 찍기
             </UploadButton>
 
-            <UploadButton onClick={() => cameraInputRef.current?.click()}>
+            <UploadButton onClick={() => fileInputRef.current?.click()}>
               🖼 앨범 선택
             </UploadButton>
           </UploadWrapper>

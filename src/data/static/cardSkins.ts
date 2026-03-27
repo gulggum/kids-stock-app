@@ -30,6 +30,7 @@ export type CardSkin = {
 
 // 미스터리 박스 가격
 export const MYSTERY_BOX_PRICE = 100;
+export const MYSTERY_BOX_DUPLICATE_REFUND = 50;
 
 // 미스터리 박스 랜덤 아이템 뽑기
 export const getRandomItem = (items: CardSkin[]) => {

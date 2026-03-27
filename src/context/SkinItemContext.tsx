@@ -11,6 +11,8 @@
 import { createContext, useContext } from "react";
 import {
   cardSkins,
+  MYSTERY_BOX_DUPLICATE_REFUND,
+  MYSTERY_BOX_PRICE,
   type CardRarity,
   type CardSkin,
 } from "../data/static/cardSkins";
@@ -37,7 +39,7 @@ type SkinItemContextType = {
   buySkin: (id: string, price: number) => BuyResult;
   selectSkin: (id: string) => void;
   isOwned: (id: string) => boolean;
-  openMysteryBox: () => MysteryBoxResult | null;
+  openMysteryBox: () => MysteryBoxResult | null | "NOT_ENOUGH_COIN";
 };
 
 // ─────────────────────────────────────────
@@ -58,7 +60,7 @@ export const SkinItemProvider = ({
   // user에서 직접 읽기
   // ✅ setUser로 user 안의 ownedSkins, selectedSkin 업데이트
   // ✅ 저장은 UserContext useEffect가 담당
-  const { user, setUser, spendCoin } = useUser();
+  const { user, setUser, spendCoin, addCoin } = useUser();
 
   // 💰 스킨 구매
   const buySkin = (id: string, price: number): BuyResult => {
@@ -88,7 +90,10 @@ export const SkinItemProvider = ({
   const isOwned = (id: string) => user.ownedSkins.includes(id);
 
   // 🎁 미스터리박스
-  const openMysteryBox = (): MysteryBoxResult | null => {
+  const openMysteryBox = (): MysteryBoxResult | null | "NOT_ENOUGH_COIN" => {
+    // ✅ 코인 차감 먼저
+    const success = spendCoin(MYSTERY_BOX_PRICE);
+    if (!success) return "NOT_ENOUGH_COIN";
     const roll = Math.random() * 100;
 
     // 확률로 등급 결정
@@ -107,6 +112,16 @@ export const SkinItemProvider = ({
 
     const random = candidates[Math.floor(Math.random() * candidates.length)];
     const alreadyOwned = user.ownedSkins.includes(random.id);
+
+    // ✅ 중복이면 코인 50 환불
+    if (alreadyOwned) {
+      addCoin(MYSTERY_BOX_DUPLICATE_REFUND);
+    } else {
+      setUser((prev) => ({
+        ...prev,
+        ownedSkins: [...prev.ownedSkins, random.id],
+      }));
+    }
 
     // 새 카드면 보유 목록에 추가
     if (!alreadyOwned) {
