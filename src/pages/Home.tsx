@@ -100,15 +100,16 @@ const Home = () => {
     setActiveQuiz(quiz);
   };
   const handleQuizCorrect = (newsId: string) => {
-    //퀴즈 푼 기록
-    markSolved(newsId, giveReward); //기록 + 보상
-
     //정답 결과 팝업
     openModal({
       type: "INFO",
       title: "🎉 오~ 맞췄어!",
       message: "보상을 획득했어요! 🪙✨",
       confirmText: "확인",
+      onConfirm: () => {
+        //퀴즈 푼 기록
+        markSolved(newsId, giveReward); //기록 + 보상
+      },
     });
     playCoinSound();
   };

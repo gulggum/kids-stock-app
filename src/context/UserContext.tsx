@@ -103,6 +103,9 @@ type UserContextType = {
     quizId: string,
     giveReward: (type: RewardType) => void,
   ) => boolean;
+
+  //나의 한마디 고르기 상태
+  updateStatus: (status: string) => void;
 };
 
 /**
@@ -138,7 +141,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     quizProgress: [],
 
     friends: [],
-    status: "🙂 초보 투자자",
+    status: "😄 오늘은 지켜보는 날이에요",
 
     profileImage: null,
     profileAvatar: null,
@@ -344,6 +347,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     return true;
   };
 
+  //나의 한마디 상태 함수
+  const updateStatus = (status: string) => {
+    setUser((prev) => ({ ...prev, status }));
+  };
+
   /**
    * 💾 저장
    */
@@ -371,6 +379,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         isCheckedToday,
         isSolved,
         markSolved,
+        updateStatus,
       }}
     >
       {children}

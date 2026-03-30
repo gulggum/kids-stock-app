@@ -19,14 +19,7 @@ import { getStorage, setStorage } from "../utils/storage";
 
 const Community = () => {
   const { achieved } = useAchievement();
-  const { user } = useUser();
-  const [myStatus, setMyStatus] = useState<string>(() =>
-    getStorage("myStatus", "😄 오늘도 참여했어요!"),
-  );
-
-  useEffect(() => {
-    setStorage("myStatus", myStatus);
-  }, [myStatus]);
+  const { user, updateStatus } = useUser();
 
   // ✅ 변경 - User → RankingUser로 변환 후 넣기
   const myRankingUser: RankingUser = {
@@ -71,7 +64,7 @@ const Community = () => {
       <Description>다른 친구들은 이렇게 활동하고 있어요 😊</Description>
 
       {/* ⭐ 내 카드 섹션 */}
-      <MyStatusSection myStatus={myStatus} onStatusChange={setMyStatus} />
+      <MyStatusSection myStatus={user.status} onStatusChange={updateStatus} />
 
       {/* 🏆 랭킹 섹션 */}
       <CommunityRanking

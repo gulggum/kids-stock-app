@@ -12,9 +12,14 @@
  * - LEGEND   5%
  */
 
-import legendSkinGold from "../../assets/cardSkins/legendSkinGold.png";
 import specialSkin_1 from "../../assets/cardSkins/specialSkin_1.png";
 import specialSkin_2 from "../../assets/cardSkins/specialSkin_2.png";
+import specialSkin_korea from "../../assets/cardSkins/specialSkin_3.png";
+import specialSkin_cinderella from "../../assets/cardSkins/specialSkin_4.png";
+import legendSkinGold from "../../assets/cardSkins/legendSkinGold.png";
+import legendSkinPupple from "../../assets/cardSkins/legendSkinPupple.png";
+import legendSkinRainbow from "../../assets/cardSkins/legendSkinRainbow.png";
+import legendSkinBlack from "../../assets/cardSkins/legendSkinBlack.png";
 
 export type CardRarity = "COMMON" | "SPECIAL" | "LEGEND";
 
@@ -158,19 +163,34 @@ export const cardSkins: CardSkin[] = [
   // ─────────────────────────────────────────
   // 🌈 SPECIAL (500코인 or 미스터리 박스)
   // ─────────────────────────────────────────
+
   {
-    id: "special1",
-    name: "스페셜 파스텔 카드",
+    id: "special2",
+    name: "스페셜 컬러풀",
+    price: 500,
+    rarity: "SPECIAL",
+    image: specialSkin_2,
+  },
+  {
+    id: "special3",
+    name: "스페셜 키즈스톡",
     price: 500,
     rarity: "SPECIAL",
     image: specialSkin_1,
   },
   {
-    id: "special2",
-    name: "스페셜 컬러플 카드",
+    id: "special4",
+    name: "스페셜 한국",
     price: 500,
     rarity: "SPECIAL",
-    image: specialSkin_2,
+    image: specialSkin_korea,
+  },
+  {
+    id: "special5",
+    name: "스페셜 신데렐라",
+    price: 500,
+    rarity: "SPECIAL",
+    image: specialSkin_cinderella,
   },
 
   // ─────────────────────────────────────────
@@ -189,7 +209,23 @@ export const cardSkins: CardSkin[] = [
     name: "블랙 레전드",
     price: 1200,
     rarity: "LEGEND",
-    image: legendSkinGold, // TODO: 블랙 레전드 이미지 추가 시 교체
+    image: legendSkinBlack,
+    unlockLevel: 10, //
+  },
+  {
+    id: "legend3",
+    name: "퍼플 레전드",
+    price: 1200,
+    rarity: "LEGEND",
+    image: legendSkinPupple,
+    unlockLevel: 10, //
+  },
+  {
+    id: "legend4",
+    name: "레인보우 레전드",
+    price: 1200,
+    rarity: "LEGEND",
+    image: legendSkinRainbow,
     unlockLevel: 10, //
   },
 ];

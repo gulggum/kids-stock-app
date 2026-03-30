@@ -319,7 +319,7 @@ const Card = styled.div<{
     `}
 `;
 
-const CardImage = styled.img<{ $skin: any }>`
+const CardImage = styled.div<{ $skin: any }>`
   width: 100%;
   height: 90px;
   object-fit: cover;
@@ -329,15 +329,7 @@ const CardImage = styled.img<{ $skin: any }>`
       ? $skin.gradient
       : `url(${$skin.image}) center/cover no-repeat`};
 
-  /* 가독성용 오버레이 */
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-
-    background: rgba(0, 0, 0, 0.15);
-  }
+  overflow: hidden;
 `;
 
 const Name = styled.div`
@@ -393,14 +385,6 @@ const PreviewImage = styled.div<{ $skin: any }>`
 
   position: relative;
   overflow: hidden;
-
-  /* ✨ 살짝 어둡게 (텍스트 대비용) */
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.1);
-  }
 `;
 
 const LockText = styled.div`
