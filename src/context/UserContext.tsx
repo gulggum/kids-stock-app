@@ -50,6 +50,8 @@ export type User = {
 
   profileImage: string | null; // 프로필 이미지
   profileAvatar: ProfileAvatarType | null; // 기본 아바타
+
+  hasBankrupt: boolean; // 파산 경험 여부 (money가 0 이하로 떨어진 적 있는지)
 };
 
 type ExpInfo = {
@@ -140,6 +142,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     profileImage: null,
     profileAvatar: null,
+    hasBankrupt: false,
   };
   /**
    * 🔥 storage에서 불러오기
@@ -281,7 +284,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // 💰 머니 차감 (부족하면 false)
   const spendMoney = (amount: number): boolean => {
     if (user.money < amount) return false;
-    setUser((prev) => ({ ...prev, money: prev.money - amount }));
+    setUser((prev) => ({
+      ...prev,
+      money: prev.money - amount <= 0 ? 500000 : prev.money - amount, // 부활금 지급
+      hasBankrupt: prev.hasBankrupt || prev.money - amount <= 0, // 파산 기록
+    }));
     return true;
   };
 

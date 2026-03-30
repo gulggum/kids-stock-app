@@ -12,12 +12,17 @@
  */
 
 export type AchievementState = {
-  totalTrades: number;
-  totalAsset: number;
-  level: number;
-  streak: number;
+  totalTrades: number; // 구매 횟수만 (재방문 유도 지표)
+  totalSells: number; // 판매 횟수 별도 (손실/수익 계산용)
+  totalAsset: number; // 현재 총 자산 (보유 현금 + 주식 평가액)
+  level: number; // 현재 레벨 (exp 기반 계산)
+  streak: number; // 연속 출석 일수
+  totalQuizCorrect: number; // 퀴즈 누적 정답 횟수
+  totalLoss: number; // 손실 매도 누적 횟수 (산 가격보다 낮게 판 횟수)
+  hasBankrupt: boolean; // 파산 경험 여부 (자산이 0 이하로 떨어진 적 있는지)
+  uniqueStocks: number; // 보유해본 종목 수 (중복 제외, 한 번이라도 산 종목)
+  totalNewsRead: number; // 뉴스 누적 읽은 횟수
 };
-
 export type Achievement = {
   id: string;
   tier: "COMMON" | "RARE" | "LEGEND";
@@ -55,23 +60,79 @@ export const ACHIEVEMENTS: Achievement[] = [
     reward: { coin: 30, exp: 40 },
     condition: (state) => state.totalTrades >= 1,
   },
-
+  {
+    id: "TRADE_5",
+    tier: "COMMON",
+    badge: {
+      title: "5번 거래",
+      description: "주식을 5번 거래했어요!",
+      emoji: "📊",
+    },
+    reward: { coin: 30, exp: 40 },
+    condition: (state) => state.totalTrades >= 5,
+  },
   {
     id: "TRADE_10",
     tier: "RARE",
     badge: {
-      title: "10번 거래 달성",
+      title: "거래 10회 달성",
       description: "주식을 10번 거래했어요!",
       emoji: "📈",
     },
     reward: { coin: 50, exp: 60 },
     condition: (state) => state.totalTrades >= 10,
   },
+  {
+    id: "TRADE_30",
+    tier: "RARE",
+    badge: {
+      title: "거래왕",
+      description: "무려 30번이나 거래했어요!",
+      emoji: "👑",
+    },
+    reward: { coin: 80, exp: 80 },
+    condition: (state) => state.totalTrades >= 30,
+  },
+
+  // ✅ 포트폴리오 다양성 (여러 종목 사보기 유도)
+  {
+    id: "STOCK_3_KINDS",
+    tier: "COMMON",
+    badge: {
+      title: "다양한 투자자",
+      description: "3가지 다른 주식을 사봤어요!",
+      emoji: "🌈",
+    },
+    reward: { coin: 30, exp: 30 },
+    condition: (state) => state.uniqueStocks >= 3,
+  },
+  {
+    id: "STOCK_5_KINDS",
+    tier: "RARE",
+    badge: {
+      title: "포트폴리오 마스터",
+      description: "5가지 종목에 분산투자!",
+      emoji: "🗂️",
+    },
+    reward: { coin: 60, exp: 60 },
+    condition: (state) => state.uniqueStocks >= 5,
+  },
 
   // ===============================
   // 💰 자산 관련 업적
   // ===============================
 
+  {
+    id: "ASSET_110",
+    tier: "COMMON",
+    badge: {
+      title: "110만원 달성",
+      description: "자산이 110만원을 넘었어요!",
+      emoji: "💵",
+    },
+    reward: { coin: 40, exp: 50 },
+    condition: (state) => state.totalAsset >= 1100000,
+  },
   {
     id: "ASSET_120",
     tier: "RARE",
@@ -83,20 +144,134 @@ export const ACHIEVEMENTS: Achievement[] = [
     reward: { coin: 70, exp: 70 },
     condition: (state) => state.totalAsset >= 1200000,
   },
+  {
+    id: "ASSET_150",
+    tier: "LEGEND",
+    badge: {
+      title: "150만원 돌파",
+      description: "엄청난 자산가가 됐어요!",
+      emoji: "🤑",
+    },
+    reward: { coin: 150, exp: 100, score: 20 },
+    condition: (state) => state.totalAsset >= 1500000,
+  },
+
+  // ===============================
+  // 😅 실패 업적 (실패도 재밌어야 함!)
+  // ===============================
+
+  {
+    id: "FIRST_LOSS",
+    tier: "COMMON",
+    badge: {
+      title: "첫 손실 경험",
+      description: "잃어도 괜찮아! 이것도 투자 경험이에요 😊",
+      emoji: "😅",
+    },
+    reward: { exp: 30 },
+    condition: (state) => state.totalLoss >= 1,
+  },
+  {
+    id: "BANKRUPT",
+    tier: "RARE",
+    badge: {
+      title: "전설의 바닥",
+      description: "파산해도 다시 일어서는 투자자!",
+      emoji: "💪",
+    },
+    reward: { exp: 100, coin: 50 },
+    condition: (state) => state.hasBankrupt === true,
+  },
+
+  // ===============================
+  // 🧠 퀴즈 업적 (현재 0개!)
+  // ===============================
+
+  {
+    id: "QUIZ_FIRST",
+    tier: "COMMON",
+    badge: {
+      title: "첫 퀴즈 정복",
+      description: "처음으로 퀴즈를 맞혔어요!",
+      emoji: "🧠",
+    },
+    reward: { coin: 20, exp: 30 },
+    condition: (state) => state.totalQuizCorrect >= 1,
+  },
+  {
+    id: "QUIZ_10",
+    tier: "RARE",
+    badge: {
+      title: "퀴즈 박사",
+      description: "퀴즈를 10번 맞혔어요!",
+      emoji: "📚",
+    },
+    reward: { coin: 50, exp: 60 },
+    condition: (state) => state.totalQuizCorrect >= 10,
+  },
+  {
+    id: "QUIZ_30",
+    tier: "LEGEND",
+    badge: {
+      title: "경제 천재",
+      description: "퀴즈 30개 정복! 넌 경제 천재야!",
+      emoji: "🎓",
+    },
+    reward: { coin: 100, exp: 100, score: 15 },
+    condition: (state) => state.totalQuizCorrect >= 30,
+  },
+
+  // ===============================
+  // 📰 뉴스 업적
+  // ===============================
+
+  {
+    id: "NEWS_FIRST",
+    tier: "COMMON",
+    badge: {
+      title: "뉴스 탐험가",
+      description: "처음으로 뉴스를 읽었어요!",
+      emoji: "📰",
+    },
+    reward: { coin: 10, exp: 20 },
+    condition: (state) => state.totalNewsRead >= 1,
+  },
+  {
+    id: "NEWS_10",
+    tier: "RARE",
+    badge: {
+      title: "경제 기자",
+      description: "뉴스를 10개나 읽었어요!",
+      emoji: "🗞️",
+    },
+    reward: { coin: 40, exp: 50 },
+    condition: (state) => state.totalNewsRead >= 10,
+  },
 
   // ===============================
   // ⭐ 레벨 업적
   // ===============================
 
   {
-    id: "LEVEL_10",
-    tier: "RARE",
+    id: "LEVEL_5",
+    tier: "COMMON",
     badge: {
-      title: "레벨 10 달성",
-      description: "투자 레벨이 10이 되었어요!",
-      emoji: "⭐",
+      title: "레벨 5 달성",
+      description: "이제 진짜 투자자!",
+      emoji: "🌟",
     },
-    reward: { coin: 100, exp: 100 },
+    reward: { coin: 60, exp: 80 },
+    condition: (state) => state.level >= 5,
+  },
+  {
+    id: "LEVEL_10",
+    tier: "LEGEND", // RARE → LEGEND로 격상
+    badge: {
+      title: "투자 마스터",
+      description: "최고 레벨 달성! 당신은 진짜 투자왕!",
+      emoji: "👑",
+    },
+    reward: { coin: 200, exp: 150, score: 30 },
     condition: (state) => state.level >= 10,
   },
 
@@ -105,6 +280,17 @@ export const ACHIEVEMENTS: Achievement[] = [
   // ===============================
 
   {
+    id: "ATTEND_3_DAYS",
+    tier: "COMMON",
+    badge: {
+      title: "3일 연속 출석",
+      description: "3일 연속으로 나타났어요!",
+      emoji: "✅",
+    },
+    reward: { coin: 20, exp: 20 },
+    condition: (state) => state.streak >= 3,
+  },
+  {
     id: "ATTEND_7_DAYS",
     tier: "COMMON",
     badge: {
@@ -112,19 +298,29 @@ export const ACHIEVEMENTS: Achievement[] = [
       description: "7일 연속 출석 성공!",
       emoji: "🔥",
     },
-    reward: { coin: 50 },
+    reward: { coin: 50, exp: 40 },
     condition: (state) => state.streak >= 7,
   },
-
   {
     id: "ATTEND_30_DAYS",
-    tier: "LEGEND",
+    tier: "RARE",
     badge: {
       title: "한 달 개근",
       description: "30일 연속 출석!",
       emoji: "🏆",
     },
-    reward: { coin: 150 },
+    reward: { coin: 150, exp: 100 },
     condition: (state) => state.streak >= 30,
+  },
+  {
+    id: "ATTEND_365_DAYS",
+    tier: "LEGEND",
+    badge: {
+      title: "1년 개근왕",
+      description: "365일 연속 출석! 넌 전설이야!",
+      emoji: "🌈",
+    },
+    reward: { coin: 500, exp: 300, score: 50 },
+    condition: (state) => state.streak >= 365,
   },
 ];
