@@ -129,7 +129,7 @@ const Card = styled.div<{
   overflow: hidden;
 
   background-size: cover;
-  background-position: top;
+  background-position: center;
   border-radius: ${({ theme }) => theme.radius.sm};
   padding: 10px;
 
@@ -272,13 +272,13 @@ const Status = styled.div`
   &::before {
     content: "";
     position: absolute;
-    top: -6px;
+    top: -5px;
     left: 16px;
 
     width: 10px;
     height: 10px;
 
-    background: ${({ theme }) => theme.colors.card};
+    background: ${({ theme }) => theme.colors.background};
 
     transform: rotate(45deg);
   }

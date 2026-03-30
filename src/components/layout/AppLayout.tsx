@@ -41,9 +41,22 @@ const AppLayout = () => {
         {/* 🏅 배지 획득 팝업 */}
         {achievementMeta && (
           <ModalPopup
-            title={`${achievementMeta.badge.emoji} ${achievementMeta.badge.title}`}
-            message={achievementMeta.badge.description}
             onConfirm={closePopupAchievement}
+            customContent={
+              <AchievementContent>
+                <AchievementLabel>🏅 뱃지 획득!</AchievementLabel>
+                <AchievementEmoji>
+                  {achievementMeta.badge.emoji}
+                </AchievementEmoji>
+
+                <AchievementTitle>
+                  {achievementMeta.badge.title}
+                </AchievementTitle>
+                <AchievementDesc>
+                  {achievementMeta.badge.description}
+                </AchievementDesc>
+              </AchievementContent>
+            }
           />
         )}
         <Outlet />
@@ -53,6 +66,9 @@ const AppLayout = () => {
     </Layout>
   );
 };
+
+export default AppLayout;
+
 const Layout = styled.div<{ $variant?: "home" | "default" }>`
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -86,4 +102,35 @@ const Footer = styled.footer`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-export default AppLayout;
+//뱃지
+const AchievementContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+`;
+
+const AchievementEmoji = styled.div`
+  font-size: 48px;
+`;
+
+const AchievementLabel = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+  background: ${({ theme }) => theme.colors.surface};
+  padding: 2px 10px;
+  border-radius: 999px;
+`;
+
+const AchievementTitle = styled.div`
+  font-size: 18px;
+  font-weight: 900;
+`;
+
+const AchievementDesc = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.5;
+`;

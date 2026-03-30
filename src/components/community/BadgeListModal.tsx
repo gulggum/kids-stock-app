@@ -18,55 +18,64 @@ const BadgeListModal = ({ badges }: BadgeListModalProps) => {
 
   return (
     <ScrollContainer>
-      <Grid>
-        {badges.map((badgeId) => {
-          const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
+      {badges.map((badgeId) => {
+        const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
+        if (!achievement) return null;
 
-          if (!achievement) return null;
-          return (
-            <BadgeItem key={badgeId}>
-              <Emoji>{achievement.badge.emoji}</Emoji>
+        return (
+          <BadgeItem key={badgeId}>
+            <EmojiBox>{achievement.badge.emoji}</EmojiBox>
+            <TextBox>
               <Title>{achievement.badge.title}</Title>
               <Description>{achievement.badge.description}</Description>
-            </BadgeItem>
-          );
-        })}
-      </Grid>
+            </TextBox>
+          </BadgeItem>
+        );
+      })}
     </ScrollContainer>
   );
 };
 
 export default BadgeListModal;
+
 const ScrollContainer = styled.div`
-  max-height: 240px; /* ⭐ 모달 안에서만 제한 */
+  max-height: 300px;
   overflow-y: auto;
-  padding-right: 4px; /* 스크롤바 여백 */
-
-  /* 스크롤 부드럽게 */
-  scroll-behavior: smooth;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
 `;
 
 const BadgeItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.radius.md};
-  padding: 12px 8px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-
-  text-align: center;
+  padding: 10px 12px;
+  position: relative;
+  overflow: hidden;
 `;
 
-const Emoji = styled.div`
-  font-size: 28px;
+const EmojiBox = styled.div`
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.background};
+  border: 2px solid ${({ theme }) => theme.colors.border};
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  flex-shrink: 0;
+`;
+
+const TextBox = styled.div`
+  flex: 1;
+  min-width: 0;
 `;
 
 const Title = styled.div`
@@ -77,7 +86,7 @@ const Title = styled.div`
 const Description = styled.div`
   font-size: 11px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.3;
+  margin-top: 2px;
 `;
 
 const EmptyText = styled.div`

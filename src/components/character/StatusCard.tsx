@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { useUser } from "../../context/UserContext";
+import { useModal } from "../../context/UIContext/ModalContext";
+import BadgeListModal from "../community/BadgeListModal";
 
 /**
  * 🪙 상태 카드
@@ -12,6 +14,16 @@ type Props = {
 
 const StatusCard = ({ achievements }: Props) => {
   const { user } = useUser();
+  const { openModal } = useModal();
+
+  const openBadgeModal = () => {
+    openModal({
+      type: "INFO",
+      title: "🏅 획득한 뱃지",
+      customContent: <BadgeListModal badges={achievements.map((a) => a.id)} />,
+      confirmText: "닫기",
+    });
+  };
   return (
     <Wrapper>
       <Header>
@@ -20,7 +32,10 @@ const StatusCard = ({ achievements }: Props) => {
       </Header>
 
       <Divider />
-
+      <BadgeHeader>
+        <span>🏅 나의 뱃지</span>
+        <small>{achievements.length}개</small>
+      </BadgeHeader>
       <BadgeWrap>
         {achievements.length === 0 ? (
           <Empty>아직 업적이 없어요 🐣</Empty>
@@ -31,6 +46,12 @@ const StatusCard = ({ achievements }: Props) => {
               <small>{a.badge.title}</small>
             </Badge>
           ))
+        )}
+        {/* ✅ 3개 초과시 더보기 버튼 */}
+        {achievements.length > 3 && (
+          <MoreButton onClick={openBadgeModal}>
+            +{achievements.length - 3} 더보기
+          </MoreButton>
         )}
       </BadgeWrap>
     </Wrapper>
@@ -84,4 +105,33 @@ const Badge = styled.div`
 
 const Empty = styled.div`
   font-size: 12px;
+`;
+const BadgeHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  margin-bottom: 8px;
+
+  small {
+    font-size: 12px;
+    color: ${({ theme }) => theme.colors.muted};
+  }
+`;
+const MoreButton = styled.button`
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+
+  background: ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+    color: white;
+  }
 `;

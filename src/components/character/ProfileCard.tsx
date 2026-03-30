@@ -2,6 +2,8 @@ import styled from "styled-components";
 import type { ProfileAvatarType } from "../../data/static/profileAvatars";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
+import { useUser } from "../../context/UserContext";
+import { getLevelTier } from "../../utils/getLevelTier";
 
 /**
  * 👤 프로필 카드
@@ -27,22 +29,34 @@ const ProfileCard = ({
 }: Props) => {
   //배경밝기 계산해서 색 바꾸기
   const textColor = getTextColorFromSkin(currentSkin);
+  const { user } = useUser();
+  const { title } = getLevelTier(user.level);
 
   return (
     <Wrapper $skin={currentSkin} $text={textColor}>
-      <ImageWrapper onClick={onClick}>
-        {profileImage ? (
-          <img src={profileImage} />
-        ) : profileAvatar ? (
-          <Sprite $x={profileAvatar.x} $y={profileAvatar.y} />
-        ) : (
-          <Default>🧒</Default>
-        )}
-      </ImageWrapper>
       <Top>
-        <Level>Lv.{level}</Level>
+        <ImageWrapper onClick={onClick}>
+          {profileImage ? (
+            <img src={profileImage} />
+          ) : profileAvatar ? (
+            <Sprite $x={profileAvatar.x} $y={profileAvatar.y} />
+          ) : (
+            <Default>🧒</Default>
+          )}
+        </ImageWrapper>
+
+        <Info>
+          <NameRow>
+            <Name>{nickname}</Name>
+            <LevelTitle>{title}</LevelTitle>
+          </NameRow>
+          <Level>Lv. {level}</Level>
+        </Info>
       </Top>
-      <Nickname>{nickname}</Nickname>
+      <Bottom>
+        {" "}
+        <Status>{user.status}</Status>
+      </Bottom>
     </Wrapper>
   );
 };
@@ -59,6 +73,7 @@ const Wrapper = styled.div<{ $skin: any; $text: string }>`
 
   color: ${({ $text }) => $text};
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 16px;
 
@@ -80,11 +95,6 @@ const ImageWrapper = styled.div`
   }
 `;
 
-const Nickname = styled.div`
-  font-size: 18px;
-  font-weight: 800;
-`;
-
 const Default = styled.div`
   font-size: 24px;
 `;
@@ -101,12 +111,77 @@ const Sprite = styled.div<{ $x: number; $y: number }>`
   background-position: ${({ $x, $y }) =>
     `${($x / 3.95) * 100}% ${($y / 2) * 100}%`};
 `;
+
 const Top = styled.div`
+  width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 10px;
+  align-items: center;
+`;
+
+const Bottom = styled.div`
+  width: 100%;
+`;
+
+const Info = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const NameRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+`;
+
+const Name = styled.div`
+  font-size: 14px;
+  font-weight: 800;
 `;
 
 const Level = styled.div`
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+
+const Status = styled.div`
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.4;
+
+  background: ${({ theme }) => theme.colors.background};
+  padding: 10px 12px;
+
+  border-radius: 12px;
+  color: ${({ theme }) => theme.colors.text};
+  position: relative;
+
+  /* 말풍선 꼬리 */
+  &::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: 16px;
+
+    width: 10px;
+    height: 10px;
+
+    background: ${({ theme }) => theme.colors.background};
+
+    transform: rotate(45deg);
+  }
+`;
+const LevelTitle = styled.div`
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+
+  background: ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
