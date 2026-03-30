@@ -32,7 +32,7 @@ const CharacterPage = () => {
   const navigate = useNavigate();
   const { user, expInfo } = useUser();
 
-  const filteredSkins = ownedSkins
+  const filteredSkins = [...new Set(ownedSkins)]
     .map((id) => cardSkins.find((s) => s.id === id))
     .filter((s) => s !== undefined);
 
@@ -145,12 +145,16 @@ const CharacterPage = () => {
           onClick={openProfileModal}
         />
         {/* 레벨상태 */}
-        <ExpBarCard
-          level={expInfo.level}
-          currentExp={expInfo.currentExp}
-          neededExp={expInfo.neededExp}
-          progress={expInfo.progress}
-        />
+
+        <CharacterBox>
+          <SectionTitle>🏆 나의 경제 활동</SectionTitle>
+          <ExpBarCard
+            level={expInfo.level}
+            currentExp={expInfo.currentExp}
+            neededExp={expInfo.neededExp}
+            progress={expInfo.progress}
+          />
+        </CharacterBox>
       </ProfileSection>
 
       {/* 내카드스킨 보유 목록 */}
@@ -315,4 +319,22 @@ const GoMarketButton = styled.button`
     transform: translateY(0);
     box-shadow: none;
   }
+`;
+
+//캐릭터(내상태) 박스
+
+const SectionTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  flex-wrap: wrap; /* 줄바꿈 허용 */
+  gap: 6px;
+`;
+const CharacterBox = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  padding: 18px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;

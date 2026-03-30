@@ -51,7 +51,10 @@ const PortfolioSummaryCard = () => {
         <Label>보유 종목</Label>
         <Value>{stockCount}개</Value>
       </Row>
-
+      <Row>
+        <Label>투자 가능 현금</Label>
+        <Value>{user.money.toLocaleString()}원</Value>
+      </Row>
       <Row>
         <Label>현재 평가금액</Label>
         <Value>{evaluationAmount.toLocaleString()}원</Value>

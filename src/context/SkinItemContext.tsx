@@ -100,7 +100,7 @@ export const SkinItemProvider = ({
     let rarity: CardRarity;
     if (roll < 5)
       rarity = "LEGEND"; // 5%
-    else if (roll < 30)
+    else if (roll < 20)
       rarity = "SPECIAL"; // 25%
     else rarity = "COMMON"; // 70%
 
@@ -116,11 +116,6 @@ export const SkinItemProvider = ({
     // ✅ 중복이면 코인 50 환불
     if (alreadyOwned) {
       addCoin(MYSTERY_BOX_DUPLICATE_REFUND);
-    } else {
-      setUser((prev) => ({
-        ...prev,
-        ownedSkins: [...prev.ownedSkins, random.id],
-      }));
     }
 
     // 새 카드면 보유 목록에 추가

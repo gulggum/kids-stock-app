@@ -182,7 +182,7 @@ export const cardSkins: CardSkin[] = [
     price: 1000,
     rarity: "LEGEND",
     image: legendSkinGold,
-    unlockLevel: 10, // ✅ 15 → 10으로 변경 (levelTitles 최대 레벨과 통일)
+    unlockLevel: 10, // 10으로 제한 (levelTitles 최대 레벨과 통일)
   },
   {
     id: "legend2",
@@ -190,6 +190,6 @@ export const cardSkins: CardSkin[] = [
     price: 1200,
     rarity: "LEGEND",
     image: legendSkinGold, // TODO: 블랙 레전드 이미지 추가 시 교체
-    unlockLevel: 10, // ✅ 15 → 10으로 변경
+    unlockLevel: 10, //
   },
 ];

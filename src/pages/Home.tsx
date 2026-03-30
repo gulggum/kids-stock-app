@@ -138,11 +138,6 @@ const Home = () => {
             neededExp={expInfo.neededExp}
             progress={expInfo.progress}
           />
-
-          <ScoreRow>
-            <ScoreNumber>{user.score}</ScoreNumber>
-            <ScoreLabel>오늘 점수</ScoreLabel>
-          </ScoreRow>
         </CharacterBox>
       </Section>
 
@@ -332,23 +327,6 @@ const CharacterBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-`;
-
-const ScoreRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-`;
-
-const ScoreNumber = styled.div`
-  font-size: 32px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.accentPink};
-`;
-
-const ScoreLabel = styled.div`
-  font-size: 14px;
-  opacity: 0.7;
 `;
 
 //오늘의 출석

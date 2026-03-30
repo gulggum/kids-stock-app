@@ -15,7 +15,7 @@ const ExpBarCard = ({
   neededExp,
   progress,
 }: ExpBarCardProps) => {
-  const { expInfo } = useUser();
+  const { expInfo, user } = useUser();
   const [displayProgress, setDisplayProgress] = useState(expInfo.progress);
   useEffect(() => {
     if (expInfo.progress === 0 && displayProgress > 90) {
@@ -34,17 +34,20 @@ const ExpBarCard = ({
     <Wrapper>
       <TopRow>
         <Level>⭐ Lv. {level}</Level>
+        <ScoreBadge>🏅 {user.score}점</ScoreBadge>
       </TopRow>
 
-      <Bar>
-        <Fill
-          $isFull={displayProgress >= 100}
-          style={{ width: `${progress}%` }}
-        />
+      <BarWrapper>
+        <Bar>
+          <Fill
+            $isFull={displayProgress >= 100}
+            style={{ width: `${progress}%` }}
+          />
+        </Bar>
         <ExpText>
           {currentExp} / {neededExp} EXP
         </ExpText>
-      </Bar>
+      </BarWrapper>
     </Wrapper>
   );
 };
@@ -76,15 +79,20 @@ const TopRow = styled.div`
 const Level = styled.div`
   font-weight: 800;
 `;
-
-const ExpText = styled.div`
-  position: absolute;
-  right: 55px;
-  margin-top: 5px;
-
-  font-size: 11px;
-  font-weight: 700;
+const ScoreBadge = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.primary};
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+`;
+
+const BarWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 `;
 
 const Bar = styled.div`
@@ -155,4 +163,15 @@ const Fill = styled.div<{ $isFull: boolean }>`
       }
     }
   `}
+`;
+
+const ExpText = styled.div`
+  position: absolute;
+  right: 5px;
+  top: 8px;
+  margin-top: 5px;
+
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
 `;
