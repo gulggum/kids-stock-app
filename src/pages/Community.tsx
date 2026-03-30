@@ -45,13 +45,15 @@ const Community = () => {
   // 🔥 전체 유저 리스트 (내 정보 + mock)
   const allUsers = [myRankingUser, ...publicUserMock];
   // 🔥 친구 상태
-  const [friends, setFriends] = useState<number[]>(() =>
-    getStorage("myFriends", []),
-  );
+  const [friends, setFriends] = useState<number[]>(() => {
+    const stored = getStorage("myFriends", []);
+    // 혹시 string으로 잘못 저장된 경우 방어
+    return Array.isArray(stored) ? stored : [];
+  });
 
   // 🔥 저장 동기화
   useEffect(() => {
-    setStorage("myFriends", JSON.stringify(friends));
+    setStorage("myFriends", friends);
   }, [friends]);
 
   // 🔥 토글 함수 (핵심)

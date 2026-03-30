@@ -37,7 +37,7 @@ export type PublicUser = {
 
 export const publicUserMock: PublicUser[] = [
   {
-    id: 1,
+    id: 21,
     nickname: "민수",
     level: 1,
     levelTitle: "🐣 투자 새싹",
