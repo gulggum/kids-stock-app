@@ -31,14 +31,14 @@ const HeaderNav = () => {
           자산
         </NavItem>
 
-        <NavItem to="/character">
-          <User size={16} />
-          캐릭터
-        </NavItem>
-
         <NavItem to="/community">
           <MessageCircle size={16} />
           커뮤니티
+        </NavItem>
+
+        <NavItem to="/character">
+          <User size={16} />
+          캐릭터
         </NavItem>
 
         <NavItem to="/shop">

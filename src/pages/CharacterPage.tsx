@@ -14,6 +14,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 import ExpBarCard from "../components/character/ExpBarCard";
+import { Settings } from "lucide-react";
 
 const CharacterPage = () => {
   const {
@@ -108,8 +109,15 @@ const CharacterPage = () => {
 
   return (
     <PageWrapper>
-      <Title>🙌 나의 정보</Title>
-      <Description>나의 프로필사진과 스킨을 꾸며보세요 😊</Description>
+      <Header>
+        <div>
+          <Title>🙌 나의 정보</Title>
+          <Description>나의 프로필사진과 스킨을 꾸며보세요 😊</Description>
+        </div>
+        <SettingButton onClick={() => navigate("/settings")}>
+          <Settings size={22} color="gray" />
+        </SettingButton>
+      </Header>
       {/* 📸 카메라 */}
       <input
         ref={cameraInputRef}
@@ -198,6 +206,23 @@ const Description = styled.p`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.muted};
   margin-top: -6px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const SettingButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  &:hover {
+    background: ${({ theme }) => theme.colors.background};
+  }
 `;
 
 const ProfileSection = styled.div`

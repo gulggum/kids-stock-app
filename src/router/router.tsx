@@ -18,6 +18,7 @@ import AdminRanking from "../pages/admin/AdminRanking";
 import AdminItems from "../pages/admin/AdminItems";
 import AdminStats from "../pages/admin/AdminStats";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
+import SettingsPage from "../pages/SettingsPage";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
         path: "character",
         element: <CharacterPage />,
       },
+      { path: "settings", element: <SettingsPage /> },
     ],
   },
   // ⭐ 관리자 페이지(별도 분리)
