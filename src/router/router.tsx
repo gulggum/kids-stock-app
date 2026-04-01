@@ -17,12 +17,18 @@ import AdminNewsCreate from "../pages/admin/AdminNewsCreate";
 import AdminRanking from "../pages/admin/AdminRanking";
 import AdminItems from "../pages/admin/AdminItems";
 import AdminStats from "../pages/admin/AdminStats";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
   {
     path: "/login",
     element: <LoginPage />,
+  },
+
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
   },
   // ⭐ 사용자 앱
   {

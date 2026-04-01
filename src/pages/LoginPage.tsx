@@ -8,8 +8,9 @@ import { checkNicknameDuplicate } from "../services/userService";
 import logo from "../assets/images/logo.png";
 import bgImage from "../assets/images/bgImage.png";
 import { useToast } from "../context/UIContext/ToastContext";
+import { supabase } from "../utils/supabase";
 
-type Mode = "select" | "guest" | "email";
+type Mode = "select" | "guest" | "email" | "reset";
 type EmailMode = "login" | "signup";
 
 const LoginPage = () => {
@@ -178,6 +179,32 @@ const LoginPage = () => {
     if (e.key === "Enter") handleEmailSubmit();
   };
 
+  const handleResetPassword = async () => {
+    setError(null);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      setError("올바른 이메일 형식이 아니에요");
+      return;
+    }
+
+    setIsLoading(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      setError("이메일 전송에 실패했어요. 다시 시도해주세요");
+    } else {
+      createToast("📧 재설정 링크를 보냈어요!");
+      setMode("email");
+      setEmail("");
+    }
+
+    setIsLoading(false);
+  };
+
   // ─────────────────────────────────────────
   // 렌더링
   // ─────────────────────────────────────────
@@ -306,7 +333,6 @@ const LoginPage = () => {
                 )}
               </>
             )}
-
             <Input
               type="email"
               placeholder="이메일을 입력하세요"
@@ -331,7 +357,32 @@ const LoginPage = () => {
                   ? "로그인"
                   : "회원가입"}
             </Button>
+
+            {emailMode === "login" && (
+              <ForgotButton onClick={() => setMode("reset")}>
+                비밀번호를 잊으셨나요?
+              </ForgotButton>
+            )}
             <BackButton onClick={() => setMode("select")}>← 뒤로</BackButton>
+          </>
+        )}
+
+        {/* ──비밀번호 찾기 화면── */}
+        {mode === "reset" && (
+          <>
+            <SubTitle>비밀번호 찾기</SubTitle>
+            <Input
+              type="email"
+              placeholder="가입한 이메일을 입력하세요"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
+            />
+            {error && <ErrorText>{error}</ErrorText>}
+            <Button onClick={handleResetPassword} disabled={isLoading}>
+              {isLoading ? "전송 중..." : "재설정 링크 보내기"}
+            </Button>
+            <BackButton onClick={() => setMode("email")}>← 뒤로</BackButton>
           </>
         )}
       </Card>
@@ -586,6 +637,20 @@ const BottomDesc = styled.p`
   color: ${({ theme }) => theme.colors.muted};
   margin-top: 12px;
   text-align: center;
+`;
+
+const ForgotButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.muted};
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 4px;
+  text-decoration: underline;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 export default LoginPage;
