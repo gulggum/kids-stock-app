@@ -23,7 +23,7 @@ export type RankingUser = Pick<
 
 interface CommunityRankingProps {
   allUsers: RankingUser[];
-  myUserId: number;
+  myUserId: string;
   myScore: number;
   myAchievedCount: number;
 }

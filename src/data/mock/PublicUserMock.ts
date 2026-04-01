@@ -22,7 +22,7 @@ import type { ProfileAvatarType } from "../static/profileAvatars";
  */
 
 export type PublicUser = {
-  id: number;
+  id: string;
   nickname: string;
   level: number;
   levelTitle: string;
@@ -37,7 +37,7 @@ export type PublicUser = {
 
 export const publicUserMock: PublicUser[] = [
   {
-    id: 21,
+    id: "user-21",
     nickname: "민수",
     level: 1,
     levelTitle: "🐣 투자 새싹",
@@ -50,7 +50,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 2,
+    id: "user-2",
     nickname: "지우",
     level: 2,
     levelTitle: "🌱 배우는 투자자",
@@ -63,7 +63,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 3,
+    id: "user-3",
     nickname: "현우",
     level: 2,
     levelTitle: "🌱 배우는 투자자",
@@ -76,7 +76,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 4,
+    id: "user-4",
     nickname: "서연",
     level: 3,
     levelTitle: "🐥 도전하는 투자자",
@@ -89,7 +89,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 5,
+    id: "user-5",
     nickname: "준호",
     level: 3,
     levelTitle: "🐥 도전하는 투자자",
@@ -102,7 +102,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 6,
+    id: "user-6",
     nickname: "하린",
     level: 4,
     levelTitle: "🦊 똑똑한 투자자",
@@ -115,7 +115,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 7,
+    id: "user-7",
     nickname: "도윤",
     level: 4,
     levelTitle: "🦊 똑똑한 투자자",
@@ -128,7 +128,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 8,
+    id: "user-8",
     nickname: "예린",
     level: 5,
     levelTitle: "🐯 용감한 투자자",
@@ -141,7 +141,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 9,
+    id: "user-9",
     nickname: "태민",
     level: 5,
     levelTitle: "🐯 용감한 투자자",
@@ -154,7 +154,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 10,
+    id: "user-10",
     nickname: "채은",
     level: 6,
     levelTitle: "🦁 자신있는 투자자",
@@ -167,7 +167,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 11,
+    id: "user-11",
     nickname: "유진",
     level: 6,
     levelTitle: "🦁 자신있는 투자자",
@@ -180,7 +180,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 12,
+    id: "user-12",
     nickname: "건우",
     level: 7,
     levelTitle: "🦅 날카로운 투자자",
@@ -193,7 +193,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 13,
+    id: "user-13",
     nickname: "소율",
     level: 7,
     levelTitle: "🦅 날카로운 투자자",
@@ -206,7 +206,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 14,
+    id: "user-14",
     nickname: "이든",
     level: 8,
     levelTitle: "🌟 빛나는 투자자",
@@ -219,7 +219,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 15,
+    id: "user-15",
     nickname: "나연",
     level: 8,
     levelTitle: "🌟 빛나는 투자자",
@@ -232,7 +232,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 16,
+    id: "user-16",
     nickname: "시우",
     level: 9,
     levelTitle: "💎 다이아 투자자",
@@ -245,7 +245,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 17,
+    id: "user-17",
     nickname: "아린",
     level: 9,
     levelTitle: "💎 다이아 투자자",
@@ -258,7 +258,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 18,
+    id: "user-18",
     nickname: "재원",
     level: 10,
     levelTitle: "👑 투자 마스터",
@@ -271,7 +271,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 19,
+    id: "user-19",
     nickname: "하은",
     level: 10,
     levelTitle: "👑 투자 마스터",
@@ -284,7 +284,7 @@ export const publicUserMock: PublicUser[] = [
     profileAvatar: null,
   },
   {
-    id: 20,
+    id: "user-20",
     nickname: "희연",
     level: 10,
     levelTitle: "👑 투자 마스터",

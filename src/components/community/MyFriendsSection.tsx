@@ -7,8 +7,8 @@ import { useState } from "react";
 
 interface Props {
   users: PublicUser[];
-  friends: number[];
-  onToggleFriend: (id: number) => void;
+  friends: string[];
+  onToggleFriend: (id: string) => void;
 }
 
 const MyFriendsSection = ({ users, friends, onToggleFriend }: Props) => {

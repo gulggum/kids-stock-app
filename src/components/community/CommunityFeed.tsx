@@ -7,8 +7,8 @@ import styled from "styled-components";
 
 interface CommunityFeedProps {
   users: PublicUser[];
-  friends: number[];
-  onToggleFriend: (id: number) => void;
+  friends: string[];
+  onToggleFriend: (id: string) => void;
 }
 
 const CommunityFeed = ({

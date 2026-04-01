@@ -4,8 +4,8 @@ import { type PublicUser } from "../../data/mock/PublicUserMock";
 
 interface Props {
   users: PublicUser[];
-  friends: number[];
-  onToggleFriend: (id: number) => void;
+  friends: string[];
+  onToggleFriend: (id: string) => void;
 }
 
 const SuggestionSection = ({ users, friends, onToggleFriend }: Props) => {

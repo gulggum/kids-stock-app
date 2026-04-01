@@ -47,7 +47,7 @@ export type User = {
   streak: number;
   quizProgress: string[];
 
-  friends: number[];
+  friends: string[];
   status: string;
 
   profileImage: string | null;
@@ -260,7 +260,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       },
     });
 
-    console.log("signUp data:", data); // ✅ 추가
+    console.log("signUp data:", data);
     console.log("signUp error:", error);
 
     if (error) return { error: error.message };
@@ -275,6 +275,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       email,
       password,
     });
+
+    console.log("signIn data:", data);
+    console.log("signIn error:", error);
 
     if (error) return { error: error.message };
     return { error: null };

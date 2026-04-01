@@ -21,7 +21,7 @@ const CommunityCard = ({
 }: {
   user: PublicUser;
   isFriend?: boolean;
-  onToggleFriend?: (id: number) => void;
+  onToggleFriend?: (id: string) => void;
 }) => {
   const { openModal } = useModal();
   const { selectedSkin } = useSkinItem();

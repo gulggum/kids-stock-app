@@ -38,7 +38,7 @@ const Community = () => {
   // 🔥 전체 유저 리스트 (내 정보 + mock)
   const allUsers = [myRankingUser, ...publicUserMock];
   // 🔥 친구 상태
-  const [friends, setFriends] = useState<number[]>(() => {
+  const [friends, setFriends] = useState<string[]>(() => {
     const stored = getStorage("myFriends", []);
     // 혹시 string으로 잘못 저장된 경우 방어
     return Array.isArray(stored) ? stored : [];
@@ -50,7 +50,7 @@ const Community = () => {
   }, [friends]);
 
   // 🔥 토글 함수 (핵심)
-  const handleToggleFriend = (userId: number) => {
+  const handleToggleFriend = (userId: string) => {
     setFriends((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
