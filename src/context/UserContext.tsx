@@ -1,6 +1,7 @@
-//CharacterContext,ScoreContext 정리예정
+// CharacterContext, ScoreContext 정리예정
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "../utils/supabase";
 import { getStorage, setStorage } from "../utils/storage";
 import { LEVEL_RULES, type LevelTier } from "../data/rules/levelTitles";
 import { getDateKey } from "../utils/date";
@@ -8,50 +9,51 @@ import type { RewardType } from "../data/rules/rewardRules";
 import type { ProfileAvatarType } from "../data/static/profileAvatars";
 import { getLevelTier } from "../utils/getLevelTier";
 
-/**
- * 📌 localStorage 키
- * - 유저 데이터를 브라우저에 저장해서 새로고침해도 유지
- */
 const USER_KEY = "user";
 
+// ─────────────────────────────────────────
+// 📌 타입 정의
+// ─────────────────────────────────────────
+
 /**
- * 🧍‍♂️ 유저 전체 데이터 타입 (🔥 핵심)
- *
- * 👉 이 객체 하나가 "서버에서 내려오는 유저 데이터"라고 생각하면 됨
+ * 🧍 유저 전체 데이터 타입
+ * id가 number → string(UUID)으로 변경됨
+ * Supabase auth.users의 id와 동일한 UUID(고유식별자) 사용
  */
 export type User = {
-  id: number; // 유저 ID
-  nickname: string; // 닉네임
+  id: string; // ✅ Supabase UUID (기존 number에서 변경)
+  nickname: string;
+  role: "user" | "admin"; // ✅ Supabase profiles의 role
 
-  level: number; // 레벨
-  exp: number; // 경험치
-  score: number; // 점수
+  level: number;
+  exp: number;
+  score: number;
 
-  coin: number; // 코인 (아이템용)
-  money: number; // 투자금
+  coin: number;
+  money: number; // ✅ Supabase wallets의 balance와 동기화
 
-  ownedSkins: string[]; // 보유 스킨
-  selectedSkin: string; // 선택 스킨
+  ownedSkins: string[];
+  selectedSkin: string;
 
-  ownedItems: string[]; // 보유 아이템
-  equippedItems: Record<string, string>; // 착용 아이템
+  ownedItems: string[];
+  equippedItems: Record<string, string>;
 
-  stocks: number[]; // 보유 주식 (id 목록)
+  stocks: number[];
 
-  achievements: string[]; // 업적목록
-  badges: string[]; // 뱃지
+  achievements: string[];
+  badges: string[];
 
-  attendance: string[]; // 출석한 날짜 목록
-  streak: number; //연속 출석 일 수
-  quizProgress: string[]; // 푼 퀴즈 ID 목록
+  attendance: string[];
+  streak: number;
+  quizProgress: string[];
 
-  friends: number[]; // 친구 목록 (id)
-  status: string; // 한줄 상태
+  friends: number[];
+  status: string;
 
-  profileImage: string | null; // 프로필 이미지
-  profileAvatar: ProfileAvatarType | null; // 기본 아바타
+  profileImage: string | null;
+  profileAvatar: ProfileAvatarType | null;
 
-  hasBankrupt: boolean; // 파산 경험 여부 (money가 0 이하로 떨어진 적 있는지)
+  hasBankrupt: boolean;
 };
 
 type ExpInfo = {
@@ -60,203 +62,273 @@ type ExpInfo = {
   neededExp: number;
   progress: number;
 };
+
 /**
  * 📦 Context에서 제공할 값들
+ * ✅ 추가: isLoading, isLoggedIn, signUp, signIn, signOut
  */
 type UserContextType = {
-  /** 현재 유저 데이터 */
   user: User;
-
-  /** 유저 전체 업데이트 */
   setUser: React.Dispatch<React.SetStateAction<User>>;
 
-  /** 경험치 추가 */
-  addExp: (amount: number) => void; // 경험치 추가
-  addScore: (amount: number) => void; // 점수 추가
+  // ✅ 새로 추가 — 로그인 상태
+  isLoading: boolean; // 세션 확인 중인지 (앱 첫 로드 시)
+  isLoggedIn: boolean; // 로그인 여부
 
-  /** 코인 사용 void는 항상성공, boolean은 실패 가능성여부 */
-  spendCoin: (amount: number) => boolean; // 코인 사용
-  addCoin: (amount: number) => void; // 코인 추가
+  // ✅ 새로 추가 — 인증 함수
+  signUp: (
+    email: string,
+    password: string,
+    nickname: string,
+  ) => Promise<{ error: string | null }>;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: string | null }>;
+  signOut: () => Promise<void>;
 
-  currentTitle: string; // 칭호 텍스트
+  addExp: (amount: number) => void;
+  addScore: (amount: number) => void;
+
+  spendCoin: (amount: number) => boolean;
+  addCoin: (amount: number) => void;
+
+  currentTitle: string;
   currentTier: LevelTier;
-  expProgress: number; // 경험치 %게이지
+  expProgress: number;
   expInfo: ExpInfo;
 
-  addAchievement: (id: string) => void; //업적리스트추가
+  addAchievement: (id: string) => void;
 
-  //가상머니
   addMoney: (amount: number) => void;
   spendMoney: (amount: number) => boolean;
 
-  //출석관련
-  // giveReward를 파라미터로 받는 이유:
-  // UserContext에서 useReward를 직접 쓰면 순환 참조 발생
-  // → 호출하는 쪽에서 giveReward 주입 ex) checkToday(giveReward)
   checkToday: (giveReward: (type: RewardType) => void) => void;
   isCheckedToday: boolean;
-  //퀴즈관련
-  // 동일한 이유로 giveReward 파라미터로 주입
-  // ex) markSolved(quizId, giveReward)
+
   isSolved: (quizId: string) => boolean;
   markSolved: (
     quizId: string,
     giveReward: (type: RewardType) => void,
   ) => boolean;
 
-  //나의 한마디 고르기 상태
   updateStatus: (status: string) => void;
 };
 
-/**
- * 📌 Context 생성
- */
+// ─────────────────────────────────────────
+// 📌 기본값 (비로그인 상태)
+// ─────────────────────────────────────────
+
+const defaultUser: User = {
+  id: "",
+  nickname: "게스트",
+  role: "user",
+  level: 1,
+  exp: 0,
+  score: 0,
+  coin: 0,
+  money: 0,
+  ownedSkins: ["basic"],
+  selectedSkin: "basic",
+  ownedItems: [],
+  equippedItems: {},
+  stocks: [],
+  achievements: [],
+  badges: [],
+  attendance: [],
+  streak: 0,
+  quizProgress: [],
+  friends: [],
+  status: "😄 오늘은 지켜보는 날이에요",
+  profileImage: null,
+  profileAvatar: null,
+  hasBankrupt: false,
+};
+
+// ─────────────────────────────────────────
+// 📌 Context 생성
+// ─────────────────────────────────────────
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const defaultUser: User = {
-    id: 1,
-    nickname: "가온",
-    level: 1,
-    exp: 0,
-    score: 0,
+  // ✅ 로그인 상태
+  const [isLoading, setIsLoading] = useState(true); // 처음엔 세션 확인 중
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    coin: 1000, //개발용
-    money: 1000000, //개발용
-
-    ownedSkins: ["basic"],
-    selectedSkin: "basic",
-
-    ownedItems: [],
-    equippedItems: {},
-
-    stocks: [],
-
-    achievements: [],
-    badges: [],
-
-    attendance: [],
-    streak: 0,
-    quizProgress: [],
-
-    friends: [],
-    status: "😄 오늘은 지켜보는 날이에요",
-
-    profileImage: null,
-    profileAvatar: null,
-    hasBankrupt: false,
-  };
-  /**
-   * 🔥 storage에서 불러오기
-   */
+  // localStorage에서 게임 데이터 불러오기 (level, exp 등)
   const [user, setUser] = useState<User>(() =>
     getStorage(USER_KEY, defaultUser),
   );
 
-  /**
-   * 🏷 현재 칭호 계산
-   */
+  // ─────────────────────────────────────────
+  // ✅ 앱 시작 시 Supabase 세션 확인
+  // 새로고침해도 로그인 유지되는 핵심 로직
+  // ─────────────────────────────────────────
+  useEffect(() => {
+    const initAuth = async () => {
+      // 현재 세션 가져오기 (자동 로그인 확인) => 브라우저에 로그인 흔적 있는지 확인하는것
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        await loadUserFromDB(session.user.id);
+      }
+
+      setIsLoading(false);
+    };
+
+    initAuth();
+
+    // 로그인/로그아웃 상태 변화 감지
+    // 다른 탭에서 로그아웃해도 자동 반영됨
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        await loadUserFromDB(session.user.id);
+      }
+      if (event === "SIGNED_OUT") {
+        setUser(defaultUser);
+        setIsLoggedIn(false);
+      }
+    });
+
+    // 컴포넌트 언마운트 시 구독 해제 (메모리 누수 방지)
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // ─────────────────────────────────────────
+  // ✅ DB에서 유저 데이터 불러오기
+  // 로그인 성공 시 호출됨
+  // ─────────────────────────────────────────
+  const loadUserFromDB = async (userId: string) => {
+    // profiles 테이블에서 닉네임, 역할 가져오기
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    // wallets 테이블에서 잔액 가져오기
+    const { data: wallet } = await supabase
+      .from("wallets")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    if (profile) {
+      // localStorage의 게임 데이터 + DB의 프로필/머니 합치기
+      const savedGameData = getStorage(USER_KEY, defaultUser);
+
+      setUser({
+        ...savedGameData, // level, exp, 출석 등 기존 게임 데이터 유지
+        id: userId, // DB의 UUID
+        nickname: profile.nickname,
+        role: profile.role,
+        money: wallet?.balance ?? 1000000, // DB 잔액 (없으면 기본값)
+      });
+
+      setIsLoggedIn(true);
+    }
+  };
+
+  // ─────────────────────────────────────────
+  // ✅ 회원가입
+  // ─────────────────────────────────────────
+  const signUp = async (email: string, password: string, nickname: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nickname }, // 트리거에서 이걸 읽어서 profiles + wallets 자동 생성
+      },
+    });
+
+    if (error) return { error: error.message };
+    return { error: null };
+  };
+
+  // ─────────────────────────────────────────
+  // ✅ 로그인
+  // ─────────────────────────────────────────
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) return { error: error.message };
+    return { error: null };
+  };
+
+  // ─────────────────────────────────────────
+  // ✅ 로그아웃
+  // ─────────────────────────────────────────
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    // onAuthStateChange에서 SIGNED_OUT 감지 → user 초기화
+  };
+
+  // ─────────────────────────────────────────
+  // 기존 게임 로직 (변경 없음)
+  // ─────────────────────────────────────────
+
   const { title: currentTitle, tier: currentTier } = getLevelTier(user.level);
 
-  /**
-   * 🔥 코인 차감
-   */
   const spendCoin = (amount: number) => {
     if (user.coin < amount) return false;
-
-    setUser((prev) => ({
-      ...prev,
-      coin: prev.coin - amount,
-    }));
-
+    setUser((prev) => ({ ...prev, coin: prev.coin - amount }));
     return true;
   };
 
-  /**
-   * 🔥 코인 추가
-   */
   const addCoin = (amount: number) => {
-    setUser((prev) => ({
-      ...prev,
-      coin: prev.coin + amount,
-    }));
+    setUser((prev) => ({ ...prev, coin: prev.coin + amount }));
   };
-  /**
-   * 📈 경험치 추가 + 레벨 자동 계산
-   */
+
   const addExp = (amount: number) => {
     setUser((prev) => {
       const newExp = prev.exp + amount;
-
-      // 🔥 현재 경험치 기준으로 칭호 계산
       const newLevel =
         LEVEL_RULES.slice()
           .reverse()
           .find((rule) => newExp >= rule.requiredExp)?.level || 1;
-
-      return {
-        ...prev,
-        exp: newExp,
-        level: newLevel,
-      };
+      return { ...prev, exp: newExp, level: newLevel };
     });
   };
 
-  /**
-   * 🏆 점수 추가
-   */
   const addScore = (amount: number) => {
-    setUser((prev) => ({
-      ...prev,
-      score: prev.score + amount,
-    }));
+    setUser((prev) => ({ ...prev, score: prev.score + amount }));
   };
 
-  /**
-   * 📊 경험치 진행률 (%) //게이지 채우는용도 ((progress %) = 현재레벨에서 쌓은 경험치 / 다음레벨까지 필요한 경험치)
-   */
   const expProgress = (() => {
     const currentRule =
       LEVEL_RULES.slice()
         .reverse()
         .find((r) => user.exp >= r.requiredExp) ?? LEVEL_RULES[0];
-
     const nextRule = LEVEL_RULES.find((r) => r.level === currentRule.level + 1);
-
     if (!nextRule) return 100;
-
     const currentLevelExp = user.exp - currentRule.requiredExp;
     const neededExp = nextRule.requiredExp - currentRule.requiredExp;
-
     return (currentLevelExp / neededExp) * 100;
   })();
 
-  // 경험치 UI용
-  //   level,  // 현재 레벨
-  //   currentExp  // 현재 레벨에서 쌓은 경험치
-  //   neededExp  // 다음 레벨까지 필요한 경험치
-  //   progress  // 퍼센트 (기존 expProgress)
   const expInfo = (() => {
     const currentRule =
       LEVEL_RULES.slice()
         .reverse()
         .find((r) => user.exp >= r.requiredExp) ?? LEVEL_RULES[0];
-
     const nextRule = LEVEL_RULES.find((r) => r.level === currentRule.level + 1);
-
-    if (!nextRule) {
+    if (!nextRule)
       return {
         level: currentRule.level,
         currentExp: 0,
         neededExp: 1,
         progress: 100,
       };
-    }
-
     const currentLevelExp = user.exp - currentRule.requiredExp;
     const neededExp = nextRule.requiredExp - currentRule.requiredExp;
-
     return {
       level: currentRule.level,
       currentExp: currentLevelExp,
@@ -265,37 +337,50 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     };
   })();
 
-  /**
-   * 🏆 업적 추가
-   */
   const addAchievement = (id: string) => {
     setUser((prev) => {
       if (prev.achievements.includes(id)) return prev;
-
-      return {
-        ...prev,
-        achievements: [...prev.achievements, id],
-      };
+      return { ...prev, achievements: [...prev.achievements, id] };
     });
   };
 
-  // 💰 머니 추가
   const addMoney = (amount: number) => {
-    setUser((prev) => ({ ...prev, money: prev.money + amount }));
+    setUser((prev) => {
+      const newBalance = prev.money + amount;
+      // ✅ 로그인 상태면 DB도 업데이트
+      if (isLoggedIn && prev.id) {
+        supabase
+          .from("wallets")
+          .update({ balance: newBalance })
+          .eq("user_id", prev.id);
+      }
+      return { ...prev, money: newBalance };
+    });
   };
 
-  // 💰 머니 차감 (부족하면 false)
   const spendMoney = (amount: number): boolean => {
     if (user.money < amount) return false;
-    setUser((prev) => ({
-      ...prev,
-      money: prev.money - amount <= 0 ? 500000 : prev.money - amount, // 부활금 지급
-      hasBankrupt: prev.hasBankrupt || prev.money - amount <= 0, // 파산 기록
-    }));
+    setUser((prev) => {
+      const newBalance =
+        prev.money - amount <= 0 ? 500000 : prev.money - amount;
+      const isBankrupt = prev.money - amount <= 0;
+      // ✅ 로그인 상태면 DB도 업데이트
+      if (isLoggedIn && prev.id) {
+        supabase
+          .from("wallets")
+          .update({ balance: newBalance })
+          .eq("user_id", prev.id);
+      }
+      return {
+        ...prev,
+        money: newBalance,
+        hasBankrupt: prev.hasBankrupt || isBankrupt,
+      };
+    });
     return true;
   };
 
-  const today = getDateKey(); // import { getDateKey } from "../../utils/date"
+  const today = getDateKey();
 
   const getYesterdayKey = () => {
     const d = new Date();
@@ -303,58 +388,43 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     return getDateKey(d);
   };
 
-  // ✅ giveReward를 파라미터로 받음 (순환 참조 방지)
-  // 사용하는 곳에서: checkToday(giveReward)
   const checkToday = (giveReward: (type: RewardType) => void) => {
-    if (user.attendance.includes(today)) return; // 이미 출석했으면 리턴
-
+    if (user.attendance.includes(today)) return;
     const yesterday = getYesterdayKey();
     const nextStreak = user.attendance.includes(yesterday)
       ? user.streak + 1
       : 1;
-
     setUser((prev) => ({
       ...prev,
       attendance: [...prev.attendance, today],
       streak: nextStreak,
     }));
-
     giveReward("ATTENDANCE_DAILY");
-
-    if (nextStreak % 7 === 0) {
-      giveReward("ATTENDANCE_STREAK_7");
-    }
+    if (nextStreak % 7 === 0) giveReward("ATTENDANCE_STREAK_7");
   };
-  // 오늘 출석 여부 (UI 버튼 비활성화용)
+
   const isCheckedToday = user.attendance.includes(today);
-  // ─── 퀴즈 ────────────────────────────────
-  // 이미 푼 퀴즈인지 확인
+
   const isSolved = (quizId: string) => user.quizProgress.includes(quizId);
 
-  // 퀴즈 완료 처리 + 보상 지급
   const markSolved = (
     quizId: string,
     giveReward: (type: RewardType) => void,
   ): boolean => {
-    if (user.quizProgress.includes(quizId)) return false; // 이미 푼 퀴즈
-
+    if (user.quizProgress.includes(quizId)) return false;
     setUser((prev) => ({
       ...prev,
       quizProgress: [...prev.quizProgress, quizId],
     }));
-
     giveReward("QUIZ_CORRECT");
     return true;
   };
 
-  //나의 한마디 상태 함수
   const updateStatus = (status: string) => {
     setUser((prev) => ({ ...prev, status }));
   };
 
-  /**
-   * 💾 저장
-   */
+  // ✅ 게임 데이터 localStorage 저장 (기존과 동일)
   useEffect(() => {
     setStorage(USER_KEY, user);
   }, [user]);
@@ -364,6 +434,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         user,
         setUser,
+        isLoading,
+        isLoggedIn,
+        signUp,
+        signIn,
+        signOut,
         spendCoin,
         addCoin,
         addExp,
@@ -386,16 +461,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     </UserContext.Provider>
   );
 };
-/**
- * 📌 커스텀 훅
- * - 어디서든 쉽게 user 접근 가능
- */
+
 export const useUser = () => {
   const context = useContext(UserContext);
-
-  if (!context) {
-    throw new Error("useUser must be used within UserProvider");
-  }
-
+  if (!context) throw new Error("useUser must be used within UserProvider");
   return context;
 };
