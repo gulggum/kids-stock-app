@@ -70,6 +70,7 @@ type ExpInfo = {
 type UserContextType = {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
+  startGuest: (nickname: string) => void; //게스트로그인(로컬에만 저장)
 
   // ✅ 새로 추가 — 로그인 상태
   isLoading: boolean; // 세션 확인 중인지 (앱 첫 로드 시)
@@ -234,17 +235,33 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // ✅ 게스트 시작 (localStorage에만 저장)
+  const startGuest = (nickname: string) => {
+    setUser((prev) => ({
+      ...prev,
+      id: "guest",
+      nickname,
+      role: "user",
+      money: 1000000,
+      coin: 1000,
+    }));
+    setIsLoggedIn(true); // 게스트도 로그인 상태로 처리
+  };
+
   // ─────────────────────────────────────────
   // ✅ 회원가입
   // ─────────────────────────────────────────
   const signUp = async (email: string, password: string, nickname: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { nickname }, // 트리거에서 이걸 읽어서 profiles + wallets 자동 생성
       },
     });
+
+    console.log("signUp data:", data); // ✅ 추가
+    console.log("signUp error:", error);
 
     if (error) return { error: error.message };
     return { error: null };
@@ -254,7 +271,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ✅ 로그인
   // ─────────────────────────────────────────
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -434,6 +451,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         user,
         setUser,
+        startGuest,
         isLoading,
         isLoggedIn,
         signUp,

@@ -1,18 +1,19 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useUser } from "../context/UserContext";
 
-/**
- * 관리자 전용 페이지 접근 보호
- * 로그인 + 관리자 여부 확인
- */
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isLoading, user } = useUser();
 
-  // ⭐ 개발중이라 일단 로그인만 확인
-  // 나중에 role === admin 추가 가능
+  if (isLoading) return null;
 
+  // 로그인 안 했으면 로그인 페이지로
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
+  }
+
+  // 관리자 아니면 홈으로
+  if (user.role !== "admin") {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
