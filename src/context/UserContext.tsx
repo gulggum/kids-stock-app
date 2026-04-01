@@ -70,7 +70,7 @@ type ExpInfo = {
 type UserContextType = {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
-  startGuest: (nickname: string) => void; //게스트로그인(로컬에만 저장)
+  startGuest: (nickname: string) => Promise<void>; //게스트로그인(로컬에만 저장)
 
   // ✅ 새로 추가 — 로그인 상태
   isLoading: boolean; // 세션 확인 중인지 (앱 첫 로드 시)
@@ -236,16 +236,48 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // ✅ 게스트 시작 (localStorage에만 저장)
-  const startGuest = (nickname: string) => {
+  const startGuest = async (nickname: string) => {
+    // ✅ Supabase 익명 계정 생성
+    const { data, error } = await supabase.auth.signInAnonymously();
+    const anonymousUser = data?.user;
+
+    if (error || !anonymousUser) {
+      // 익명 로그인 실패 시 기존 방식으로 폴백
+      setUser((prev) => ({
+        ...prev,
+        id: "guest",
+        nickname,
+        role: "user",
+        money: 1000000,
+        coin: 1000,
+      }));
+      setIsLoggedIn(true); // 게스트도 로그인 상태로 처리
+      return;
+    }
+    // ✅ profiles에 닉네임 저장
+    await supabase.from("profiles").upsert({
+      id: anonymousUser.id,
+      nickname,
+      role: "user",
+    });
+
+    // ✅ wallets 생성
+    await supabase.from("wallets").upsert({
+      user_id: anonymousUser.id,
+      balance: 1000000,
+    });
+
+    // ✅ 유저 상태 업데이트
     setUser((prev) => ({
       ...prev,
-      id: "guest",
+      id: anonymousUser.id,
       nickname,
       role: "user",
       money: 1000000,
       coin: 1000,
     }));
-    setIsLoggedIn(true); // 게스트도 로그인 상태로 처리
+
+    setIsLoggedIn(true);
   };
 
   // ─────────────────────────────────────────

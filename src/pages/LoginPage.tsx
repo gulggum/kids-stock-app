@@ -61,7 +61,7 @@ const LoginPage = () => {
   // ─────────────────────────────────────────
   // 게스트 시작
   // ─────────────────────────────────────────
-  const handleGuestStart = () => {
+  const handleGuestStart = async () => {
     if (!guestNickname.trim()) {
       setGuestNicknameStatus({
         type: "error",
@@ -78,9 +78,9 @@ const LoginPage = () => {
       return;
     }
 
-    // UserContext의 startGuest 호출
-    // localStorage에만 저장, DB 저장 없음
-    startGuest(guestNickname);
+    // Supabase 익명 계정 생성 후 시작
+    // 캐시 지워도 데이터 유지됨
+    await startGuest(guestNickname);
     navigate("/");
   };
 
@@ -272,9 +272,9 @@ const LoginPage = () => {
             )}
 
             <Notice>
-              💡 게스트는 이 기기에만 저장돼요
+              💡 게스트 기록은 자동으로 저장돼요
               <br />
-              기록을 지키려면 이메일로 가입하세요
+              이메일로 가입하면 다른 기기에서도 사용 가능해요
             </Notice>
 
             <Button onClick={handleGuestStart}>시작하기!</Button>
