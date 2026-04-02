@@ -98,7 +98,7 @@ const Nav = styled.nav`
 const Item = styled(NavLink)`
   flex: 1;
   height: 100%;
-
+  text-decoration: none;
   display: flex;
   flex-direction: column;
   align-items: center;

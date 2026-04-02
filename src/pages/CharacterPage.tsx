@@ -200,6 +200,7 @@ const PageWrapper = styled.div`
 const Title = styled.h2`
   font-size: 22px;
   font-weight: 900;
+  margin-bottom: 10px;
 `;
 
 const Description = styled.p`

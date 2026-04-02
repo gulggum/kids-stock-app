@@ -88,7 +88,7 @@ const NavItem = styled(NavLink)`
   display: flex;
   align-items: center;
   gap: 6px;
-
+  text-decoration: none;
   padding: 8px 14px;
   border-radius: ${({ theme }) => theme.radius.md};
 

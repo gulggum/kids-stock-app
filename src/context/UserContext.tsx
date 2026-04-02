@@ -236,12 +236,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         setIsLoggedIn(true);
-        console.log("프로파일도?", profile);
       }
     } catch (err) {
       console.error(err);
     } finally {
-      console.log("마침내 여기왔다");
       setIsLoading(false); // 🔥 끝 (이게 핵심)
     }
   };

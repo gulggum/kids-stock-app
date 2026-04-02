@@ -8,6 +8,7 @@ import {
   Bell,
   Palette,
   ShieldCheck,
+  LayoutDashboard,
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { useModal } from "../context/UIContext/ModalContext";
@@ -111,6 +112,27 @@ const SettingsPage = () => {
           </ProfileRole>
         </ProfileInfo>
       </ProfileCard>
+
+      {/* ✅ 관리자 메뉴 — admin만 보임 */}
+      {user.role === "admin" && (
+        <>
+          <SectionTitle>관리자</SectionTitle>
+          <SectionCard>
+            <SettingItem $last onClick={() => navigate("/admin")}>
+              <IconWrapper style={{ background: "#FFF0E618" }}>
+                <span style={{ color: "#E67E22" }}>
+                  <LayoutDashboard size={18} />
+                </span>
+              </IconWrapper>
+              <ItemText>
+                <ItemLabel>관리자 페이지</ItemLabel>
+                <ItemDesc>뉴스 등록, 통계, 랭킹 관리</ItemDesc>
+              </ItemText>
+              <ChevronRight size={16} color="#ccc" />
+            </SettingItem>
+          </SectionCard>
+        </>
+      )}
 
       {/* 설정 목록 */}
       {settingGroups.map((group) => (
