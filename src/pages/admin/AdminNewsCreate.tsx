@@ -1,194 +1,314 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { getNews, saveNews } from "../../utils/newsStorage";
+import { ClipboardPaste, Send, RotateCcw, CheckCircle } from "lucide-react";
+import { supabase } from "../../utils/supabase";
+import type {
+  HomeNews,
+  NewsQuiz,
+  NewsResponse,
+} from "../../data/mock/homeNewsMockData";
 
 /**
  * 관리자 뉴스 생성 페이지
  *
- * Step1 → 뉴스 입력
- * Step2 → 뉴스 수정
- * Step3 → 미리보기
+ * Step1 → JSON 붙여넣기  (ChatGPT에서 복사)
+ * Step2 → 미리보기 + 수정
+ * Step3 → Supabase 게시
  */
 
-type NewsItem = {
-  title: string;
-  summary: string;
-  image: string;
-  companies: string[];
-};
-
-type Step = "input" | "edit" | "preview";
+type Step = "paste" | "preview" | "done";
 
 const AdminNewsCreate = () => {
-  const [step, setStep] = useState<Step>("input");
+  const [step, setStep] = useState<Step>("paste");
+  const [jsonInput, setJsonInput] = useState("");
+  const [parsed, setParsed] = useState<NewsResponse | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [inputs, setInputs] = useState<string[]>(["", "", "", "", "", ""]);
+  // --------------------------------------------------
+  // JSON 파싱
+  // --------------------------------------------------
+  const handleParse = () => {
+    setError("");
+    try {
+      const data = JSON.parse(jsonInput) as NewsResponse;
 
-  const [news, setNews] = useState<NewsItem[]>([]);
-
-  const handleInput = (index: number, value: string) => {
-    const copy = [...inputs];
-    copy[index] = value;
-    setInputs(copy);
-  };
-
-  /**
-   * AI 요약 (mock)
-   */
-  const handleGenerate = () => {
-    const result = inputs
-      .filter((v) => v.trim() !== "")
-      .map((_, i) => ({
-        title: `뉴스 ${i + 1}`,
-        summary:
-          "AI가 어린이를 위해 쉽게 설명한 경제 뉴스입니다. 기업 활동과 시장 변화를 이해할 수 있도록 정리되었습니다.",
-        image: "https://picsum.photos/seed/computer/400/200",
-        companies: ["삼성전자", "애플"],
+      // ✅ contentReference 자동 제거
+      data.news = data.news.map((item) => ({
+        ...item,
+        summary: item.summary
+          .replace(/:contentReference\[.*?\]\{.*?\}/g, "")
+          .trim(),
       }));
 
-    setNews(result);
-    setStep("edit");
-  };
+      // 기본 유효성 검사
+      if (!data.news || !Array.isArray(data.news)) {
+        throw new Error("news 배열이 없어요");
+      }
+      if (!data.quizzes || !Array.isArray(data.quizzes)) {
+        throw new Error("quizzes 배열이 없어요");
+      }
 
-  /**
-   * 관리자 수정
-   */
-  const updateNews = (index: number, field: string, value: any) => {
-    const copy = [...news];
-    // @ts-ignore
-    copy[index][field] = value;
-    setNews(copy);
-  };
-
-  /**
-   * 게시
-   */
-  const handlePublish = () => {
-    // 빈 값 체크
-    const validNews = news.filter((n) => n.title.trim() && n.summary.trim());
-
-    if (validNews.length === 0) {
-      alert("뉴스 내용을 입력해주세요!");
-      return;
+      setParsed(data);
+      setStep("preview");
+    } catch (e: any) {
+      setError(`JSON 형식이 올바르지 않아요: ${e.message}`);
     }
-
-    const data = getNews();
-
-    const newItems = validNews.map((item, index) => ({
-      id: `news_today_${Date.now()}_${index}`,
-
-      title: item.title,
-      summary: item.summary,
-      image: item.image,
-
-      stockIds: [], // ✅ number[] (나중에 연결)
-      type: "today" as const, // ✅ NewsType으로 고정
-      country: "KR" as const, // ✅ NewsCountry로 고정
-
-      createdAt: new Date().toISOString(),
-    }));
-
-    const updated = {
-      ...data,
-      news: [...newItems, ...data.news],
-    };
-
-    saveNews(updated);
-
-    alert("뉴스 게시 완료!");
   };
 
+  // --------------------------------------------------
+  // Supabase 게시
+  // --------------------------------------------------
+  const handlePublish = async () => {
+    if (!parsed) return;
+    setLoading(true);
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    try {
+      // 1️⃣ news 테이블 upsert
+      const newsRows = parsed.news.map((item: HomeNews) => ({
+        id: item.id,
+        title: item.title,
+        summary: item.summary,
+        image: item.image ?? null,
+        stock_ids: item.stockIds ?? [],
+        type: item.type,
+        country: item.country,
+        date: today,
+        created_at: new Date().toISOString(),
+      }));
+
+      const { error: newsError } = await supabase
+        .from("news")
+        .upsert(newsRows, { onConflict: "id" });
+
+      if (newsError) throw newsError;
+
+      // 2️⃣ news_quizzes 테이블 upsert
+      const quizRows = parsed.quizzes.map((q: NewsQuiz) => ({
+        news_id: q.newsId,
+        question: q.question,
+        options: q.options,
+        answer_index: q.answerIndex,
+      }));
+
+      const { error: quizError } = await supabase
+        .from("news_quizzes")
+        .upsert(quizRows, { onConflict: "news_id" });
+
+      if (quizError) throw quizError;
+
+      setStep("done");
+    } catch (e: any) {
+      setError(`게시 실패: ${e.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --------------------------------------------------
+  // 초기화
+  // --------------------------------------------------
+  const handleReset = () => {
+    setStep("paste");
+    setJsonInput("");
+    setParsed(null);
+    setError("");
+  };
+
+  // --------------------------------------------------
+  // UI
+  // --------------------------------------------------
   return (
     <Container>
-      <Title>오늘 뉴스 생성</Title>
+      {/* 단계 표시 */}
+      <StepRow>
+        <StepDot $active={step === "paste"} $done={step !== "paste"}>
+          1
+        </StepDot>
+        <StepLine />
+        <StepDot $active={step === "preview"} $done={step === "done"}>
+          2
+        </StepDot>
+        <StepLine />
+        <StepDot $active={step === "done"} $done={false}>
+          3
+        </StepDot>
+      </StepRow>
 
-      {/* STEP 1 : 뉴스 입력 */}
+      {/* ======================== STEP 1 : JSON 붙여넣기 ======================== */}
+      {step === "paste" && (
+        <>
+          <SectionTitle>📋 JSON 붙여넣기</SectionTitle>
 
-      {step === "input" && (
-        <Section>
-          <SectionTitle>뉴스 원문 입력</SectionTitle>
+          <SectionCard>
+            <GuideItem>
+              <GuideNum>1</GuideNum>
+              <GuideText>ChatGPT에서 아래 프롬프트로 JSON을 받아요</GuideText>
+            </GuideItem>
+            <GuideItem>
+              <GuideNum>2</GuideNum>
+              <GuideText>받은 JSON을 아래 창에 붙여넣기 해요</GuideText>
+            </GuideItem>
+            <GuideItem $last>
+              <GuideNum>3</GuideNum>
+              <GuideText>파싱 버튼을 눌러요</GuideText>
+            </GuideItem>
+          </SectionCard>
 
-          {inputs.map((v, i) => (
-            <Textarea
-              key={i}
-              placeholder={`뉴스 ${i + 1}`}
-              value={v}
-              onChange={(e) => handleInput(i, e.target.value)}
+          {/* ChatGPT 프롬프트 복사용 */}
+          <SectionTitle>💬 ChatGPT 프롬프트 (복사해서 사용)</SectionTitle>
+          <PromptBox>
+            {`너는 어린이경제신문에서 일하는 기자야. 
+
+내가 주는 한국 경제 뉴스 3개 + 세계 경제 뉴스 3개를
+어린이 경제신문 기사처럼 재밌고 이해하기 쉽게 5줄이내로 다시 작성해줘. 
+
+반드시 중요한 경제 용어(예: 금리, 환율, 인플레이션 등)는
+어려워도 빼지 말고 그대로 포함해.
+
+출력은 반드시 아래 JSON 형식으로만 해.
+설명, 말투, 추가 텍스트 절대 금지.
+
+{
+  "news": [
+    {
+      "id": "news_today_kr_1",
+      "title": "어린이 경제신문 기사처럼 (20자 이내)",
+      "summary": "어린이 경제신문 기사처럼 재밌고 이해하기 쉽게 5줄이내",
+      "image": "",
+      "stockIds": ["관련기업1", "관련기업2"],
+      "type": "today",
+      "country": "KR",
+      "createdAt": "YYYY-MM-DD"
+    }
+  ],
+  "quizzes": [
+    {
+      "newsId": "news_today_kr_1",
+      "question": "뉴스 내용을 기반으로 한 퀴즈",
+      "options": ["보기1", "보기2", "보기3"],
+      "answerIndex": 0
+    }
+  ],
+  "date": "YYYY-MM-DD"
+}
+
+규칙:
+- 한국 뉴스 id: news_today_kr_1 ~ news_today_kr_3
+- 해외 뉴스 id: news_today_us_1 ~ news_today_us_3
+- 뉴스는 총 6개 작성
+- 각 뉴스마다 퀴즈 1개 (총 6개)
+- answerIndex는 반드시 0, 1, 2 중 하나
+- stockIds는 뉴스와 관련된 대표 기업 2개 (예: 삼성전자, 애플 등)
+- createdAt과 date는 오늘 날짜로 동일하게 작성`}
+          </PromptBox>
+
+          <SectionTitle>📥 JSON 입력</SectionTitle>
+
+          <SectionCard style={{ padding: "12px" }}>
+            <JsonTextarea
+              placeholder="여기에 ChatGPT에서 받은 JSON을 붙여넣기 해주세요..."
+              value={jsonInput}
+              onChange={(e) => setJsonInput(e.target.value)}
             />
-          ))}
+          </SectionCard>
 
-          <Button onClick={handleGenerate}>AI 요약 생성</Button>
-        </Section>
+          {error && <ErrorMsg>{error}</ErrorMsg>}
+
+          <ActionButton onClick={handleParse} disabled={!jsonInput.trim()}>
+            <ClipboardPaste size={16} />
+            파싱하기
+          </ActionButton>
+        </>
       )}
 
-      {/* STEP 2 : 수정 */}
+      {/* ======================== STEP 2 : 미리보기 ======================== */}
+      {step === "preview" && parsed && (
+        <>
+          <SectionTitle>👀 뉴스 미리보기 ({parsed.news.length}개)</SectionTitle>
 
-      {step === "edit" && (
-        <Section>
-          <SectionTitle>뉴스 수정</SectionTitle>
+          {parsed.news.map((item) => {
+            const quiz = parsed.quizzes.find((q) => q.newsId === item.id);
+            return (
+              <SectionCard key={item.id}>
+                <PreviewHeader>
+                  <CountryBadge $country={item.country}>
+                    {item.country === "KR" ? "🇰🇷 한국" : "🌎 세계"}
+                  </CountryBadge>
+                  <TypeBadge>{item.type}</TypeBadge>
+                </PreviewHeader>
 
-          {news.map((item, i) => (
-            <Card key={i}>
-              <Input
-                value={item.title}
-                onChange={(e) => updateNews(i, "title", e.target.value)}
-              />
+                <PreviewRow $last={false}>
+                  <PreviewLabel>제목</PreviewLabel>
+                  <PreviewValue>{item.title}</PreviewValue>
+                </PreviewRow>
 
-              <Input
-                placeholder="이미지 URL"
-                value={item.image}
-                onChange={(e) => updateNews(i, "image", e.target.value)}
-              />
+                <PreviewRow $last={false}>
+                  <PreviewLabel>요약</PreviewLabel>
+                  <PreviewValue>{item.summary}</PreviewValue>
+                </PreviewRow>
 
-              <Textarea
-                value={item.summary}
-                onChange={(e) => updateNews(i, "summary", e.target.value)}
-              />
+                {quiz && (
+                  <PreviewRow $last>
+                    <PreviewLabel>퀴즈</PreviewLabel>
+                    <QuizBox>
+                      <QuizQuestion>{quiz.question}</QuizQuestion>
+                      {quiz.options.map((opt, i) => (
+                        <QuizOption key={i} $correct={i === quiz.answerIndex}>
+                          {i === quiz.answerIndex ? "✅" : "○"} {opt}
+                        </QuizOption>
+                      ))}
+                    </QuizBox>
+                  </PreviewRow>
+                )}
+                {item.stockIds && item.stockIds.length > 0 && (
+                  <PreviewRow $last>
+                    <PreviewLabel>주식</PreviewLabel>
+                    <StockRow>
+                      {item.stockIds.map((id, i) => (
+                        <StockTag key={i}>#{id}</StockTag>
+                      ))}
+                    </StockRow>
+                  </PreviewRow>
+                )}
+              </SectionCard>
+            );
+          })}
 
-              <CompanyRow>
-                {item.companies.map((c, idx) => (
-                  <Tag key={idx}>{c}</Tag>
-                ))}
-              </CompanyRow>
-            </Card>
-          ))}
+          {error && <ErrorMsg>{error}</ErrorMsg>}
 
           <ButtonRow>
-            <Button onClick={() => setStep("input")}>뒤로</Button>
-            <Button onClick={() => setStep("preview")}>미리보기</Button>
+            <BackButton onClick={() => setStep("paste")}>
+              <RotateCcw size={14} />
+              다시 입력
+            </BackButton>
+            <ActionButton onClick={handlePublish} disabled={loading}>
+              <Send size={16} />
+              {loading ? "게시 중..." : "Supabase에 게시"}
+            </ActionButton>
           </ButtonRow>
-        </Section>
+        </>
       )}
 
-      {/* STEP 3 : 미리보기 */}
+      {/* ======================== STEP 3 : 완료 ======================== */}
+      {step === "done" && (
+        <>
+          <SectionTitle>✅ 게시 완료</SectionTitle>
 
-      {step === "preview" && (
-        <Section>
-          <SectionTitle>홈 미리보기</SectionTitle>
+          <SectionCard>
+            <DoneContent>
+              <CheckCircle size={48} color="#6BCB3D" />
+              <DoneTitle>뉴스가 성공적으로 게시됐어요!</DoneTitle>
+              <DoneDesc>홈 화면에서 오늘의 뉴스를 확인할 수 있어요.</DoneDesc>
+            </DoneContent>
+          </SectionCard>
 
-          <PreviewGrid>
-            {news.map((item, i) => (
-              <PreviewCard key={i}>
-                <PreviewImage src={item.image} />
-
-                <PreviewTitle>{item.title}</PreviewTitle>
-
-                <PreviewText>{item.summary}</PreviewText>
-
-                <CompanyRow>
-                  {item.companies.map((c, idx) => (
-                    <Tag key={idx}>{c}</Tag>
-                  ))}
-                </CompanyRow>
-              </PreviewCard>
-            ))}
-          </PreviewGrid>
-
-          <ButtonRow>
-            <Button onClick={() => setStep("edit")}>수정</Button>
-            <PublishButton onClick={handlePublish}>뉴스 게시</PublishButton>
-          </ButtonRow>
-        </Section>
+          <ActionButton onClick={handleReset}>
+            <RotateCcw size={16} />새 뉴스 등록
+          </ActionButton>
+        </>
       )}
     </Container>
   );
@@ -196,111 +316,295 @@ const AdminNewsCreate = () => {
 
 export default AdminNewsCreate;
 
-/* 스타일 */
+/* ======================== 스타일 ======================== */
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 8px;
 `;
 
-const Title = styled.h1`
-  font-size: 22px;
+// 단계 표시
+const StepRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 16px 4px 8px;
 `;
 
-const Section = styled.div`
-  padding: 20px;
-  border-radius: ${({ theme }) => theme.radius.md};
+const StepDot = styled.div<{ $active: boolean; $done: boolean }>`
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  background: ${({ $active, $done, theme }) =>
+    $done
+      ? theme.colors.primary
+      : $active
+        ? theme.colors.primary
+        : theme.colors.surface};
+  color: ${({ $active, $done, theme }) =>
+    $done || $active ? "white" : theme.colors.muted};
+  opacity: ${({ $active, $done }) => ($active || $done ? 1 : 0.4)};
+`;
+
+const StepLine = styled.div`
+  flex: 1;
+  height: 2px;
+  background: ${({ theme }) => theme.colors.border};
+`;
+
+// 섹션 공통
+const SectionTitle = styled.p`
+  font-size: 13px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 8px 4px 0;
+`;
+
+const SectionCard = styled.div`
   background: ${({ theme }) => theme.colors.card};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  overflow: hidden;
 `;
 
-const SectionTitle = styled.h3`
-  margin-bottom: 12px;
+// 가이드
+const GuideItem = styled.div<{ $last?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: ${({ $last, theme }) =>
+    $last ? "none" : `1px solid ${theme.colors.background}`};
 `;
 
-const Textarea = styled.textarea`
-  width: 100%;
-  min-height: 80px;
-  margin-bottom: 10px;
-  padding: 8px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-`;
-
-const Button = styled.button`
-  padding: 10px 14px;
-  border-radius: ${({ theme }) => theme.radius.sm};
+const GuideNum = styled.div`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   background: ${({ theme }) => theme.colors.primary};
   color: white;
-  border: none;
-  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 `;
 
+const GuideText = styled.p`
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+// 프롬프트 박스
+const PromptBox = styled.pre`
+  padding: 14px 16px;
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.text};
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+`;
+
+// JSON 입력
+const JsonTextarea = styled.textarea`
+  width: 100%;
+  min-height: 160px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.text};
+  resize: vertical;
+  font-family: monospace;
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.muted};
+  }
+`;
+
+// 미리보기
+const PreviewHeader = styled.div`
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 0;
+`;
+
+const CountryBadge = styled.span<{ $country: string }>`
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: ${({ $country }) => ($country === "KR" ? "#EBF5FB" : "#FEF9E7")};
+  color: ${({ $country }) => ($country === "KR" ? "#2E8EDB" : "#F39C12")};
+`;
+
+const TypeBadge = styled.span`
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.muted};
+`;
+
+const PreviewRow = styled.div<{ $last: boolean }>`
+  display: flex;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: ${({ $last, theme }) =>
+    $last ? "none" : `1px solid ${theme.colors.background}`};
+`;
+
+const PreviewLabel = styled.p`
+  font-size: 12px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 0;
+  width: 36px;
+  flex-shrink: 0;
+  padding-top: 2px;
+`;
+
+const PreviewValue = styled.p`
+  font-size: 13px;
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text};
+  line-height: 1.5;
+  flex: 1;
+`;
+
+const QuizBox = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const QuizQuestion = styled.p`
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const QuizOption = styled.p<{ $correct: boolean }>`
+  font-size: 12px;
+  margin: 0;
+  color: ${({ $correct, theme }) =>
+    $correct ? "#6BCB3D" : theme.colors.muted};
+  font-weight: ${({ $correct }) => ($correct ? 700 : 400)};
+`;
+
+const StockRow = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+`;
+
+const StockTag = styled.span`
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+// 버튼
 const ButtonRow = styled.div`
   display: flex;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 4px;
 `;
 
-const Card = styled.div`
-  padding: 14px;
-  margin-bottom: 12px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const CompanyRow = styled.div`
+const ActionButton = styled.button`
+  flex: 1;
   display: flex;
-  gap: 6px;
-`;
-
-const Tag = styled.span`
-  padding: 4px 8px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  background: ${({ theme }) => theme.colors.accentBlue};
-  color: white;
-  font-size: 12px;
-`;
-
-const PublishButton = styled.button`
-  padding: 12px 16px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  background: ${({ theme }) => theme.colors.accentGreen};
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.primary};
   color: white;
   border: none;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
+  transition: 0.2s;
+  margin-top: 4px;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    opacity: 0.9;
+  }
 `;
 
-const PreviewGrid = styled.div`
-  display: grid;
-  gap: 12px;
-`;
-
-const PreviewCard = styled.div`
-  padding: 16px;
+const BackButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
   border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const PreviewImage = styled.img`
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  margin-bottom: 8px;
-`;
-
-const PreviewTitle = styled.h4`
-  margin-bottom: 6px;
-`;
-
-const PreviewText = styled.p`
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  background: none;
+  color: ${({ theme }) => theme.colors.text};
   font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+`;
+
+// 에러
+const ErrorMsg = styled.p`
+  padding: 12px 16px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: #fff0f0;
+  color: #e74c3c;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+`;
+
+// 완료
+const DoneContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+`;
+
+const DoneTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const DoneDesc = styled.p`
+  font-size: 14px;
+  margin: 0;
+  color: ${({ theme }) => theme.colors.muted};
+  text-align: center;
 `;

@@ -168,16 +168,18 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ─────────────────────────────────────────
   useEffect(() => {
     const initAuth = async () => {
-      // 현재 세션 가져오기 (자동 로그인 확인) => 브라우저에 로그인 흔적 있는지 확인하는것
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (session?.user) {
-        await loadUserFromDB(session.user.id);
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          await loadUserFromDB(session.user.id);
+        }
+      } catch (err) {
+        console.error("initAuth 에러:", err);
+      } finally {
+        setIsLoading(false); // ✅ 성공이든 실패든 무조건 false
       }
-
-      setIsLoading(false);
     };
 
     initAuth();
@@ -205,33 +207,42 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // 로그인 성공 시 호출됨
   // ─────────────────────────────────────────
   const loadUserFromDB = async (userId: string) => {
-    // profiles 테이블에서 닉네임, 역할 가져오기
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
+    try {
+      setIsLoading(true); // 🔥 시작
+      // profiles 테이블에서 닉네임, 역할 가져오기
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
 
-    // wallets 테이블에서 잔액 가져오기
-    const { data: wallet } = await supabase
-      .from("wallets")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
+      // wallets 테이블에서 잔액 가져오기
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
 
-    if (profile) {
-      // localStorage의 게임 데이터 + DB의 프로필/머니 합치기
-      const savedGameData = getStorage(USER_KEY, defaultUser);
+      if (profile) {
+        // localStorage의 게임 데이터 + DB의 프로필/머니 합치기
+        const savedGameData = getStorage(USER_KEY, defaultUser);
 
-      setUser({
-        ...savedGameData, // level, exp, 출석 등 기존 게임 데이터 유지
-        id: userId, // DB의 UUID
-        nickname: profile.nickname,
-        role: profile.role,
-        money: wallet?.balance ?? 1000000, // DB 잔액 (없으면 기본값)
-      });
+        setUser({
+          ...savedGameData, // level, exp, 출석 등 기존 게임 데이터 유지
+          id: userId, // DB의 UUID
+          nickname: profile.nickname,
+          role: profile.role,
+          money: wallet?.balance ?? 1000000, // DB 잔액 (없으면 기본값)
+        });
 
-      setIsLoggedIn(true);
+        setIsLoggedIn(true);
+        console.log("프로파일도?", profile);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      console.log("마침내 여기왔다");
+      setIsLoading(false); // 🔥 끝 (이게 핵심)
     }
   };
 
