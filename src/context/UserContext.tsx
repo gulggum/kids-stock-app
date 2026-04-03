@@ -237,7 +237,20 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("wallet error:", walletError);
       }
 
-      // ✅ fallback 포함 (이거 핵심🔥)
+      // ✅ 퀴즈 푼 기록 가져오기 (다른 기기 동기화)
+      const { data: newsLogs, error: newsLogError } = await supabase
+        .from("user_news_log")
+        .select("news_id")
+        .eq("user_id", userId)
+        .eq("quiz_done", true);
+
+      if (newsLogError) {
+        console.error("newsLog error:", newsLogError);
+      }
+
+      const solvedQuizIds = newsLogs?.map((log) => log.news_id) ?? [];
+
+      // localStorage + Supabase 합치기 (중복 제거)
       const savedGameData = getStorage(USER_KEY, defaultUser);
 
       setUser({
@@ -246,6 +259,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         nickname: profile?.nickname ?? "유저",
         role: profile?.role ?? "user",
         money: wallet?.balance ?? 1000000,
+        //new Set으로 (로컬과,supabase에있는것 )중복제거
+        quizProgress: [
+          ...new Set([...savedGameData.quizProgress, ...solvedQuizIds]),
+        ],
+        achievements: [
+          ...new Set([
+            ...savedGameData.achievements, //로컬
+            ...(profile?.achievements ?? []), //supabase
+          ]),
+        ],
       });
 
       setIsLoggedIn(true);
@@ -417,7 +440,21 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const addAchievement = (id: string) => {
     setUser((prev) => {
       if (prev.achievements.includes(id)) return prev;
-      return { ...prev, achievements: [...prev.achievements, id] };
+
+      const updated = [...prev.achievements, id]; //새로운배열
+
+      // ✅ Supabase에도 저장
+      if (prev.id) {
+        supabase
+          .from("profiles")
+          .update({ achievements: updated })
+          .eq("id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("achievements 저장 실패:", error);
+          });
+      }
+
+      return { ...prev, achievements: updated };
     });
   };
 
@@ -482,17 +519,47 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isCheckedToday = user.attendance.includes(today);
 
+  // 변경 — localStorage + Supabase 동시 저장
   const isSolved = (quizId: string) => user.quizProgress.includes(quizId);
-
+  // ↑ 빠른 응답을 위해 localStorage 먼저 체크 (그대로 유지
   const markSolved = (
     quizId: string,
     giveReward: (type: RewardType) => void,
   ): boolean => {
+    // 중복 체크 — localStorage 기준
     if (user.quizProgress.includes(quizId)) return false;
+
+    // 1️⃣ localStorage 즉시 업데이트 (빠른 UI 반응)
     setUser((prev) => ({
       ...prev,
       quizProgress: [...prev.quizProgress, quizId],
     }));
+
+    // 2️⃣ Supabase user_news_log 저장 (비동기 — UI 안 막음)
+    if (user.id) {
+      const today = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10);
+
+      supabase
+        .from("user_news_log")
+        .upsert(
+          {
+            user_id: user.id,
+            news_id: quizId,
+            read: true,
+            quiz_done: true,
+            rewarded: true,
+            date: today,
+          },
+          { onConflict: "user_id,news_id" },
+        )
+        .then(({ error }) => {
+          if (error) console.error("user_news_log 저장 실패:", error);
+        });
+    }
+
+    // 3️⃣ 리워드 지급
     giveReward("QUIZ_CORRECT");
     return true;
   };
