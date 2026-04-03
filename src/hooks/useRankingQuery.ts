@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../utils/supabase";
-import type { RankingUser } from "../components/community/CommunityRanking";
+import type { PublicUser } from "../types/UserType";
 
 /**
  * 전체 유저 랭킹 가져오기
@@ -14,7 +14,7 @@ import type { RankingUser } from "../components/community/CommunityRanking";
  * - staleTime 5분 → 자주 바뀌지 않으니까 적당히 캐싱
  */
 
-const fetchRanking = async (): Promise<RankingUser[]> => {
+const fetchRanking = async (): Promise<PublicUser[]> => {
   const { data, error } = await supabase
     .from("profiles")
     .select("id, nickname, level, score, achievements, last_active")

@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
-import rankBg from "../../assets/images/rankBg.png";
 import type { PublicUser } from "../../types/UserType";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 
