@@ -10,6 +10,7 @@ import { useUser } from "../context/UserContext";
 import { getStorage, setStorage } from "../utils/storage";
 import { useRankingQuery } from "../hooks/useRankingQuery";
 import type { PublicUser } from "../types/UserType";
+import CommunityRankingSkeleton from "../components/community/CommunityRankingSkeleton";
 
 /**
  * 커뮤니티 메인 화면
@@ -70,12 +71,17 @@ const Community = () => {
       <MyStatusSection myStatus={user.status} onStatusChange={updateStatus} />
 
       {/* 🏆 랭킹 섹션 */}
-      <CommunityRanking
-        allUsers={allUsers}
-        myUserId={user.id}
-        myScore={user.score}
-        myAchievedCount={achieved.length}
-      />
+      {rankingLoading ? (
+        <CommunityRankingSkeleton />
+      ) : (
+        <CommunityRanking
+          allUsers={allUsers}
+          myUserId={user.id}
+          myScore={user.score}
+          myAchievedCount={achieved.length}
+        />
+      )}
+
       {/* 👥 내친구 섹션 */}
       <MyFriendsSection
         users={allUsers}
