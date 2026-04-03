@@ -25,6 +25,10 @@ const AdminNewsCreate = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const today = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10); //한국시간기준
+
   // --------------------------------------------------
   // JSON 파싱
   // --------------------------------------------------
@@ -62,8 +66,6 @@ const AdminNewsCreate = () => {
   const handlePublish = async () => {
     if (!parsed) return;
     setLoading(true);
-
-    const today = new Date().toISOString().slice(0, 10);
 
     try {
       // 1️⃣ news 테이블 upsert
@@ -175,7 +177,7 @@ const AdminNewsCreate = () => {
 - 20자 이내
 
 2. 본문(summary)
-- 반드시 하나의 자연스러운 문단으로 작성 (줄바꿈 최소화)
+- 스토리형식으로 문해력에도 도움될수 있도록
 - 최대 7줄 이내
 - 첫 문장은 아이가 궁금해할 질문 또는 상황으로 시작
   (예: “왜 요즘 기름값이 비싸졌을까?”)
@@ -215,8 +217,8 @@ const AdminNewsCreate = () => {
 }
 
 규칙:
-- KR 뉴스 id: news_2026-04-02_kr_1 ~ news_2026-04-02_kr_3
-- US 뉴스 id: news_2026-04-02_us_1 ~ news_2026-04-02_us_3
+- KR 뉴스 id: news_2026-${today}_kr_1 ~ news_2026-${today}_kr_3
+- US 뉴스 id: news_2026-${today}_us_1 ~ news_2026-${today}_us_3
 - 오늘 날짜를 YYYY-MM-DD 형식으로 id에 포함
 - 뉴스는 총 6개 작성
 - 각 뉴스마다 퀴즈 1개 (총 6개)
