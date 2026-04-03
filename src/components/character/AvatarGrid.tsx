@@ -60,7 +60,7 @@ const Sprite = styled.div<{ $x: number; $y: number }>`
   background-repeat: no-repeat;
   border-radius: 10px;
 
-  background-size: 500% 300%;
+  background-size: 510% 310%;
   background-position: ${({ $x, $y }) =>
-    `${($x / 4) * 100}% ${($y / 2) * 100}%`};
+    `${($x / 4) * 100 + 0.8}% ${($y / 2) * 100}%`};
 `;

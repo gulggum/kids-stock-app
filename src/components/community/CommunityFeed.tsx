@@ -39,14 +39,24 @@ const CommunityFeed = ({
       <SectionTitle>친구들은 이렇게 하고 있어요</SectionTitle>
 
       <List>
-        {currentUsers.map((user) => (
-          <CommunityCard
-            key={user.id}
-            user={user}
-            isFriend={friends.includes(user.id)}
-            onToggleFriend={onToggleFriend}
-          />
-        ))}
+        {currentUsers.length === 0 ? (
+          <EmptyBox>
+            <EmptyEmoji>📭</EmptyEmoji>
+            <EmptyText>아직 활동한 친구가 없어요</EmptyText>
+            <EmptyHint>친구를 팔로우하면 여기서 볼 수 있어요!</EmptyHint>
+          </EmptyBox>
+        ) : (
+          <>
+            {currentUsers.map((user) => (
+              <CommunityCard
+                key={user.id}
+                user={user}
+                isFriend={friends.includes(user.id)}
+                onToggleFriend={onToggleFriend}
+              />
+            ))}
+          </>
+        )}
       </List>
       <SearchWrapper>
         <SearchInput
@@ -146,4 +156,29 @@ const PageButton = styled.button<{ $active: boolean }>`
   &:active {
     transform: translateY(1px);
   }
+`;
+const EmptyBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+`;
+
+const EmptyEmoji = styled.div`
+  font-size: 32px;
+`;
+
+const EmptyText = styled.p`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+`;
+
+const EmptyHint = styled.p`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 0;
+  text-align: center;
 `;

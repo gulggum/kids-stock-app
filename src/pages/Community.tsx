@@ -48,6 +48,9 @@ const Community = () => {
     return Array.isArray(stored) ? stored : [];
   });
 
+  // 내 정보 제외한 유저만
+  const otherUsers = allUsers.filter((u) => u.id !== user.id);
+
   // 🔥 저장 동기화
   useEffect(() => {
     setStorage("myFriends", friends);
@@ -84,20 +87,20 @@ const Community = () => {
 
       {/* 👥 내친구 섹션 */}
       <MyFriendsSection
-        users={allUsers}
+        users={otherUsers}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />
       {/* 👥 친구추천 섹션 */}
       <SuggestionSection
-        users={allUsers}
+        users={otherUsers}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />
 
       {/* 👥 친구 피드 섹션 */}
       <CommunityFeed
-        users={allUsers}
+        users={otherUsers}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />
@@ -110,7 +113,7 @@ export default Community;
 /* ================= 스타일 ================= */
 
 const Wrapper = styled.div`
-  padding: 16px;
+  padding: 16px 5px;
   display: flex;
   flex-direction: column;
   gap: 20px;

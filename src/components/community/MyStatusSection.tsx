@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import SelectStatusModal from "./SelectStatusModal";
 import { useAchievement } from "../../context/AchievementContext";
 import { useUser } from "../../context/UserContext";
+import avatarSprite from "../../assets/avatars/avatarSprite.png";
 
 interface MyStatusSectionProps {
   myStatus: string;
@@ -64,7 +65,6 @@ const MyStatusSection = ({
           id: user.id,
           nickname: user.nickname,
           level: user.level,
-          levelTitle: "",
           emoji: "🐣", // TODO: Supabase 연동 시 제거, profileImage/profileAvatar 사용 예정
           status: myStatus,
           score: user.score,
@@ -82,12 +82,24 @@ const MyStatusSection = ({
       {showSticky && (
         <StickyMyStatus>
           <MyStatusRow>
-            <StatusEmoji>🧍</StatusEmoji>
+            {/* ✅ 이모지 → 아바타 사진으로 교체 */}
+            <StickyAvatar>
+              {user.profileImage ? (
+                <StickyAvatarImg src={user.profileImage} />
+              ) : user.profileAvatar ? (
+                <StickySprite
+                  $x={user.profileAvatar.x}
+                  $y={user.profileAvatar.y}
+                />
+              ) : (
+                <StickyEmoji>🙂</StickyEmoji>
+              )}
+            </StickyAvatar>
             <MyStatusText>{myStatus}</MyStatusText>
           </MyStatusRow>
-          <SelectButton onClick={handleOpenStatusModal}>
-            상태 바꾸기 ✨
-          </SelectButton>
+          <StickyButton onClick={handleOpenStatusModal}>
+            나도 한마디 선택하기 ✨
+          </StickyButton>
         </StickyMyStatus>
       )}
 
@@ -149,18 +161,15 @@ const StickyMyStatus = styled.div`
   left: 0;
   right: 0;
   z-index: 20;
-  padding: 12px 16px;
-
-  border: none;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(6px);
-  color: ${({ theme }) => theme.colors.text};
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: 0 3px 3px -3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   animation: slideDown 0.2s ease-out;
 
   @keyframes slideDown {
@@ -187,10 +196,38 @@ const MyStatusRow = styled.div`
   min-width: 0;
 `;
 
-const StatusEmoji = styled.div`
-  font-size: 16px;
+const StickyAvatar = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: ${({ theme }) => theme.colors.background};
 `;
 
+const StickyAvatarImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const StickySprite = styled.div<{ $x: number; $y: number }>`
+  width: 100%;
+  height: 100%;
+  background-image: url(${avatarSprite});
+  background-size: 500% 300%;
+  background-position: ${({ $x, $y }) =>
+    `${($x / 3.8999) * 100}% ${($y / 2) * 100}%`};
+`;
+
+const StickyEmoji = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+`;
 const MyStatusText = styled.div`
   font-size: 13px;
   font-weight: 700;
@@ -198,4 +235,17 @@ const MyStatusText = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const StickyButton = styled.button`
+  padding: 8px 14px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: none;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 `;

@@ -83,7 +83,7 @@ const Wrapper = styled.div<{ $skin: any; $text: string }>`
 const ImageWrapper = styled.div`
   width: 90px;
   height: 90px;
-  border-radius: 16px;
+  border-radius: 50%;
   overflow: hidden;
   background: white;
   cursor: pointer;
@@ -133,7 +133,7 @@ const Sprite = styled.div<{ $x: number; $y: number }>`
   background-repeat: no-repeat;
   border-radius: 10px;
 
-  background-size: 500% 300%;
+  background-size: 510% 310%;
   background-position: ${({ $x, $y }) =>
     `${($x / 3.95) * 100}% ${($y / 2) * 100}%`};
 `;

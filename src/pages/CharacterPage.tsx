@@ -37,8 +37,11 @@ const CharacterPage = () => {
     .map((id) => cardSkins.find((s) => s.id === id))
     .filter((s) => s !== undefined);
 
-  const currentSkin = cardSkins.find((s) => s.id === selectedSkin);
-
+  //basic 없으면 첫 번째 스킨으로 fallback
+  const currentSkin =
+    cardSkins.find((s) => s.id === selectedSkin) ??
+    cardSkins.find((s) => s.id === "basic") ??
+    cardSkins[0];
   const openProfileModal = () => {
     openModal({
       title: "프로필 선택",
@@ -194,7 +197,7 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 16px;
+  padding: 16px 5px;
   height: 100%;
 `;
 

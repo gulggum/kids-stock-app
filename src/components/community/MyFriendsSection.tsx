@@ -3,10 +3,10 @@
 import styled from "styled-components";
 import CommunityCard from "./CommunityCard";
 import { useState } from "react";
-import type { RankingUser } from "./CommunityRanking";
+import type { PublicUser } from "../../types/UserType";
 
 interface Props {
-  users: RankingUser[];
+  users: PublicUser[];
   friends: string[];
   onToggleFriend: (id: string) => void;
 }
@@ -22,14 +22,14 @@ const MyFriendsSection = ({ users, friends, onToggleFriend }: Props) => {
     return (
       <Section>
         <Title>👥 내 친구</Title>
-        <Empty>
-          아직 친구가 없어요 😢
-          <br />+ 팔로우를 클릭해 내 친구를 등록하세요!
-        </Empty>
+        <EmptyBox>
+          <EmptyEmoji>🫂</EmptyEmoji>
+          <EmptyText>아직 친구가 없어요</EmptyText>
+          <EmptyHint>아래 추천 친구에서 팔로우해봐요!</EmptyHint>
+        </EmptyBox>
       </Section>
     );
   }
-
   return (
     <Section>
       <Title>👥 내 친구</Title>
@@ -77,10 +77,30 @@ const List = styled.div`
   flex-direction: column;
   gap: 14px;
 `;
+const EmptyBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+`;
 
-const Empty = styled.div`
-  font-size: 13px;
+const EmptyEmoji = styled.div`
+  font-size: 32px;
+`;
+
+const EmptyText = styled.p`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+`;
+
+const EmptyHint = styled.p`
+  font-size: 12px;
   color: ${({ theme }) => theme.colors.muted};
+  margin: 0;
+  text-align: center;
 `;
 
 const ToggleButton = styled.button`

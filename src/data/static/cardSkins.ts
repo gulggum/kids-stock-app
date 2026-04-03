@@ -47,6 +47,13 @@ export const cardSkins: CardSkin[] = [
   // 🎨 COMMON - 파스텔 (100~120코인)
   // ─────────────────────────────────────────
   {
+    id: "basic",
+    name: "기본",
+    price: 0,
+    rarity: "COMMON",
+    gradient: "linear-gradient(135deg, #E8F5E9, #F1F8E9)",
+  },
+  {
     id: "skyblue",
     name: "스카이블루",
     price: 100,

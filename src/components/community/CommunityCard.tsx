@@ -9,7 +9,7 @@ import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
-import type { RankingUser } from "./CommunityRanking";
+import type { PublicUser } from "../../types/UserType";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -20,7 +20,7 @@ const CommunityCard = ({
   isFriend,
   onToggleFriend,
 }: {
-  user: RankingUser;
+  user: PublicUser;
   isFriend?: boolean;
   onToggleFriend?: (id: string) => void;
 }) => {
@@ -28,7 +28,10 @@ const CommunityCard = ({
   const { selectedSkin } = useSkinItem();
   const { title, tier } = getLevelTier(user.level);
 
-  const skin = cardSkins.find((skin) => skin.id === selectedSkin);
+  const skin =
+    cardSkins.find((skin) => skin.id === selectedSkin) ??
+    cardSkins.find((s) => s.id === "basic") ??
+    cardSkins[0]; // ← 없으면 basic으로
   const currentSkin = cardSkins.find((s) => s.id === selectedSkin);
 
   const textColor = getTextColorFromSkin(currentSkin);
@@ -127,7 +130,7 @@ const Card = styled.div<{
       ? $skin.gradient
       : $skin?.image
         ? `url(${$skin.image}) center/cover`
-        : "#fff"};
+        : "linear-gradient(135deg, #E8F5E9, #F1F8E9)"};
 
   position: relative;
   overflow: hidden;
@@ -364,7 +367,7 @@ const AvatarWrapper = styled.div`
   position: relative;
   width: 60px;
   height: 60px;
-  border-radius: 12px;
+  border-radius: 50%;
   overflow: hidden;
 
   display: flex;

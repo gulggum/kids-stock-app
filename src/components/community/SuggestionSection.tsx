@@ -14,18 +14,26 @@ const SuggestionSection = ({ users, friends, onToggleFriend }: Props) => {
   return (
     <Section>
       <Title>✨ 추천 친구</Title>
-      <Row>
-        {suggested.map((user) => (
-          <MiniCard key={user.id}>
-            <span>{user.emoji}</span>
-            <Name>{user.nickname}</Name>
+      {suggested.length === 0 ? (
+        <EmptyBox>
+          <EmptyEmoji>🔍</EmptyEmoji>
+          <EmptyText>추천할 친구가 없어요</EmptyText>
+          <EmptyHint>친구들이 가입하면 여기 나타나요!</EmptyHint>
+        </EmptyBox>
+      ) : (
+        <Row>
+          {suggested.map((user) => (
+            <MiniCard key={user.id}>
+              <span>{user.emoji}</span>
+              <Name>{user.nickname}</Name>
 
-            <AddButton onClick={() => onToggleFriend(user.id)}>
-              + 팔로우
-            </AddButton>
-          </MiniCard>
-        ))}
-      </Row>
+              <AddButton onClick={() => onToggleFriend(user.id)}>
+                + 팔로우
+              </AddButton>
+            </MiniCard>
+          ))}
+        </Row>
+      )}
     </Section>
   );
 };
@@ -81,4 +89,29 @@ const AddButton = styled.button`
   background: ${({ theme }) => theme.colors.primary};
   color: white;
   cursor: pointer;
+`;
+const EmptyBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+`;
+
+const EmptyEmoji = styled.div`
+  font-size: 32px;
+`;
+
+const EmptyText = styled.p`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+`;
+
+const EmptyHint = styled.p`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 0;
+  text-align: center;
 `;

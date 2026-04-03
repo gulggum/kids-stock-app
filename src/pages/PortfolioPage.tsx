@@ -147,7 +147,7 @@ const PortfolioPage = () => {
 };
 
 const Wrapper = styled.div`
-  padding: 16px;
+  padding: 16px 5px;
   display: flex;
   flex-direction: column;
   gap: 24px;

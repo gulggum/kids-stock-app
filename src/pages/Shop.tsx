@@ -63,8 +63,9 @@ const Shop = () => {
   // 📌 필터링된 카드 목록
   // -----------------------------
   const filteredSkins = cardSkins.filter((item) => {
-    if (activeTab === "ALL") return true;
+    if (item.id === "basic") return false; // ← 이 한 줄 추가
 
+    if (activeTab === "ALL") return true;
     if (activeTab === "HOT")
       return (
         item.rarity === "COMMON" ||
@@ -73,7 +74,6 @@ const Shop = () => {
       );
     return item.rarity === activeTab;
   });
-
   return (
     <Wrapper>
       {/* ----------------------------- */}
@@ -220,7 +220,7 @@ const sparkle = keyframes`
 `;
 
 const Wrapper = styled.div`
-  padding: 16px;
+  padding: 16px 5px;
   display: flex;
   flex-direction: column;
   gap: 16px;

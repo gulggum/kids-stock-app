@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import rankBg from "../../assets/images/rankBg.png";
 import type { PublicUser } from "../../types/UserType";
+import avatarSprite from "../../assets/avatars/avatarSprite.png";
 
 //`Pick`을 쓰면 `PublicUser`에서 필요한 필드만 뽑아서 `RankingUser`를 만들 수 있어요. 나중에 `PublicUser`에 필드 추가해도 `RankingUser`는 자동으로 안 따라와서 안전
 // 📌 TODO: Supabase 연동 시
@@ -77,45 +78,75 @@ const CommunityRanking = ({
 
       {/* 🔥 TOP 3 영역 */}
       <TopThreeWrapper>
-        {rankingList.slice(0, 3).map((user, index) => (
-          <TopCard key={user.id} $rank={index}>
-            <Medal>{index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}</Medal>
-            <TopEmoji>{user.emoji}</TopEmoji>
-            <TopName>{user.nickname}</TopName>
-            <TopScore>
-              {rankingType === "SCORE"
-                ? `${user.score ?? 0}점`
-                : `${user.badges?.length ?? 0}개`}
-            </TopScore>
-          </TopCard>
-        ))}
+        {[0, 1, 2].map((index) => {
+          const user = rankingList[index];
+          return (
+            <TopCard key={index} $rank={index}>
+              <Medal>{index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}</Medal>
+              {user ? (
+                <>
+                  {/* ✅ 프로필 이미지 → 아바타 → 이모지 순서로 */}
+                  <TopAvatarWrapper>
+                    {user.profileImage ? (
+                      <TopAvatarImg src={user.profileImage} />
+                    ) : user.profileAvatar ? (
+                      <TopSprite
+                        $x={user.profileAvatar.x}
+                        $y={user.profileAvatar.y}
+                      />
+                    ) : (
+                      <TopEmoji>{user.emoji}</TopEmoji>
+                    )}
+                  </TopAvatarWrapper>
+                  <TopName>{user.nickname}</TopName>
+                  <TopScore>
+                    {rankingType === "SCORE"
+                      ? `${user.score ?? 0}점`
+                      : `${user.badges?.length ?? 0}개`}
+                  </TopScore>
+                </>
+              ) : (
+                <>
+                  <EmptyEmoji>👤</EmptyEmoji>
+                  <EmptyName>???</EmptyName>
+                  <EmptyScore>-</EmptyScore>
+                </>
+              )}
+            </TopCard>
+          );
+        })}
       </TopThreeWrapper>
 
       {/* 🔥 4등 이후 리스트 */}
       <RankingList>
-        {rankingList.slice(3).map((user, index) => {
-          const actualRank = index + 4;
-          const isMe = user.id === myUserId;
-          return (
-            <RankingRow
-              key={user.id}
-              ref={isMe ? myRankRef : null}
-              $isMe={isMe}
-            >
-              <RankNumber>{actualRank}</RankNumber>
-              <UserInfo>
-                <UserEmoji>{user.emoji}</UserEmoji>
-                <UserName>{user.nickname}</UserName>
-                <LevelText>Lv.{user.level}</LevelText>
-              </UserInfo>
-              <Score>
-                {rankingType === "SCORE"
-                  ? `${user.score ?? 0}점`
-                  : `${user.badges?.length ?? 0}개`}
-              </Score>
-            </RankingRow>
-          );
-        })}
+        {rankingList.slice(3).length === 0 ? (
+          // ✅ 4등 이하 유저 없으면 안내 문구
+          <EmptyList>아직 참여한 친구가 없어요 👀</EmptyList>
+        ) : (
+          rankingList.slice(3).map((user, index) => {
+            const actualRank = index + 4;
+            const isMe = user.id === myUserId;
+            return (
+              <RankingRow
+                key={user.id}
+                ref={isMe ? myRankRef : null}
+                $isMe={isMe}
+              >
+                <RankNumber>{actualRank}</RankNumber>
+                <UserInfo>
+                  <UserEmoji>{user.emoji}</UserEmoji>
+                  <UserName>{user.nickname}</UserName>
+                  <LevelText>Lv.{user.level}</LevelText>
+                </UserInfo>
+                <Score>
+                  {rankingType === "SCORE"
+                    ? `${user.score ?? 0}점`
+                    : `${user.badges?.length ?? 0}개`}
+                </Score>
+              </RankingRow>
+            );
+          })
+        )}
       </RankingList>
 
       {/* 📌 내 순위 sticky */}
@@ -181,18 +212,37 @@ const RankingTab = styled.button<{ $active: boolean }>`
 const TopThreeWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+
   gap: 12px;
   margin-bottom: 24px;
 `;
 
 const TopCard = styled.div<{ $rank: number }>`
+  width: calc(33% - 8px);
   flex: 1;
   padding: 16px;
   border-radius: 16px;
-  text-align: center;
-  background-image: url(${rankBg});
-  background-position: ${({ $rank }) =>
-    $rank === 0 ? "top" : $rank === 1 ? "center" : "bottom"};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* ✅ 세련된 카드 */
+  background: ${({ $rank }) =>
+    $rank === 0
+      ? "linear-gradient(145deg, #FFF8DC, #F5E642)" // 골드
+      : $rank === 1
+        ? "linear-gradient(145deg, #F0F0F0, #C8C8C8)" // 실버
+        : "linear-gradient(145deg, #FFE0C0, #D4874E)"}; // 브론즈
+
+  border: 1px solid
+    ${({ $rank }) =>
+      $rank === 0 ? "#E8C800" : $rank === 1 ? "#B0B0B0" : "#C06020"};
+
+  box-shadow: ${({ $rank }) =>
+    $rank === 0
+      ? "0 4px 12px rgba(232,200,0,0.3)"
+      : $rank === 1
+        ? "0 4px 12px rgba(0,0,0,0.1)"
+        : "0 4px 12px rgba(192,96,32,0.3)"};
 
   background-repeat: no-repeat;
 `;
@@ -209,6 +259,10 @@ const TopEmoji = styled.div`
 const TopName = styled.div`
   font-weight: bold;
   margin-top: 4px;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  white-space: nowrap;
 `;
 
 const TopScore = styled.div`
@@ -280,4 +334,53 @@ const LevelText = styled.div`
 const Score = styled.div`
   font-size: 14px;
   font-weight: 800;
+`;
+const EmptyEmoji = styled.div`
+  font-size: 28px;
+  opacity: 0.25;
+`;
+
+const EmptyName = styled.div`
+  font-weight: bold;
+  margin-top: 4px;
+  color: ${({ theme }) => theme.colors.muted};
+  opacity: 0.4;
+`;
+
+const EmptyScore = styled.div`
+  font-size: 14px;
+  margin-top: 6px;
+  color: ${({ theme }) => theme.colors.muted};
+  opacity: 0.4;
+`;
+
+const EmptyList = styled.div`
+  text-align: center;
+  padding: 20px;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+const TopAvatarWrapper = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  background: ${({ theme }) => theme.colors.background};
+  flex-shrink: 0;
+`;
+
+const TopAvatarImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const TopSprite = styled.div<{ $x: number; $y: number }>`
+  width: 100%;
+  height: 100%;
+  background-image: url(${avatarSprite});
+  background-size: 500% 300%;
+  background-position: ${({ $x, $y }) =>
+    `${($x / 3.8999) * 100}% ${($y / 2) * 100}%`};
 `;
