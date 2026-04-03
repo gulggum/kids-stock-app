@@ -9,7 +9,9 @@ import { useUser } from "../context/UserContext";
  */
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
+
+  if (isLoading) return <div>로딩중..</div>;
 
   // 🔥 핵심: 로그인 여부 = user.id
   if (!user.id) {
