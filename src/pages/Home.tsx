@@ -6,7 +6,7 @@ import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
 import { useNewsQuery } from "../hooks/useNewsQuery";
 import NewsSection from "../components/news/NewsSection";
-import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
+import type { HomeNews, NewsQuiz } from "../types/newsType";
 import { useUser } from "../context/UserContext";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useReward } from "../context/RewardContext";

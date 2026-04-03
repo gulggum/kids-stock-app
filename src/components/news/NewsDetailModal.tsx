@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { X, BookOpen, Brain } from "lucide-react";
-import { type HomeNews } from "../../data/mock/homeNewsMockData";
+import { type HomeNews } from "../../types/newsType";
 
 /**
  * 📰 뉴스 상세 모달

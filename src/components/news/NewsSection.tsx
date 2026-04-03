@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { type HomeNews } from "../../data/mock/homeNewsMockData";
+import { type HomeNews } from "../../types/newsType";
 import { marketMockData } from "../../data/mock/marketMock";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";

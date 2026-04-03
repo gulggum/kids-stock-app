@@ -2,11 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { ClipboardPaste, Send, RotateCcw, CheckCircle } from "lucide-react";
 import { supabase } from "../../utils/supabase";
-import type {
-  HomeNews,
-  NewsQuiz,
-  NewsResponse,
-} from "../../data/mock/homeNewsMockData";
+import type { HomeNews, NewsQuiz, NewsResponse } from "../../types/newsType";
 
 /**
  * 관리자 뉴스 생성 페이지
