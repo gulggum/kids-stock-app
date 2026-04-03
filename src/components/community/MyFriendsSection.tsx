@@ -1,12 +1,12 @@
 //나의 친구목록
 
 import styled from "styled-components";
-import { type PublicUser } from "../../data/mock/PublicUserMock";
 import CommunityCard from "./CommunityCard";
 import { useState } from "react";
+import type { RankingUser } from "./CommunityRanking";
 
 interface Props {
-  users: PublicUser[];
+  users: RankingUser[];
   friends: string[];
   onToggleFriend: (id: string) => void;
 }

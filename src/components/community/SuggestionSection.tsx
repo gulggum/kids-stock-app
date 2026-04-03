@@ -1,6 +1,6 @@
 //추천친구
 import styled from "styled-components";
-import { type PublicUser } from "../../data/mock/PublicUserMock";
+import type { PublicUser } from "../../types/UserType";
 
 interface Props {
   users: PublicUser[];

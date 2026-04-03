@@ -1,16 +1,15 @@
 import styled from "styled-components";
-import { publicUserMock } from "../data/mock/PublicUserMock";
 import { useEffect, useState } from "react";
 import { useAchievement } from "../context/AchievementContext";
 import MyStatusSection from "../components/community/MyStatusSection";
-import CommunityRanking, {
-  type RankingUser,
-} from "../components/community/CommunityRanking";
+import CommunityRanking from "../components/community/CommunityRanking";
 import CommunityFeed from "../components/community/CommunityFeed";
 import MyFriendsSection from "../components/community/MyFriendsSection";
 import SuggestionSection from "../components/community/SuggestionSection";
 import { useUser } from "../context/UserContext";
 import { getStorage, setStorage } from "../utils/storage";
+import { useRankingQuery } from "../hooks/useRankingQuery";
+import type { PublicUser } from "../types/UserType";
 
 /**
  * 커뮤니티 메인 화면
@@ -20,9 +19,10 @@ import { getStorage, setStorage } from "../utils/storage";
 const Community = () => {
   const { achieved } = useAchievement();
   const { user, updateStatus } = useUser();
+  const { data: rankingUsers, isLoading: rankingLoading } = useRankingQuery();
 
   // ✅ 변경 - User → RankingUser로 변환 후 넣기
-  const myRankingUser: RankingUser = {
+  const myRankingUser: PublicUser = {
     id: user.id,
     nickname: user.nickname,
     level: user.level,
@@ -30,13 +30,16 @@ const Community = () => {
     badges: user.badges,
     profileImage: user.profileImage,
     profileAvatar: user.profileAvatar,
-    // TODO: Supabase 연동 시 제거
-    // 프로필 이미지(profileImage) 또는 아바타(profileAvatar) 사용 예정
     emoji: "🙂",
+    status: user.status,
+    lastActive: Date.now(), // — 나는 지금 온라인이니까 현재 시간
   };
 
-  // 🔥 전체 유저 리스트 (내 정보 + mock)
-  const allUsers = [myRankingUser, ...publicUserMock];
+  // 🔥 전체 유저 리스트 ( // ✅ 내 정보 + Supabase 유저들 합치기
+  // 단, 내가 이미 목록에 있으면 중복 제거)
+  const allUsers = rankingUsers
+    ? [myRankingUser, ...rankingUsers.filter((u) => u.id !== user.id)] //내정보 중복제거
+    : [myRankingUser];
   // 🔥 친구 상태
   const [friends, setFriends] = useState<string[]>(() => {
     const stored = getStorage("myFriends", []);
@@ -75,20 +78,20 @@ const Community = () => {
       />
       {/* 👥 내친구 섹션 */}
       <MyFriendsSection
-        users={publicUserMock}
+        users={allUsers}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />
       {/* 👥 친구추천 섹션 */}
       <SuggestionSection
-        users={publicUserMock}
+        users={allUsers}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />
 
       {/* 👥 친구 피드 섹션 */}
       <CommunityFeed
-        users={publicUserMock}
+        users={allUsers}
         friends={friends}
         onToggleFriend={handleToggleFriend}
       />

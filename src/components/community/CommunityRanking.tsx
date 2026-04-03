@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { type PublicUser } from "../../data/mock/PublicUserMock";
 import { useEffect, useRef, useState } from "react";
 import rankBg from "../../assets/images/rankBg.png";
+import type { PublicUser } from "../../types/UserType";
 
 //`Pick`을 쓰면 `PublicUser`에서 필요한 필드만 뽑아서 `RankingUser`를 만들 수 있어요. 나중에 `PublicUser`에 필드 추가해도 `RankingUser`는 자동으로 안 따라와서 안전
 // 📌 TODO: Supabase 연동 시
@@ -9,20 +9,9 @@ import rankBg from "../../assets/images/rankBg.png";
 // 현재는 communityMock(PublicUser)에서 Pick으로 추출해서 사용
 // 연동 후엔 이 타입이 그대로 API 응답 타입이 됨
 // ─────────────────────────────────────────
-export type RankingUser = Pick<
-  PublicUser,
-  | "id"
-  | "nickname"
-  | "level"
-  | "score"
-  | "badges"
-  | "profileImage"
-  | "profileAvatar"
-  | "emoji" //  TODO: Supabase 연동 시 제거 / 현재는 UI 확인용 임시 이모지
->;
 
 interface CommunityRankingProps {
-  allUsers: RankingUser[];
+  allUsers: PublicUser[];
   myUserId: string;
   myScore: number;
   myAchievedCount: number;

@@ -7,9 +7,9 @@ import { cardSkins } from "../../data/static/cardSkins";
 import { useSkinItem } from "../../context/SkinItemContext";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
-import type { PublicUser } from "../../data/mock/PublicUserMock";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
+import type { RankingUser } from "./CommunityRanking";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -20,7 +20,7 @@ const CommunityCard = ({
   isFriend,
   onToggleFriend,
 }: {
-  user: PublicUser;
+  user: RankingUser;
   isFriend?: boolean;
   onToggleFriend?: (id: string) => void;
 }) => {

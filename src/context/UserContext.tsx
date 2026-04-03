@@ -226,6 +226,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("profile error:", profileError);
       }
 
+      // 앱 열 때마다 last_active 업데이트 (온라인 표시용)
+      await supabase
+        .from("profiles")
+        .update({ last_active: new Date().toISOString() })
+        .eq("id", userId);
+
       // ✅ wallet (maybeSingle로 안전하게)
       const { data: wallet, error: walletError } = await supabase
         .from("wallets")
@@ -259,6 +265,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         nickname: profile?.nickname ?? "유저",
         role: profile?.role ?? "user",
         money: wallet?.balance ?? 1000000,
+        // DB 값이 있으면 DB 우선, 없으면 localStorage
+        score: profile?.score ?? savedGameData.score,
+        level: profile?.level ?? savedGameData.level,
         //new Set으로 (로컬과,supabase에있는것 )중복제거
         quizProgress: [
           ...new Set([...savedGameData.quizProgress, ...solvedQuizIds]),
@@ -394,12 +403,39 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         LEVEL_RULES.slice()
           .reverse()
           .find((rule) => newExp >= rule.requiredExp)?.level || 1;
+
+      // Supabase 백그라운드 저장 (Optimistic Update)
+      if (prev.id) {
+        supabase
+          .from("profiles")
+          .update({ level: newLevel })
+          .eq("id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("level 저장 실패:", error);
+          });
+      }
+
       return { ...prev, exp: newExp, level: newLevel };
     });
   };
 
   const addScore = (amount: number) => {
-    setUser((prev) => ({ ...prev, score: prev.score + amount }));
+    setUser((prev) => {
+      const newScore = prev.score + amount;
+
+      // Supabase 백그라운드 저장 (Optimistic Update)
+      if (prev.id) {
+        supabase
+          .from("profiles")
+          .update({ score: newScore })
+          .eq("id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("score 저장 실패:", error);
+          });
+      }
+
+      return { ...prev, score: newScore };
+    });
   };
 
   const expProgress = (() => {
