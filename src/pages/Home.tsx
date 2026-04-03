@@ -132,14 +132,13 @@ const Home = () => {
       {/* 🏆 나의 경제 활동 */}
       <Section>
         <SectionTitle>🏆 나의 경제 활동</SectionTitle>
-        <CharacterBox>
-          <ExpBarCard
-            level={expInfo.level}
-            currentExp={expInfo.currentExp}
-            neededExp={expInfo.neededExp}
-            progress={expInfo.progress}
-          />
-        </CharacterBox>
+
+        <ExpBarCard
+          level={expInfo.level}
+          currentExp={expInfo.currentExp}
+          neededExp={expInfo.neededExp}
+          progress={expInfo.progress}
+        />
       </Section>
 
       {/* 📰 오늘의 뉴스 */}
@@ -257,7 +256,7 @@ const SectionTitle = styled.h3`
   font-weight: 800;
   display: flex;
   flex-wrap: wrap; /* 줄바꿈 허용 */
-  gap: 6px;
+  margin-bottom: 10px;
 `;
 
 const Progress = styled.span`
@@ -272,11 +271,9 @@ const CalendarSection = styled.section`
   padding: 20px;
   border-radius: ${({ theme }) => theme.radius.md};
 
-  background: #fffef6;
+  background: ${({ theme }) => theme.colors.card};
 
-  box-shadow: ${({ theme }) => theme.shadows.md};
-
-  border: 2px solid #f1e6b8;
+  box-shadow: ${({ theme }) => theme.shadows.lg};
 
   overflow: hidden;
 
@@ -302,15 +299,9 @@ const CalendarSection = styled.section`
 `;
 const AttendanceBox = styled.div`
   padding: 14px 16px;
-  border-radius: ${({ theme }) => theme.radius.lg};
+  border-radius: ${({ theme }) => theme.radius.md};
 
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.card},
-    ${({ theme }) => theme.colors.surface}
-  );
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
+  background-color: ${({ theme }) => theme.colors.surface};
 
   display: flex;
   align-items: center;
@@ -318,16 +309,6 @@ const AttendanceBox = styled.div`
 
   font-size: 14px;
   font-weight: 700;
-`;
-
-//캐릭터(내상태) 박스
-const CharacterBox = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  padding: 18px;
-  border-radius: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 `;
 
 //오늘의 출석

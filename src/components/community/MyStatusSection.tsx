@@ -100,10 +100,10 @@ const MyStatusSection = ({
 
 export default MyStatusSection;
 const SectionBlock = styled.section`
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 18px;
-  box-shadow: ${({ theme }) => theme.shadows.sm};
+  box-shadow: ${({ theme }) => theme.shadows.md};
 
   display: flex;
   flex-direction: column;
@@ -114,6 +114,8 @@ const SectionHeader = styled.h3`
   font-weight: 900;
   color: ${({ theme }) => theme.colors.textSecondary};
   letter-spacing: 0.3px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding-bottom: 10px;
 
   display: flex;
   align-items: center;

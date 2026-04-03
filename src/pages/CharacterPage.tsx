@@ -195,6 +195,7 @@ const PageWrapper = styled.div`
   flex-direction: column;
   gap: 20px;
   padding: 16px;
+  height: 100%;
 `;
 
 const Title = styled.h2`
@@ -230,9 +231,6 @@ const ProfileSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.md};
 `;
 const ModalContent = styled.div`
   display: flex;
@@ -303,7 +301,7 @@ const CloseButton = styled.button`
 //마켓가기 스타일
 
 const Empty = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 24px;
   text-align: center;

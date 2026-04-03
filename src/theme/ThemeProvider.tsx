@@ -49,6 +49,7 @@ declare module "styled-components" {
     shadows: {
       sm: string;
       md: string;
+      lg: string;
     };
   }
 }
@@ -58,34 +59,34 @@ declare module "styled-components" {
 export const kidTheme: DefaultTheme = {
   name: "kid",
   colors: {
-    // 🌟 메인 브랜드 컬러 (로고 K 블루)
+    // 🌟 메인
     primary: "#2E8EDB",
+    secondary: "#F59E0B",
 
-    // 🟠 보조 (로고 오렌지)
-    secondary: "#F39C12",
+    // 🌿 배경
+    background: "#F6F8FC",
 
-    // 💛 메인 배경 (로고 노랑 톤)
-    background: "#f5f7fb",
+    // 🧁 카드 (핵심 개선🔥)
+    surface: `#F6F8FC`,
+    card: "#FFFFFF",
 
-    // 카드 & 레이어
-    surface: "#FFF9DB",
-    card: "#fff",
-    border: "#E6C84F",
+    // ❗ border 개선 (이게 핵심)
+    border: "rgba(31, 58, 95, 0.08)",
 
-    // 🎨 로고 컬러 확장
+    // 🎨 포인트 (조금 더 파스텔화)
     accentBlue: "#3B82F6",
     accentGreen: "#6BCB3D",
     accentPurple: "#9B59B6",
     accentPink: "#FF8FA3",
 
-    // 📈 주식 컬러 (아이들 친화적으로 너무 강하지 않게)
-    up: "#4CAF50",
-    down: "#E74C3C",
+    // 📈 상태
+    up: "#22C55E",
+    down: "#EF4444",
 
-    // ✏️ 텍스트 (로고 아웃라인 네이비 기반)
-    text: "#1F3A5F",
-    textSecondary: "#2C4A73",
-    muted: "#5F7FA6",
+    // ✏️ 텍스트 (부드럽게 수정)
+    text: "#1E3A5F",
+    textSecondary: "#3B5B85",
+    muted: "#7B9AC8",
   },
 
   fonts: {
@@ -100,8 +101,10 @@ export const kidTheme: DefaultTheme = {
   },
 
   shadows: {
-    sm: "0 8px 20px rgba(31,58,95,0.12)",
-    md: "0 14px 35px rgba(31,58,95,0.18)",
+    sm: "0 8px 20px rgba(0,0,0,0.06)",
+    md: "0 12px 28px rgba(31,58,95,0.14)",
+    lg: `  0 4px 12px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.08);`,
   },
 };
 
@@ -145,6 +148,8 @@ export const cleanTheme: DefaultTheme = {
   shadows: {
     sm: "0 4px 12px rgba(15,23,42,0.06)",
     md: "0 8px 24px rgba(15,23,42,0.10)",
+    lg: `  0 4px 12px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.08);`,
   },
 };
 

@@ -272,8 +272,7 @@ const SearchInput = styled.input`
 const FilterBar = styled.div`
   display: flex;
   gap: 8px;
-
-  padding-bottom: 10px;
+  padding: 10px 0px;
 `;
 
 const FilterButton = styled.button<{ $active: boolean }>`

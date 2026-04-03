@@ -127,7 +127,7 @@ const defaultUser: User = {
   level: 1,
   exp: 0,
   score: 0,
-  coin: 0,
+  coin: 500,
   money: 0,
   ownedSkins: ["basic"],
   selectedSkin: "basic",
@@ -174,11 +174,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         } = await supabase.auth.getSession();
         if (session?.user) {
           await loadUserFromDB(session.user.id);
+        } else {
+          setUser(defaultUser);
+          setIsLoggedIn(false);
+          setIsLoading(false); // 🔥 이거 필수
         }
       } catch (err) {
         console.error("initAuth 에러:", err);
-      } finally {
-        setIsLoading(false); // ✅ 성공이든 실패든 무조건 false
       }
     };
 
@@ -190,7 +192,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        await loadUserFromDB(session.user.id);
+        // 이미 같은 유저면 무시
+        if (user.id !== session.user.id) {
+          await loadUserFromDB(session.user.id);
+        }
       }
       if (event === "SIGNED_OUT") {
         setUser(defaultUser);
@@ -208,39 +213,50 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ─────────────────────────────────────────
   const loadUserFromDB = async (userId: string) => {
     try {
-      setIsLoading(true); // 🔥 시작
-      // profiles 테이블에서 닉네임, 역할 가져오기
-      const { data: profile } = await supabase
+      setIsLoading(true);
+
+      // ✅ profile
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
-      // wallets 테이블에서 잔액 가져오기
-      const { data: wallet } = await supabase
+      if (profileError) {
+        console.error("profile error:", profileError);
+      }
+
+      // ✅ wallet (maybeSingle로 안전하게)
+      const { data: wallet, error: walletError } = await supabase
         .from("wallets")
         .select("*")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
 
-      if (profile) {
-        // localStorage의 게임 데이터 + DB의 프로필/머니 합치기
-        const savedGameData = getStorage(USER_KEY, defaultUser);
-
-        setUser({
-          ...savedGameData, // level, exp, 출석 등 기존 게임 데이터 유지
-          id: userId, // DB의 UUID
-          nickname: profile.nickname,
-          role: profile.role,
-          money: wallet?.balance ?? 1000000, // DB 잔액 (없으면 기본값)
-        });
-
-        setIsLoggedIn(true);
+      if (walletError) {
+        console.error("wallet error:", walletError);
       }
+
+      // ✅ fallback 포함 (이거 핵심🔥)
+      const savedGameData = getStorage(USER_KEY, defaultUser);
+
+      setUser({
+        ...savedGameData,
+        id: userId,
+        nickname: profile?.nickname ?? "유저",
+        role: profile?.role ?? "user",
+        money: wallet?.balance ?? 1000000,
+      });
+
+      setIsLoggedIn(true);
     } catch (err) {
-      console.error(err);
+      console.error("loadUserFromDB 에러:", err);
+
+      // ❗ 에러 나도 앱 안 멈추게
+      setUser(defaultUser);
+      setIsLoggedIn(false);
     } finally {
-      setIsLoading(false); // 🔥 끝 (이게 핵심)
+      setIsLoading(false);
     }
   };
 

@@ -140,8 +140,12 @@ const rotateLight = keyframes`
 
 const Card = styled.div`
   background: ${({ theme }) => theme.colors.card};
-  border-radius: ${({ theme }) => theme.radius.sm};
+  border-radius: ${({ theme }) => theme.radius.md};
   padding: 16px;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.08);
 
   display: flex;
   flex-direction: column;

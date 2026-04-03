@@ -34,7 +34,7 @@ export default SuggestionSection;
 
 /* 스타일 */
 const Section = styled.section`
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 16px;
   box-shadow: ${({ theme }) => theme.shadows.sm};
@@ -43,7 +43,9 @@ const Section = styled.section`
 const Title = styled.h4`
   font-size: 14px;
   font-weight: 900;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding-bottom: 10px;
 `;
 
 const Row = styled.div`
@@ -58,7 +60,7 @@ const MiniCard = styled.div`
   min-width: 80px;
   padding: 10px;
   border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme }) => theme.colors.card};
+  background: ${({ theme }) => theme.colors.background};
 
   display: flex;
   flex-direction: column;

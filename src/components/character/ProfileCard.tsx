@@ -41,14 +41,14 @@ const ProfileCard = ({
           ) : profileAvatar ? (
             <Sprite $x={profileAvatar.x} $y={profileAvatar.y} />
           ) : (
-            <Default>🧒</Default>
+            <Default></Default>
           )}
         </ImageWrapper>
 
         <Info>
           <NameRow>
+            <LevelTitle $text={textColor}>{title}</LevelTitle>
             <Name>{nickname}</Name>
-            <LevelTitle>{title}</LevelTitle>
           </NameRow>
           <Level>Lv. {level}</Level>
         </Info>
@@ -81,8 +81,8 @@ const Wrapper = styled.div<{ $skin: any; $text: string }>`
 `;
 
 const ImageWrapper = styled.div`
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   border-radius: 16px;
   overflow: hidden;
   background: white;
@@ -96,7 +96,33 @@ const ImageWrapper = styled.div`
 `;
 
 const Default = styled.div`
-  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  border-radius: 12px;
+
+  background: #f8fafc;
+
+  &::before {
+    content: "?";
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+
+    background: #e2e8f0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    font-weight: 900;
+    color: #64748b;
+  }
 `;
 
 const Sprite = styled.div<{ $x: number; $y: number }>`
@@ -131,9 +157,11 @@ const Info = styled.div`
 
 const NameRow = styled.div`
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 50px;
   min-width: 0;
+  height: 60px;
 `;
 
 const Name = styled.div`
@@ -174,14 +202,45 @@ const Status = styled.div`
     transform: rotate(45deg);
   }
 `;
-const LevelTitle = styled.div`
+const LevelTitle = styled.div<{ $text: string }>`
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
+  gap: 4px;
+
+  padding: 4px 10px;
   border-radius: 999px;
+
   font-size: 10px;
   font-weight: 800;
 
-  background: ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  /* ⭐ 핵심: 유리 + 뱃지 느낌 */
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+
+  /* ⭐ 테두리로 뱃지 느낌 */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  /* ⭐ 텍스트 색은 자동 */
+  color: ${({ $text }) => $text};
+
+  /* ⭐ 살짝 떠있는 느낌 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  /* ⭐ 살짝 반짝 느낌 */
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    opacity: 0.6;
+    pointer-events: none;
+  }
 `;

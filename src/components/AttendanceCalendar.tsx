@@ -55,7 +55,7 @@ const Day = styled.div<{ $checked: boolean; $today: boolean }>`
   font-weight: 700;
 
   background: ${({ $checked, theme }) =>
-    $checked ? theme.colors.primary : theme.colors.surface};
+    $checked ? theme.colors.primary : theme.colors.background};
 
   color: ${({ $checked }) => ($checked ? "#fff" : "inherit")};
 

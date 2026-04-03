@@ -9,6 +9,7 @@ import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import type { PublicUser } from "../../data/mock/PublicUserMock";
 import { getLevelTier } from "../../utils/getLevelTier";
+import { getTextColorFromSkin } from "../../utils/getTextColor";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -28,6 +29,9 @@ const CommunityCard = ({
   const { title, tier } = getLevelTier(user.level);
 
   const skin = cardSkins.find((skin) => skin.id === selectedSkin);
+  const currentSkin = cardSkins.find((s) => s.id === selectedSkin);
+
+  const textColor = getTextColorFromSkin(currentSkin);
 
   const openBadgeModal = () => {
     openModal({
@@ -70,7 +74,7 @@ const CommunityCard = ({
           </NameRow>
           <Level>Lv. {user.level}</Level>
         </Info>
-        <LevelTitle>{title}</LevelTitle>
+        <LevelTitle $text={textColor}>{title}</LevelTitle>
       </Top>
 
       <BadgeRow>
@@ -138,7 +142,7 @@ const Card = styled.div<{
   gap: 12px;
 
   /* ⭐ 카드 입체감 */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: ${({ theme }) => theme.shadows.lg};
 
   transition: all 0.18s ease;
 
@@ -283,17 +287,43 @@ const Status = styled.div`
     transform: rotate(45deg);
   }
 `;
-const LevelTitle = styled.div`
+const LevelTitle = styled.div<{ $text: string }>`
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 999px;
   font-size: 10px;
   font-weight: 800;
   margin-left: auto;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
 
-  background: ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  /* ⭐ 테두리로 뱃지 느낌 */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  /* ⭐ 텍스트 색은 자동 */
+  color: ${({ $text }) => $text};
+
+  /* ⭐ 살짝 떠있는 느낌 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  /* ⭐ 살짝 반짝 느낌 */
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    opacity: 0.6;
+    pointer-events: none;
+  }
 `;
 const BadgeRow = styled.div`
   margin-top: 4px;

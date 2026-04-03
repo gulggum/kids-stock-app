@@ -60,8 +60,8 @@ export default SkinSection;
 /* 스타일 */
 
 const Wrapper = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radius.md};
   padding: 16px;
 
   box-shadow: ${({ theme }) => theme.shadows.sm};
@@ -73,6 +73,8 @@ const Wrapper = styled.div`
 
 const Title = styled.div`
   font-weight: 800;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding-bottom: 10px;
 `;
 
 const List = styled.div`
@@ -80,8 +82,13 @@ const List = styled.div`
   gap: 12px;
   overflow-x: auto;
   padding: 15px;
-  background-color: ${({ theme }) => theme.colors.surface};
+
+  background: #ffffff;
+
   border-radius: ${({ theme }) => theme.radius.md};
-  -ms-overflow-style: none; /* IE, Edge */
-  scrollbar-width: none; /* Firefox */
+
+  box-shadow: 0 6px 18px rgba(31, 58, 95, 0.08);
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;

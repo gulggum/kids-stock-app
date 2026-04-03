@@ -56,10 +56,10 @@ export default MyFriendsSection;
 
 /* 스타일 */
 const Section = styled.section`
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 18px;
-  box-shadow: ${({ theme }) => theme.shadows.sm};
+  box-shadow: ${({ theme }) => theme.shadows.md};
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -68,6 +68,8 @@ const Section = styled.section`
 const Title = styled.h4`
   font-size: 14px;
   font-weight: 900;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding-bottom: 10px;
 `;
 
 const List = styled.div`
