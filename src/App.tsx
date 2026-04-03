@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Providers } from "./providers";
 import { AppRouter } from "./router/router";
-import LoadingScreen from "./pages/LoadingPage/LoadingScreen";
+import IntroBackground from "./pages/LoadingPage/IntroBackground";
 import { createGlobalStyle } from "styled-components";
 import { playIntroSound } from "./utils/sounds";
 
@@ -44,7 +44,7 @@ function App() {
   return (
     <Providers>
       <BaseGlobalStyle />
-      {step === "video" && <LoadingScreen />}
+      {step === "video" && <IntroBackground />}
       {step === "app" && <AppRouter />}
     </Providers>
   );
