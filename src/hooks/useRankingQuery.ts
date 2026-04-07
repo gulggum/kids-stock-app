@@ -44,7 +44,7 @@ export const useRankingQuery = () => {
   return useQuery({
     queryKey: ["ranking"],
     queryFn: fetchRanking,
-    staleTime: 1000 * 60 * 5, // 5분 캐싱
+    staleTime: 0, // 5분 캐싱
     retry: 1,
   });
 };

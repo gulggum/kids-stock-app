@@ -424,7 +424,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const newScore = prev.score + amount;
 
       // Supabase 백그라운드 저장 (Optimistic Update)
-      if (prev.id) {
+      if (prev.id && prev.id !== "guest") {
         supabase
           .from("profiles")
           .update({ score: newScore })

@@ -365,6 +365,8 @@ const TopAvatarWrapper = styled.div`
   border-radius: 50%;
   overflow: hidden;
   display: flex;
+  align-items: center;
+  justify-content: center;
   background: ${({ theme }) => theme.colors.background};
   flex-shrink: 0;
 `;
