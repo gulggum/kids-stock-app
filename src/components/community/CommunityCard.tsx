@@ -50,14 +50,16 @@ const CommunityCard = ({
     <Card $tier={tier} $skin={skin}>
       <Top>
         <AvatarWrapper>
-          {user.profileImage ? (
-            <img src={user.profileImage} />
-          ) : user.profileAvatar ? (
-            <Sprite $x={user.profileAvatar.x} $y={user.profileAvatar.y} />
-          ) : (
-            <Emoji>{user.emoji}</Emoji>
-          )}
-          {online && <ActiveDot />}
+          <AvatarInner>
+            {user.profileImage ? (
+              <img src={user.profileImage} />
+            ) : user.profileAvatar ? (
+              <Sprite $x={user.profileAvatar.x} $y={user.profileAvatar.y} />
+            ) : (
+              <Emoji>{user.emoji}</Emoji>
+            )}
+            {online && <ActiveDot />}
+          </AvatarInner>
         </AvatarWrapper>
         <Info>
           <NameRow>
@@ -190,13 +192,10 @@ const Emoji = styled.div`
 
   width: 50px;
   height: 50px;
-
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 12px;
-
   background: ${({ theme }) => theme.colors.background};
 
   position: relative;
@@ -367,12 +366,17 @@ const AvatarWrapper = styled.div`
   position: relative;
   width: 60px;
   height: 60px;
-  border-radius: 50%;
   overflow: visible;
-
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+const AvatarInner = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+
   img {
     width: 100%;
     height: 100%;
