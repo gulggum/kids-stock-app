@@ -20,6 +20,7 @@ import { krwToUsd } from "../../utils/currency";
 import { getStorage, setStorage } from "../../utils/storage";
 import { useStocksQuery } from "../../hooks/useStocksQuery";
 import Loading from "../../components/Loading";
+import { useExchangeRate } from "../../hooks/useExchangeRate";
 
 type FilterType = "ALL" | "KR" | "US" | "FAVORITE";
 
@@ -36,8 +37,8 @@ const Market = () => {
   // 필터
   const [filter, setFilter] = useState<FilterType>("ALL");
 
-  // 환율 (추후 API 연결 예정)
-  const exchangeRate = 1320;
+  // 환율
+  const exchangeRate = useExchangeRate();
 
   // 즐겨찾기 저장
   const [favoriteIds, setFavoriteIds] = useState<number[]>(() =>

@@ -14,7 +14,7 @@ export function useExchangeRate() {
         .from("settings")
         .select("value")
         .eq("key", "exchange_rate")
-        .single();
+        .maybeSingle();
 
       if (data?.value) {
         setExchangeRate(Number(data.value));
