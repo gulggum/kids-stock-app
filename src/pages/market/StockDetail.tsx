@@ -2,13 +2,13 @@ import { useParams } from "react-router";
 import { useNavigate } from "react-router";
 import styled, { useTheme } from "styled-components";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
-import { getChartData } from "../../data/mock/chartMock";
 import StockChart from "../../components/stock/StockChart";
 import StockDetailHeader from "../../components/stock/StockDetailHeader";
 import StockPriceSection from "../../components/stock/StockPriceSection";
 import { useStockDetail } from "../../hooks/useStockDetail";
 import BuySellSection from "../../components/stock/BuySellSection";
 import { useStockByIdQuery } from "../../hooks/useStocksQuery";
+import { useChart } from "../../hooks/useChart";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +39,11 @@ const StockDetail = () => {
     handleSellClick,
   } = useStockDetail(company ?? { id: 0, name: "", price: 0 });
 
+  const { data: chartData = [], isLoading: chartLoading } = useChart(
+    company?.symbol ?? "",
+    period === "7d" ? "7d" : "30d",
+  );
+
   // 로딩
   if (loading) {
     return <LoadingText>불러오는 중이에요 📈</LoadingText>;
@@ -49,14 +54,9 @@ const StockDetail = () => {
     return <LoadingText>회사를 찾을 수 없어요 🥲</LoadingText>;
   }
 
-  // ✅ 변경: chartMock[company.id] → getChartData(symbol, price, period)
-  // symbol 기반이라 DB ID가 바뀌어도 절대 안 깨짐
-  const chartData = getChartData(company.symbol, company.price, period);
-
   const isUptrend =
     chartData.length > 1 &&
     chartData[chartData.length - 1].price > chartData[0].price;
-
   const isHolding = isHoldingStock(company.id);
 
   return (
@@ -84,6 +84,7 @@ const StockDetail = () => {
         <StockPriceSection
           price={company.price}
           changeRate={company.changeRate}
+          country={company.country}
         />
 
         {/* 📊 탭 */}
@@ -113,10 +114,16 @@ const StockDetail = () => {
               </ChartHeader>
 
               <ChartPlaceholder>
-                <StockChart
-                  data={chartData}
-                  strokeColor={isUptrend ? theme.colors.up : theme.colors.down}
-                />
+                {chartLoading ? (
+                  <div>차트 불러오는 중...</div>
+                ) : (
+                  <StockChart
+                    data={chartData}
+                    strokeColor={
+                      isUptrend ? theme.colors.up : theme.colors.down
+                    }
+                  />
+                )}
               </ChartPlaceholder>
             </ChartSection>
           </ChartContent>

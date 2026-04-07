@@ -3,17 +3,29 @@
 // - 상승/하락 여부에 따라 색상 분기
 
 import styled from "styled-components";
+import { usdToKrw } from "../../utils/currency";
 
 type Props = {
   price: number;
   changeRate: number;
+  country?: "KR" | "US";
 };
 
-const StockPriceSection = ({ price, changeRate }: Props) => (
+const StockPriceSection = ({ price, changeRate, country }: Props) => (
   <PriceSection>
     <PriceInfo>
       <PriceLabel>현재 가격</PriceLabel>
-      <PriceValue>{price.toLocaleString()}원</PriceValue>
+      <PriceValue>
+        {" "}
+        {country === "US" ? (
+          <>
+            ${price.toLocaleString()}
+            <SubPrice>({usdToKrw(price, 1350).toLocaleString()}원)</SubPrice>
+          </>
+        ) : (
+          `${price.toLocaleString()}원`
+        )}
+      </PriceValue>
     </PriceInfo>
     <ChangeRate $positive={changeRate >= 0}>
       {changeRate >= 0 ? "▲" : "▼"} {Math.abs(changeRate)}%
@@ -47,7 +59,11 @@ const PriceValue = styled.span`
   font-size: 22px;
   font-weight: 700;
 `;
-
+const SubPrice = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
 const ChangeRate = styled.div<{ $positive: boolean }>`
   font-size: 14px;
   font-weight: 700;

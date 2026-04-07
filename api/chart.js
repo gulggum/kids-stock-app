@@ -3,7 +3,7 @@
 // ✔ Yahoo Finance에서 기간별 데이터 가져옴 (7일 / 30일)
 // ✔ 프론트는 이 API만 호출하면 됨 (외부 API 숨김)
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     const { symbol, period = "7d" } = req.query;
 
@@ -33,10 +33,13 @@ export default async function handler(req, res) {
     const prices = result.indicators.quote[0].close;
 
     // 🔥 프론트에서 쓰기 좋은 형태로 변환
-    const chartData = timestamps.map((t, i) => ({
-      date: new Date(t * 1000).toLocaleDateString(), // 날짜
-      price: prices[i] ?? 0,
-    }));
+    // 🔥 null 제거 + 유효값만 필터
+    const chartData = timestamps
+      .map((t, i) => ({
+        date: new Date(t * 1000).toLocaleDateString(),
+        price: prices[i],
+      }))
+      .filter((d) => typeof d.price === "number");
 
     return res.status(200).json({
       symbol,
@@ -47,4 +50,4 @@ export default async function handler(req, res) {
     console.error(err);
     return res.status(500).json({ error: "chart fetch failed" });
   }
-}
+};

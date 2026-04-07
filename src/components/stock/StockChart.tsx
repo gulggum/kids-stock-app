@@ -29,11 +29,19 @@ const StockChart = ({ data, strokeColor }: StockChartProps) => {
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10 }}
+            tickFormatter={(date) => {
+              const d = new Date(date);
+              return `${d.getMonth() + 1}/${d.getDate()}`; // "4/7" 형식으로 짧게
+            }}
+            interval="preserveStartEnd" // 첫날 마지막날만 표시
           />
 
           {/* 📐 Y축: 숫자 숨김 (아이용 UX) */}
-          <YAxis hide />
+          <YAxis
+            hide
+            domain={["auto", "auto"]} // ← 이거 추가
+          />
 
           {/* 💬 툴팁: 눌렀을 때 가격만 보여줌 */}
           <Tooltip

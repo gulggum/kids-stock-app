@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { usdToKrw } from "../../utils/currency";
 
 // 타입 정의 (주식 데이터 형태)
 type StockCardProps = {
@@ -21,7 +22,6 @@ const StockCard = ({
   changeRate,
   description,
   isFavorite,
-  usdPrice,
   country,
   onToggleFavorite,
   onClick,
@@ -38,9 +38,17 @@ const StockCard = ({
         <Name>{name}</Name>
         <Description>{description}</Description>
         <Price>
-          {price.toLocaleString()}원
-          {country === "US" && usdPrice && (
-            <DollarPrice>(${usdPrice.toLocaleString()})</DollarPrice>
+          {country === "US" ? (
+            <>
+              ${price.toLocaleString()}
+              {usdToKrw && (
+                <DollarPrice>
+                  ({usdToKrw(price, 1350).toLocaleString()}원)
+                </DollarPrice>
+              )}
+            </>
+          ) : (
+            `${price.toLocaleString()}원`
           )}
         </Price>
       </Info>

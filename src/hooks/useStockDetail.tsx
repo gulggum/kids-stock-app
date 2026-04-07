@@ -136,6 +136,16 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   };
 
   const handleBuyClick = () => {
+    // ✅ 잔액 체크 추가
+    if (user.money < company.price) {
+      openModal({
+        type: "INFO",
+        title: "돈이 부족해요 🥲",
+        message: `이 주식을 사려면 ${company.price.toLocaleString()}원이 필요해요!`,
+        confirmText: "알겠어요",
+      });
+      return;
+    }
     // 첫 구매면 가이드 먼저
     if (!hasCompletedFirstBuy) {
       setShowGuideModal(true);

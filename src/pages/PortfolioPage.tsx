@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { usePortfolio } from "../context/PortfolioContext";
 import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 import { useNavigate } from "react-router";
-import { chartMock } from "../data/mock/chartMock";
+import { usePortfolioStocks } from "../hooks/Useportfoliostocks ";
 import { useState } from "react";
 import InfoModal from "../components/InfoModal";
 import InfoIcon from "../components/InfoIcon";
@@ -11,6 +11,10 @@ const PortfolioPage = () => {
   const { portfolio } = usePortfolio();
   const navigate = useNavigate();
   const [openInfo, setOpenInfo] = useState<string | null>(null);
+
+  // ✅ 실제 Supabase 가격 사용
+  const { getCurrentPrice } = usePortfolioStocks(portfolio);
+
   const toggleInfo = (key: string) => {
     setOpenInfo((prev) => (prev === key ? null : key));
   };
@@ -34,12 +38,7 @@ const PortfolioPage = () => {
           </Empty>
         ) : (
           portfolio.map((item) => {
-            const chart = chartMock[String(item.id)];
-
-            const currentPrice =
-              //7일 차트의 마지막 가격=현재가격
-              chart?.["7d"]?.[chart["7d"].length - 1].price ?? item.buyPrice;
-
+            const currentPrice = getCurrentPrice(item);
             const totalValue = currentPrice * item.quantity;
 
             const profitRate =

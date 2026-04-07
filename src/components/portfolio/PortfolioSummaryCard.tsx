@@ -3,7 +3,7 @@
 import styled from "styled-components";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { useTrade } from "../../context/TradeContext";
-import { chartMock } from "../../data/mock/chartMock";
+import { usePortfolioStocks } from "../../hooks/Useportfoliostocks ";
 import { useUser } from "../../context/UserContext";
 
 const BASE_MONEY = 1000000; //초기 사이버 머니(고정값)
@@ -12,16 +12,16 @@ const PortfolioSummaryCard = () => {
   const { hasBoughtToday } = useTrade();
   const { user } = useUser();
 
+  // ✅ 실제 Supabase 가격 사용
+  const { getCurrentPrice } = usePortfolioStocks(portfolio);
+
   //보유 종목 수
   const stockCount = portfolio.length;
 
   //현재 평가 금액
   const evaluationAmount = portfolio.reduce((total, item) => {
-    const chart = chartMock[item.id];
-
-    const currentPrice =
-      chart?.["7d"][chart["7d"].length - 1].price ?? item.buyPrice; //보유수량*현재가격
-    return total + currentPrice * item.quantity; //모든주식 합산
+    const currentPrice = getCurrentPrice(item);
+    return total + currentPrice * item.quantity;
   }, 0);
 
   //총 자산 = 초기머니(BASE_MONEY) +현재 평가 금액(evaluationAmount)
