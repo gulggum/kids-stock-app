@@ -1,11 +1,11 @@
 import styled, { keyframes } from "styled-components";
 
-const Loading = () => {
+const Loading = ({ text = "불러오는 중이에요..." }) => {
   return (
     <Wrapper>
       <Card>
         <Spinner />
-        <Text>불러오는 중이에요...</Text>
+        <Text>{text}</Text>
       </Card>
     </Wrapper>
   );

@@ -12,13 +12,14 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { marketMockData } from "../../data/mock/marketMock";
 
 import StockCard from "../../components/stock/StockCard";
 import ExchangeRateInfo from "../../components/stock/ExchangeRateInfo";
 
 import { krwToUsd } from "../../utils/currency";
 import { getStorage, setStorage } from "../../utils/storage";
+import { useStocksQuery } from "../../hooks/useStocksQuery";
+import Loading from "../../components/Loading";
 
 type FilterType = "ALL" | "KR" | "US" | "FAVORITE";
 
@@ -43,10 +44,12 @@ const Market = () => {
     getStorage(FAVORITE_KEY, []),
   );
 
+  const { stocks: rawStocks, loading, error } = useStocksQuery();
+
   /* ================= 데이터 가공 ================= */
 
   // 찜 상태 반영
-  const stocks = marketMockData.map((stock) => ({
+  const stocks = rawStocks.map((stock) => ({
     ...stock,
     isFavorite: favoriteIds.includes(stock.id),
   }));
@@ -86,10 +89,8 @@ const Market = () => {
   /* ================= 리스트 분리 ================= */
 
   const favoriteStocks = filteredStocks.filter((s) => s.isFavorite);
-
   const favoriteKR = favoriteStocks.filter((s) => s.country === "KR");
   const favoriteUS = favoriteStocks.filter((s) => s.country === "US");
-
   const normalStocks = filteredStocks.filter((s) => !s.isFavorite);
 
   /* ================= 로컬스토리지 저장 ================= */
@@ -119,7 +120,18 @@ const Market = () => {
   );
 
   /* ================= UI ================= */
-
+  // ✅ 로딩 상태
+  if (loading) {
+    return <Loading text="주식 정보를 불러오는 중이에요 📈" />;
+  }
+  // ✅ 에러 상태
+  if (error) {
+    return (
+      <Wrapper>
+        <LoadingText>잠시 후 다시 시도해주세요 🥲</LoadingText>
+      </Wrapper>
+    );
+  }
   return (
     <Wrapper>
       <StickyHeader>
@@ -325,5 +337,11 @@ const SubSectionTitle = styled.div`
   font-size: 13px;
   font-weight: 700;
 
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+const LoadingText = styled.div`
+  text-align: center;
+  margin-top: 60px;
+  font-size: 16px;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;

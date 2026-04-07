@@ -1,62 +1,64 @@
 import { useParams } from "react-router";
 import { useNavigate } from "react-router";
 import styled, { useTheme } from "styled-components";
-import { marketMockData } from "../../data/mock/marketMock";
 import ChartPeriodToggle from "../../components/stock/ChartPeriodToggle";
-import { chartMock } from "../../data/mock/chartMock";
+import { getChartData } from "../../data/mock/chartMock";
 import StockChart from "../../components/stock/StockChart";
 import StockDetailHeader from "../../components/stock/StockDetailHeader";
 import StockPriceSection from "../../components/stock/StockPriceSection";
 import { useStockDetail } from "../../hooks/useStockDetail";
 import BuySellSection from "../../components/stock/BuySellSection";
+import { useStockByIdQuery } from "../../hooks/useStocksQuery";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const company = marketMockData.find((s) => s.id === Number(id));
+  // ✅ 변경: marketMockData.find → useStockByIdQuery
+  const { stock: company, loading } = useStockByIdQuery(id ? Number(id) : null);
 
-  if (!company) {
-    return <div>회사를 찾을 수 없어요 🥲</div>;
-  }
-
-  /** ✅ 커스텀 훅 (핵심) */
   const {
     period,
     setPeriod,
     activeTab,
     setActiveTab,
-
     animateMoney,
     showMoneyEffect,
     showSellEffect,
-
     showGuideModal,
     setShowGuideModal,
-
     checks,
     toggleCheck,
     isAllChecked,
-
     money,
     hasBoughtToday,
     isHoldingStock,
-
     handleBuyClick,
     handleBuyConfirm,
     handleSellClick,
-  } = useStockDetail(company);
+  } = useStockDetail(company ?? { id: 0, name: "", price: 0 });
 
-  /** 📊 차트 데이터 */
-  const chartData = chartMock[company.id][period];
+  // 로딩
+  if (loading) {
+    return <LoadingText>불러오는 중이에요 📈</LoadingText>;
+  }
 
-  /** 📈 상승/하락 판단 (간단 유지) */
+  // 못 찾음
+  if (!company) {
+    return <LoadingText>회사를 찾을 수 없어요 🥲</LoadingText>;
+  }
+
+  // ✅ 변경: chartMock[company.id] → getChartData(symbol, price, period)
+  // symbol 기반이라 DB ID가 바뀌어도 절대 안 깨짐
+  const chartData = getChartData(company.symbol, company.price, period);
+
   const isUptrend =
     chartData.length > 1 &&
     chartData[chartData.length - 1].price > chartData[0].price;
 
   const isHolding = isHoldingStock(company.id);
+
   return (
     <Wrapper>
       {/* 🔝 헤더 */}
@@ -357,6 +359,12 @@ const InvestmentNotice = styled.div`
   align-items: center;
   justify-content: center;
   gap: 6px;
+`;
+
+const LoadingText = styled.div`
+  text-align: center;
+  margin-top: 60px;
+  font-size: 16px;
 `;
 
 export default StockDetail;
