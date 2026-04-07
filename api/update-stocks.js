@@ -2,7 +2,7 @@
 // 용도 1: 브라우저에서 직접 호출 → 즉시 가격 채우기
 // 용도 2: vercel.json Cron 등록 → 매일 자동 실행
 
-const { createClient } = require("@supabase/supabase-js");
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -38,7 +38,7 @@ async function fetchPrice(symbol) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // GET 요청만 허용
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -89,4 +89,4 @@ module.exports = async function handler(req, res) {
     message: `✅ ${succeeded}개 성공, ❌ ${failed}개 실패`,
     results,
   });
-};
+}
