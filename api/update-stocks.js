@@ -51,7 +51,7 @@ async function fetchExchangeRate() {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -110,4 +110,4 @@ module.exports = async function handler(req, res) {
     message: `✅ ${succeeded}개 성공, ❌ ${failed}개 실패 / 환율: ${rate ?? "실패"}원`,
     results,
   });
-};
+}

@@ -62,7 +62,7 @@ const AppLayout = () => {
         <Outlet />
       </Main>
       <BottomNav />
-      <Footer>© StockKids</Footer>
+      <Footer>© kidsStock</Footer>
     </Layout>
   );
 };

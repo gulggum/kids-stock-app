@@ -3,7 +3,7 @@
 // ✔ Yahoo Finance에서 기간별 데이터 가져옴 (7일 / 30일)
 // ✔ 프론트는 이 API만 호출하면 됨 (외부 API 숨김)
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     const { symbol, period = "7d" } = req.query;
 
@@ -50,4 +50,4 @@ module.exports = async function handler(req, res) {
     console.error(err);
     return res.status(500).json({ error: "chart fetch failed" });
   }
-};
+}

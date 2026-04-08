@@ -1,4 +1,4 @@
-# 🪙 StockKids
+# 🪙 kidsStock
 
 > 어린이를 위한 주식 체험 금융 교육 앱
 
