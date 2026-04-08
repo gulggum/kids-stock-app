@@ -334,20 +334,6 @@ const SubText = styled.div`
    💡 설명 카드
    ========================= */
 
-const ExplainCard = styled.div`
-  background: ${({ theme }) => theme.colors.card};
-  padding: 16px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`;
-
-const ExplainTitle = styled.div`
-  font-size: 15px;
-  font-weight: 700;
-`;
-
 const HintText = styled.div`
   margin-top: 8px;
   font-size: 13px;
