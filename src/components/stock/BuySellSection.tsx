@@ -16,44 +16,22 @@ type GuideChecks = {
  * - StockDetail에서 내려주는 값들
  */
 type Props = {
-  /** 가이드 모달 열림 여부 */
-  showGuideModal: boolean;
-
-  /** 가이드 모달 상태 변경 */
-  setShowGuideModal: (v: boolean) => void;
-
-  /** 체크 상태 */
-  checks: GuideChecks;
-
-  /** 체크 토글 함수 */
-  toggleCheck: (key: keyof GuideChecks) => void;
-
-  /** 전체 체크 완료 여부 */
-  isAllChecked: boolean;
-
-  /** 오늘 구매 여부 */
-  hasBoughtToday: boolean;
-
-  /** 구매 버튼 클릭 */
-  handleBuyClick: () => void;
-
-  /** 실제 구매 실행 */
-  handleBuyConfirm: () => void;
-
-  /** 판매 버튼 클릭 */
-  handleSellClick: () => void;
-
-  /** 구매 이펙트 */
-  showMoneyEffect: boolean;
-
+  showGuideModal: boolean; /** 가이드 모달 열림 여부 */
+  setShowGuideModal: (v: boolean) => void; /** 가이드 모달 상태 변경 */
+  checks: GuideChecks; /** 체크 상태 */
+  toggleCheck: (key: keyof GuideChecks) => void; /** 체크 토글 함수 */
+  isAllChecked: boolean; /** 전체 체크 완료 여부 */
+  hasBoughtToday: boolean; /** 오늘 구매 여부 */
+  handleBuyClick: () => void; /** 구매 버튼 클릭 */
+  handleBuyConfirm: () => void; /** 실제 구매 실행 */
+  handleSellClick: () => void; /** 판매 버튼 클릭 */
+  showMoneyEffect: boolean; /** 구매 이펙트 */
   /** 판매 이펙트 */
   showSellEffect: boolean;
-
-  //회사정보
-  company: Company;
-
+  company: Company; //회사정보
   //내가보유한 금액
   myMoney: number;
+  myDollars?: number;
 };
 
 const BuySellSection = ({
@@ -70,6 +48,7 @@ const BuySellSection = ({
   showSellEffect,
   company,
   myMoney,
+  myDollars,
 }: Props) => {
   const { openModal } = useModal();
 
@@ -89,8 +68,9 @@ const BuySellSection = ({
               <TradeSummary
                 type="BUY"
                 name={company.name}
-                money={myMoney}
+                money={company.country === "US" ? (myDollars ?? 0) : myMoney}
                 price={company.price}
+                country={company.country}
               />
             ),
             confirmText: "구매",

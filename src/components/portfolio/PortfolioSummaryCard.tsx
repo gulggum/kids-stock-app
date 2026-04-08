@@ -5,65 +5,79 @@ import { usePortfolio } from "../../context/PortfolioContext";
 import { useTrade } from "../../context/TradeContext";
 import { usePortfolioStocks } from "../../hooks/Useportfoliostocks";
 import { useUser } from "../../context/UserContext";
+import { useExchangeRate } from "../../hooks/useExchangeRate";
 
-const BASE_MONEY = 1000000; //초기 사이버 머니(고정값)
+const BASE_MONEY = 1000000;
+
 const PortfolioSummaryCard = () => {
   const { portfolio } = usePortfolio();
   const { hasBoughtToday } = useTrade();
   const { user } = useUser();
-
-  // ✅ 실제 Supabase 가격 사용
   const { getCurrentPrice } = usePortfolioStocks(portfolio);
+  const exchangeRate = useExchangeRate();
 
-  //보유 종목 수
   const stockCount = portfolio.length;
 
-  //현재 평가 금액
+  // 주식 평가금액 (KR은 원화, US는 달러→원화 환산)
   const evaluationAmount = portfolio.reduce((total, item) => {
     const currentPrice = getCurrentPrice(item);
-    return total + currentPrice * item.quantity;
+    const valueInKrw =
+      item.country === "US"
+        ? currentPrice * exchangeRate
+        : currentPrice * item.quantity;
+    return total + valueInKrw;
   }, 0);
 
-  //총 자산 = 초기머니(BASE_MONEY) +현재 평가 금액(evaluationAmount)
-  const totalAsset = user.money + evaluationAmount;
+  // 달러 → 원화 환산
+  const dollarsInKrw = (user.dollars ?? 0) * exchangeRate;
 
-  // ⭐ 수익 계산
+  // 총 자산 = 원화 현금 + 달러(원화환산) + 주식 평가금액
+  const totalAsset = user.money + dollarsInKrw + evaluationAmount;
+
   const profit = totalAsset - BASE_MONEY;
   const profitRate = (profit / BASE_MONEY) * 100;
   const isUp = profit >= 0;
 
   return (
     <Card>
-      {/* 오늘의한번 뱃지🎖️*/}
       {!hasBoughtToday && <Badge>오늘의 한 번 🎖️</Badge>}
 
       {/* 총 자산 */}
       <AssetSection>
-        <AssetLabel>내 자산 💰</AssetLabel>
-        <AssetValue>{totalAsset.toLocaleString()}원</AssetValue>
-
+        <AssetLabel>내 전체 자산 💰</AssetLabel>
+        <AssetValue>{Math.round(totalAsset).toLocaleString()}원</AssetValue>
         <Profit $isUp={isUp}>
           {isUp ? "📈 +" : "📉 "}
-          {profit.toLocaleString()}원 ({profitRate.toFixed(1)}%)
+          {Math.abs(Math.round(profit)).toLocaleString()}원 (
+          {profitRate.toFixed(1)}%)
         </Profit>
       </AssetSection>
+
+      <Divider />
+
+      {/* 자산 구성 */}
       <Row>
-        <Label>보유 종목</Label>
-        <Value>{stockCount}개</Value>
-      </Row>
-      <Row>
-        <Label>투자 가능 현금</Label>
+        <Label>🇰🇷 원화 현금</Label>
         <Value>{user.money.toLocaleString()}원</Value>
       </Row>
       <Row>
-        <Label>현재 평가금액</Label>
-        <Value>{evaluationAmount.toLocaleString()}원</Value>
+        <Label>🇺🇸 달러</Label>
+        <ValueGroup>
+          <Value>${(user.dollars ?? 0).toLocaleString()}</Value>
+          <SubValue>({dollarsInKrw.toLocaleString()}원)</SubValue>
+        </ValueGroup>
       </Row>
-
-      <Divider />
+      <Row>
+        <Label>📊 보유 주식 ({stockCount}개)</Label>
+        <Value>{Math.round(evaluationAmount).toLocaleString()}원</Value>
+      </Row>
     </Card>
   );
 };
+
+export default PortfolioSummaryCard;
+
+/* ================= 스타일 ================= */
 
 const Card = styled.div`
   background: ${({ theme }) => theme.colors.surface};
@@ -75,32 +89,10 @@ const Card = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.sm};
 `;
 
-const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Label = styled.span`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.muted};
-`;
-
-const Value = styled.span`
-  font-size: 15px;
-  font-weight: 600;
-`;
-
-const Divider = styled.div`
-  height: 1px;
-  background: ${({ theme }) => theme.colors.background};
-  margin: 8px 0;
-`;
-
 const Badge = styled.div`
   align-self: flex-start;
   background: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.text};
+  color: white;
   font-size: 12px;
   font-weight: 700;
   padding: 4px 10px;
@@ -119,15 +111,48 @@ const AssetLabel = styled.span`
 `;
 
 const AssetValue = styled.span`
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 const Profit = styled.span<{ $isUp: boolean }>`
   font-size: 14px;
   font-weight: 700;
-
   color: ${({ theme, $isUp }) => ($isUp ? theme.colors.up : theme.colors.down)};
 `;
 
-export default PortfolioSummaryCard;
+const Divider = styled.div`
+  height: 1px;
+  background: ${({ theme }) => theme.colors.border};
+  margin: 4px 0;
+`;
+
+const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Label = styled.span`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+
+const Value = styled.span`
+  font-size: 15px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const ValueGroup = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+`;
+
+const SubValue = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.muted};
+`;

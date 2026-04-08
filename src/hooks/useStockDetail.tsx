@@ -214,6 +214,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
           name={company.name}
           money={isUS ? (user.dollars ?? 0) : user.money}
           price={company.price}
+          country={company.country}
         />
       ),
       confirmText: "구매",
@@ -257,9 +258,10 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
         <TradeSummary
           type="SELL"
           name={company.name}
-          money={user.money}
+          money={isUS ? (user.dollars ?? 0) : user.money}
           price={company.price}
           buyPrice={company.price}
+          country={company.country}
         />
       ),
       confirmText: "판매",

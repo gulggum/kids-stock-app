@@ -20,6 +20,7 @@ type PortfolioItem = {
   name: string; //회사명
   quantity: number; //보유 수량
   buyPrice: number; //평균 매수가(📍 첫구매시 구매가격과동일,추가매수시 누적 평균가격)
+  country?: "KR" | "US";
 };
 
 type PortfolioContextType = {
@@ -58,6 +59,7 @@ export const PortfolioProvider = ({
             name: trade.stockName,
             quantity: trade.quantity,
             buyPrice: trade.price,
+            country: trade.country ?? "KR",
           });
         } else {
           // 📌 추가 매수, 이미 있는 종목이면 평균단가 계산

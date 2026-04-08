@@ -9,11 +9,13 @@ import { useStockDetail } from "../../hooks/useStockDetail";
 import BuySellSection from "../../components/stock/BuySellSection";
 import { useStockByIdQuery } from "../../hooks/useStocksQuery";
 import { useChart } from "../../hooks/useChart";
+import { useUser } from "../../context/UserContext";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
+  const { user } = useUser();
 
   // ✅ 변경: marketMockData.find → useStockByIdQuery
   const { stock: company, loading } = useStockByIdQuery(id ? Number(id) : null);
@@ -147,11 +149,6 @@ const StockDetail = () => {
           </MyStockContent>
         </ContentSection>
 
-        {/* 💡 설명 */}
-        <ExplainCard>
-          <ExplainTitle>{company.description}</ExplainTitle>
-        </ExplainCard>
-
         {/* ⛔ 구매 제한 */}
         {hasBoughtToday && (
           <HintText>
@@ -179,6 +176,7 @@ const StockDetail = () => {
           showSellEffect={showSellEffect}
           company={company}
           myMoney={money}
+          myDollars={user.dollars}
         />
       </Content>
     </Wrapper>
@@ -261,7 +259,7 @@ const ContentSection = styled.div`
   position: relative;
   padding: 10px;
   height: 340px; /* 공간 고정 */
-  margin-bottom: 20px;
+
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.surface};
 `;
