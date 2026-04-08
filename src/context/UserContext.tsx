@@ -677,6 +677,17 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const updateStatus = (status: string) => {
     setUser((prev) => ({ ...prev, status }));
+
+    // ✅ Supabase 저장
+    if (user.id && user.id !== "guest") {
+      supabase
+        .from("profiles")
+        .update({ status })
+        .eq("id", user.id)
+        .then(({ error }) => {
+          if (error) console.error("상태 저장 실패:", error);
+        });
+    }
   };
 
   // ✅ 게임 데이터 localStorage 저장 (기존과 동일)
@@ -684,16 +695,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setStorage(USER_KEY, user);
   }, [user]);
 
-  // ✅ Supabase 저장
-  if (user.id && user.id !== "guest") {
-    supabase
-      .from("profiles")
-      .update({ status })
-      .eq("id", user.id)
-      .then(({ error }) => {
-        if (error) console.error("상태 저장 실패:", error);
-      });
-  }
   return (
     <UserContext.Provider
       value={{
