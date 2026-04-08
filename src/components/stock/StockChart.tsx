@@ -35,10 +35,7 @@ const CustomDot = (props: any) => {
 
   if (!isMax && !isMin) return null;
 
-  const isTop = isMax; // 최고가는 위에, 최저가는 아래에 라벨
-  const label = isMax
-    ? `최고 ${isUS ? `$${value.toLocaleString()}` : `${value.toLocaleString()}원`}`
-    : `최저 ${isUS ? `$${value.toLocaleString()}` : `${value.toLocaleString()}원`}`;
+  const isTop = isMax || isMin; // 최고가는 위에, 최저가는 아래에 라벨
   const color = isMax ? "#16a34a" : "#dc2626";
 
   return (
@@ -53,16 +50,29 @@ const CustomDot = (props: any) => {
         strokeWidth={2}
       />
       {/* 라벨 */}
-      <text
-        x={cx}
-        y={isTop ? cy - 14 : cy + 20}
-        textAnchor="middle"
-        fontSize={11}
-        fontWeight={700}
-        fill={color}
-      >
-        {label}
-      </text>
+      <>
+        <text
+          x={cx}
+          y={isTop ? cy - 20 : cy + 28}
+          textAnchor="middle"
+          fontSize={10}
+          fontWeight={700}
+          fill={color}
+        >
+          {isMax ? "최고" : "최저"}
+        </text>
+
+        <text
+          x={cx}
+          y={isTop ? cy - 8 : cy + 40}
+          textAnchor="middle"
+          fontSize={11}
+          fontWeight={800}
+          fill={color}
+        >
+          {isUS ? `$${value.toLocaleString()}` : `${value.toLocaleString()}원`}
+        </text>
+      </>
     </g>
   );
 };
