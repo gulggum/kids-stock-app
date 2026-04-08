@@ -17,6 +17,7 @@ import {
   type CardSkin,
 } from "../data/static/cardSkins";
 import { useUser } from "./UserContext";
+import { supabase } from "../utils/supabase";
 
 // ─────────────────────────────────────────
 // 📌 타입 정의
@@ -70,10 +71,19 @@ export const SkinItemProvider = ({
     if (!success) return "NOT_ENOUGH_COIN";
 
     // ✅ setUser로 user.ownedSkins 업데이트
-    setUser((prev) => ({
-      ...prev,
-      ownedSkins: [...prev.ownedSkins, id],
-    }));
+    const newOwnedSkins = [...user.ownedSkins, id];
+    setUser((prev) => ({ ...prev, ownedSkins: newOwnedSkins }));
+
+    // ✅ 구매한 스킨 목록 Supabase 저장
+    if (user.id && user.id !== "guest") {
+      supabase
+        .from("profiles")
+        .update({ owned_skins: newOwnedSkins })
+        .eq("id", user.id)
+        .then(({ error }) => {
+          if (error) console.error("스킨 구매 저장 실패:", error);
+        });
+    }
 
     return "SUCCESS";
   };
@@ -81,9 +91,18 @@ export const SkinItemProvider = ({
   // 🎨 스킨 선택 (보유한 것만 가능)
   const selectSkin = (id: string) => {
     if (!user.ownedSkins.includes(id)) return;
-
     // ✅ setUser로 user.selectedSkin 업데이트
     setUser((prev) => ({ ...prev, selectedSkin: id }));
+    // ✅ 선택한 스킨 Supabase 저장
+    if (user.id && user.id !== "guest") {
+      supabase
+        .from("profiles")
+        .update({ selected_skin: id })
+        .eq("id", user.id)
+        .then(({ error }) => {
+          if (error) console.error("스킨 선택 저장 실패:", error);
+        });
+    }
   };
 
   // 🔍 보유 여부 확인
@@ -118,12 +137,21 @@ export const SkinItemProvider = ({
       addCoin(MYSTERY_BOX_DUPLICATE_REFUND);
     }
 
-    // 새 카드면 보유 목록에 추가
+    // 🎁 미스터리박스 — openMysteryBox 안에서 새 카드 추가 시
     if (!alreadyOwned) {
-      setUser((prev) => ({
-        ...prev,
-        ownedSkins: [...prev.ownedSkins, random.id],
-      }));
+      const newOwnedSkins = [...user.ownedSkins, random.id];
+      setUser((prev) => ({ ...prev, ownedSkins: newOwnedSkins }));
+
+      // ✅ 미스터리박스로 얻은 스킨 Supabase 저장
+      if (user.id && user.id !== "guest") {
+        supabase
+          .from("profiles")
+          .update({ owned_skins: newOwnedSkins })
+          .eq("id", user.id)
+          .then(({ error }) => {
+            if (error) console.error("미스터리박스 스킨 저장 실패:", error);
+          });
+      }
     }
 
     return { ...random, duplicate: alreadyOwned };

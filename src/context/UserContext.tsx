@@ -272,6 +272,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         role: profile?.role ?? "user",
         money: wallet?.balance ?? 1000000,
         dollars: wallet?.dollars ?? 0,
+        profileAvatar: profile?.avatar ?? null,
+        profileImage: profile?.profile_image ?? "",
+        ownedSkins: profile?.owned_skins ?? ["basic"],
+        selectedSkin: profile?.selected_skin ?? "basic",
         // DB 값이 있으면 DB 우선, 없으면 localStorage
         score: profile?.score ?? savedGameData.score,
         level: profile?.level ?? savedGameData.level,
@@ -319,11 +323,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     // ✅ profiles에 닉네임 저장
-    await supabase.from("profiles").upsert({
-      id: anonymousUser.id,
-      nickname,
-      role: "user",
-    });
+    await supabase
+      .from("profiles")
+      .update({
+        nickname,
+        role: "user",
+      })
+      .eq("id", anonymousUser.id);
 
     // ✅ wallets 생성
     await supabase.from("wallets").upsert({
