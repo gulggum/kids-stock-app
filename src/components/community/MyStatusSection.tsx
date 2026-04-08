@@ -72,6 +72,7 @@ const MyStatusSection = ({
           badges: achieved,
           profileImage: user.profileImage,
           profileAvatar: user.profileAvatar ?? null,
+          selectedSkin: user.selectedSkin ?? "basic",
         }}
       />
 

@@ -31,6 +31,7 @@ const Community = () => {
     badges: user.badges,
     profileImage: user.profileImage,
     profileAvatar: user.profileAvatar,
+    selectedSkin: user.selectedSkin ?? "basic",
     emoji: "🙂",
     status: user.status,
     lastActive: Date.now(), // — 나는 지금 온라인이니까 현재 시간

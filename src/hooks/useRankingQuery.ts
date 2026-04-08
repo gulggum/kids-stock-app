@@ -17,7 +17,9 @@ import type { PublicUser } from "../types/UserType";
 const fetchRanking = async (): Promise<PublicUser[]> => {
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, nickname, level, score, achievements, last_active")
+    .select(
+      "id, nickname, level, score, achievements, last_active, avatar, selected_skin",
+    )
     .order("score", { ascending: false }); // score 높은 순
 
   if (error) throw new Error(error.message);
@@ -30,8 +32,9 @@ const fetchRanking = async (): Promise<PublicUser[]> => {
     levelTitle: "",
     score: user.score ?? 0,
     badges: user.achievements ?? [], // achievements → badges로 매핑
-    profileImage: null,
-    profileAvatar: null,
+    profileImage: null, // 사진은 본인만 보임
+    profileAvatar: user.avatar ?? null,
+    selectedSkin: user.selected_skin ?? "basic",
     status: "😄 오늘도 열심히!",
     emoji: "🙂", // 나중에 profileAvatar로 교체 예정
     lastActive: user.last_active // ← 추가

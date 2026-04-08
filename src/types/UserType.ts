@@ -17,4 +17,5 @@ export type PublicUser = {
   emoji: string;
   status: string;
   lastActive: number;
+  selectedSkin: string;
 };

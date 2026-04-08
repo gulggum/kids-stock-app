@@ -25,14 +25,14 @@ const CommunityCard = ({
   onToggleFriend?: (id: string) => void;
 }) => {
   const { openModal } = useModal();
-  const { selectedSkin } = useSkinItem();
   const { title, tier } = getLevelTier(user.level);
 
   const skin =
-    cardSkins.find((skin) => skin.id === selectedSkin) ??
+    cardSkins.find((s) => s.id === user.selectedSkin) ??
     cardSkins.find((s) => s.id === "basic") ??
-    cardSkins[0]; // ← 없으면 basic으로
-  const currentSkin = cardSkins.find((s) => s.id === selectedSkin);
+    cardSkins[0];
+
+  const currentSkin = skin;
 
   const textColor = getTextColorFromSkin(currentSkin);
 
