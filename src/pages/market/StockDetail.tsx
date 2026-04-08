@@ -66,6 +66,7 @@ const StockDetail = () => {
         money={money}
         animateMoney={animateMoney}
         onBack={() => navigate(-1)}
+        country={company.country}
       />
 
       <Content>

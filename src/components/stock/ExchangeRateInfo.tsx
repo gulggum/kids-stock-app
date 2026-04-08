@@ -6,9 +6,6 @@
  * 2️⃣ 환율 설명 보기 버튼
  * 3️⃣ 클릭 시 교육용 설명 모달
  * 4️⃣ 달러 → 원 계산 예시 제공
- *
- * 현재는 기본 환율값 사용
- * 추후 API 연결 예정
  */
 
 import styled from "styled-components";
@@ -16,6 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import InfoModal from "../InfoModal";
 import InfoIcon from "../InfoIcon";
+import { useUser } from "../../context/UserContext";
 
 type Props = {
   exchangeRate: number;
@@ -24,21 +22,38 @@ type Props = {
 const ExchangeRateInfo = ({ exchangeRate }: Props) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { user } = useUser();
 
   return (
     <>
       <Wrapper>
-        <LeftRow>
-          <RateText>
-            💱 환율 <strong>1달러 = {exchangeRate.toLocaleString()}원</strong>
-          </RateText>
-          <InfoIcon variant="question" onClick={() => setOpen(true)} />
-        </LeftRow>
+        {/* 환율 + 환전 버튼 */}
+        <TopRow>
+          <RateRow>
+            <RateText>
+              💱 <strong>1달러 = {exchangeRate.toLocaleString()}원</strong>
+            </RateText>
+            <InfoIcon variant="question" onClick={() => setOpen(true)} />
+          </RateRow>
+          <ExchangeButton onClick={() => navigate("/exchange")}>
+            🏦 환전하기
+          </ExchangeButton>
+        </TopRow>
 
-        {/* 환전 상점 바로가기 버튼 */}
-        <ExchangeButton onClick={() => navigate("/exchange")}>
-          🏦 환전하기
-        </ExchangeButton>
+        {/* 원화 / 달러 잔액 */}
+        <WalletRow>
+          <WalletItem>
+            <WalletFlag>🇰🇷</WalletFlag>
+            <WalletAmount>{user.money.toLocaleString()}원</WalletAmount>
+          </WalletItem>
+          <WalletDivider />
+          <WalletItem>
+            <WalletFlag>🇺🇸</WalletFlag>
+            <WalletAmount $isDollar>
+              ${(user.dollars ?? 0).toLocaleString()}
+            </WalletAmount>
+          </WalletItem>
+        </WalletRow>
       </Wrapper>
 
       {open && (
@@ -75,12 +90,17 @@ export default ExchangeRateInfo;
 
 const Wrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  flex-direction: column;
+  gap: 10px;
 `;
 
-const LeftRow = styled.div`
+const TopRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const RateRow = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
@@ -95,32 +115,63 @@ const ExchangeButton = styled.button`
   padding: 7px 14px;
   border: none;
   border-radius: 999px;
-
   background: ${({ theme }) => theme.colors.primary};
   color: white;
-
   font-size: 12px;
   font-weight: 700;
   font-family: inherit;
-
   cursor: pointer;
   white-space: nowrap;
-
   box-shadow: ${({ theme }) => theme.shadows.sm};
-
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
-
   &:hover {
     transform: translateY(-1px);
     box-shadow: ${({ theme }) => theme.shadows.md};
   }
-
   &:active {
     transform: scale(0.96);
-    box-shadow: none;
   }
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 2px;
+  }
+`;
+
+const WalletRow = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.card};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+`;
+
+const WalletItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+`;
+
+const WalletFlag = styled.span`
+  font-size: 16px;
+`;
+
+const WalletAmount = styled.span<{ $isDollar?: boolean }>`
+  font-size: 15px;
+  font-weight: 800;
+  color: ${({ theme, $isDollar }) =>
+    $isDollar ? theme.colors.accentGreen : theme.colors.primary};
+`;
+
+const WalletDivider = styled.div`
+  width: 1px;
+  height: 24px;
+  background: ${({ theme }) => theme.colors.border};
+  margin: 0 8px;
 `;
 
 const ModalContent = styled.div`
@@ -154,18 +205,15 @@ const ExampleCard = styled.div`
 const ExampleTitle = styled.div`
   font-weight: 700;
 `;
-
 const ExampleText = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
-
 const ExampleResult = styled.div`
   margin-top: 4px;
   font-size: 14px;
   font-weight: 800;
   color: ${({ theme }) => theme.colors.primary};
 `;
-
 const Hint = styled.div`
   margin-top: 6px;
   padding: 8px 10px;
@@ -174,5 +222,4 @@ const Hint = styled.div`
   border-radius: ${({ theme }) => theme.radius.sm};
   background: rgba(0, 0, 0, 0.03);
   color: ${({ theme }) => theme.colors.textSecondary};
-  text-align: center;
 `;

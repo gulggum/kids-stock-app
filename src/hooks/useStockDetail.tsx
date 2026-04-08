@@ -6,6 +6,8 @@ import { useUser } from "../context/UserContext";
 import { getStorage, setStorage } from "../utils/storage";
 import { playMoneySound } from "../utils/sounds";
 import TradeSummary from "../components/stock/TradeSummary";
+import styled from "styled-components";
+import { useNavigate } from "react-router";
 
 /**
  * 📌 useStockDetail
@@ -93,13 +95,15 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
     rule3: false,
     rule4: false,
   });
+
   const isAllChecked = Object.values(checks).every(Boolean);
 
   // Context
   const { buyStock, sellStock, hasBoughtToday, isHoldingStock } = useTrade();
-  const { openModal } = useModal();
+  const { openModal, closeModal } = useModal();
   const { user, spendMoney, addMoney, spendDollars, addDollars } = useUser();
   const { giveReward } = useReward();
+  const navigate = useNavigate();
 
   const isUS = company.country === "US";
 
@@ -156,7 +160,26 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
         openModal({
           type: "INFO",
           title: "달러가 부족해요 🥲",
-          message: `이 주식을 사려면 $${company.price}가 필요해요!\n환전 상점에서 달러를 먼저 바꿔보세요!`,
+          customContent: (
+            <ExchangeGuide>
+              <ExchangeText>
+                이 주식을 사려면 <br /> <strong>${company.price}</strong>가
+                필요해요!
+              </ExchangeText>
+              <ExchangeText $sub>
+                달러가 없으면 미국 주식을 살 수 없어요.
+                <br /> 환전 상점에서 원화를 달러로 바꿔보세요! 💱
+              </ExchangeText>
+              <GoExchangeButton
+                onClick={() => {
+                  closeModal();
+                  navigate("/exchange");
+                }}
+              >
+                🏦 환전하러 가기
+              </GoExchangeButton>
+            </ExchangeGuide>
+          ),
           confirmText: "알겠어요",
         });
         return;
@@ -275,3 +298,44 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
     handleSellClick,
   };
 };
+
+const ExchangeGuide = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 4px 0;
+`;
+
+const ExchangeText = styled.p<{ $sub?: boolean }>`
+  margin: 0;
+  font-size: ${({ $sub }) => ($sub ? "13px" : "15px")};
+  font-weight: ${({ $sub }) => ($sub ? "400" : "600")};
+  color: ${({ theme, $sub }) =>
+    $sub ? theme.colors.textSecondary : theme.colors.text};
+  text-align: center;
+  line-height: 1.5;
+`;
+
+const GoExchangeButton = styled.button`
+  margin-top: 4px;
+  padding: 10px 20px; // width: 100% 제거 → 자연스러운 너비
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: transparent; // 파란 배경 제거
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary}10;
+  }
+  &:active {
+    transform: scale(0.97);
+  }
+`;
