@@ -4,7 +4,7 @@
 // 용도 2: vercel.json Cron 등록 → 매일 평일 오전 9시(KST) 자동 실행
 // 실행 내용: 전체 종목 시세 업데이트 + 원/달러 환율 업데이트
 
-const { createClient } = require("@supabase/supabase-js");
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
