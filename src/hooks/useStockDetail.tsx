@@ -35,6 +35,7 @@ export type Company = {
   id: number;
   name: string;
   price: number;
+  country?: "KR" | "US";
 };
 
 type UseStockDetailReturn = {
@@ -97,8 +98,10 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   // Context
   const { buyStock, sellStock, hasBoughtToday, isHoldingStock } = useTrade();
   const { openModal } = useModal();
-  const { user, spendMoney, addMoney } = useUser();
+  const { user, spendMoney, addMoney, spendDollars, addDollars } = useUser();
   const { giveReward } = useReward();
+
+  const isUS = company.country === "US";
 
   // 체크리스트 토글
   const toggleCheck = (key: keyof GuideChecks) => {
@@ -119,12 +122,23 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   // ─── 구매 로직 ────────────────────────────
   const handleBuyConfirm = () => {
     playMoneySound();
-    spendMoney(company.price);
+    // ✅ 미국 주식이면 달러로, 한국 주식이면 원화로 차감
+    if (isUS) {
+      spendDollars(company.price); // 달러 차감
+    } else {
+      spendMoney(company.price); // 원화 차감
+    }
 
     setShowMoneyEffect(true);
     setTimeout(() => setShowMoneyEffect(false), 500);
 
-    buyStock(company);
+    // ✅ country 넘겨서 포트폴리오에서 구분 가능하게
+    buyStock({
+      id: company.id,
+      name: company.name,
+      price: company.price,
+      country: company.country,
+    });
 
     setStorage("hasCompletedFirstBuy", true);
     setHasCompletedFirstBuy(true);
@@ -136,15 +150,27 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   };
 
   const handleBuyClick = () => {
-    // ✅ 잔액 체크 추가
-    if (user.money < company.price) {
-      openModal({
-        type: "INFO",
-        title: "돈이 부족해요 🥲",
-        message: `이 주식을 사려면 ${company.price.toLocaleString()}원이 필요해요!`,
-        confirmText: "알겠어요",
-      });
-      return;
+    // ✅ 미국 주식이면 달러 잔액 체크, 한국 주식이면 원화 잔액 체크
+    if (isUS) {
+      if ((user.dollars ?? 0) < company.price) {
+        openModal({
+          type: "INFO",
+          title: "달러가 부족해요 🥲",
+          message: `이 주식을 사려면 $${company.price}가 필요해요!\n환전 상점에서 달러를 먼저 바꿔보세요!`,
+          confirmText: "알겠어요",
+        });
+        return;
+      }
+    } else {
+      if (user.money < company.price) {
+        openModal({
+          type: "INFO",
+          title: "돈이 부족해요 🥲",
+          message: `이 주식을 사려면 ${company.price.toLocaleString()}원이 필요해요!`,
+          confirmText: "알겠어요",
+        });
+        return;
+      }
     }
     // 첫 구매면 가이드 먼저
     if (!hasCompletedFirstBuy) {
@@ -163,7 +189,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
         <TradeSummary
           type="BUY"
           name={company.name}
-          money={user.money}
+          money={isUS ? (user.dollars ?? 0) : user.money}
           price={company.price}
         />
       ),
@@ -176,7 +202,13 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   // ─── 판매 로직 ────────────────────────────
   const handleSellConfirm = () => {
     playMoneySound();
-    addMoney(company.price);
+
+    // ✅ 미국 주식 판매 → 달러로 받기 / 한국 주식 → 원화로 받기
+    if (isUS) {
+      addDollars(company.price);
+    } else {
+      addMoney(company.price);
+    }
 
     setShowSellEffect(true);
     setTimeout(() => setShowSellEffect(false), 900);

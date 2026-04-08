@@ -16,7 +16,7 @@ import { useNavigate } from "react-router";
 import StockCard from "../../components/stock/StockCard";
 import ExchangeRateInfo from "../../components/stock/ExchangeRateInfo";
 
-import { krwToUsd, usdToKrw } from "../../utils/currency";
+import { usdToKrw } from "../../utils/currency";
 import { getStorage, setStorage } from "../../utils/storage";
 import { useStocksQuery } from "../../hooks/useStocksQuery";
 import Loading from "../../components/Loading";

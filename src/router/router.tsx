@@ -19,6 +19,7 @@ import AdminItems from "../pages/admin/AdminItems";
 import AdminStats from "../pages/admin/AdminStats";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import SettingsPage from "../pages/SettingsPage";
+import ExchangePage from "../pages/market/ExchangePage";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "market", element: <Market /> },
       { path: "market/:id", element: <StockDetail /> },
+      { path: "/exchange", element: <ExchangePage /> },
       { path: "portfolio", element: <PortfolioPage /> },
       { path: "community", element: <Community /> },
       { path: "shop", element: <Shop /> },

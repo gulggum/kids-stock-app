@@ -31,6 +31,7 @@ export type User = {
 
   coin: number;
   money: number; // ✅ Supabase wallets의 balance와 동기화
+  dollars: number; // 달러 잔액 (미국 주식 구매용)
 
   ownedSkins: string[];
   selectedSkin: string;
@@ -103,6 +104,10 @@ type UserContextType = {
 
   addMoney: (amount: number) => void;
   spendMoney: (amount: number) => boolean;
+  addDollars: (amount: number) => void;
+  spendDollars: (amount: number) => boolean;
+  exchangeToUsd: (krw: number, dollars: number) => void; // 원화→달러
+  exchangeToKrw: (dollars: number, krw: number) => void; // 달러→원화
 
   checkToday: (giveReward: (type: RewardType) => void) => void;
   isCheckedToday: boolean;
@@ -129,6 +134,7 @@ const defaultUser: User = {
   score: 0,
   coin: 500,
   money: 0,
+  dollars: 0,
   ownedSkins: ["basic"],
   selectedSkin: "basic",
   ownedItems: [],
@@ -265,6 +271,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         nickname: profile?.nickname ?? "유저",
         role: profile?.role ?? "user",
         money: wallet?.balance ?? 1000000,
+        dollars: wallet?.dollars ?? 0,
         // DB 값이 있으면 DB 우선, 없으면 localStorage
         score: profile?.score ?? savedGameData.score,
         level: profile?.level ?? savedGameData.level,
@@ -507,6 +514,47 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       return { ...prev, money: newBalance };
     });
   };
+  //환전함수
+  const addDollars = (amount: number) => {
+    setUser((prev) => {
+      const newDollars = (prev.dollars ?? 0) + amount;
+      // 로그인 상태면 DB도 업데이트
+      if (isLoggedIn && prev.id) {
+        supabase
+          .from("wallets")
+          .update({ dollars: newDollars })
+          .eq("user_id", prev.id);
+      }
+      return { ...prev, dollars: newDollars };
+    });
+  };
+
+  const spendDollars = (amount: number): boolean => {
+    if ((user.dollars ?? 0) < amount) return false;
+    setUser((prev) => {
+      const newDollars = (prev.dollars ?? 0) - amount;
+      if (isLoggedIn && prev.id) {
+        supabase
+          .from("wallets")
+          .update({ dollars: newDollars })
+          .eq("user_id", prev.id);
+      }
+      return { ...prev, dollars: newDollars };
+    });
+    return true;
+  };
+
+  // 원화 → 달러 환전
+  const exchangeToUsd = (krw: number, dollars: number) => {
+    spendMoney(krw);
+    addDollars(dollars);
+  };
+
+  // 달러 → 원화 환전
+  const exchangeToKrw = (dollars: number, krw: number) => {
+    spendDollars(dollars);
+    addMoney(krw);
+  };
 
   const spendMoney = (amount: number): boolean => {
     if (user.money < amount) return false;
@@ -631,6 +679,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         addAchievement,
         addMoney,
         spendMoney,
+        addDollars,
+        spendDollars,
+        exchangeToUsd,
+        exchangeToKrw,
         checkToday,
         isCheckedToday,
         isSolved,

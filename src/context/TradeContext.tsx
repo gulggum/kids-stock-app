@@ -14,12 +14,18 @@ type Trade = {
   quantity: number; //거래수량
   type: TradeType; //"buy","sell"
   createdAt: string; // ISO date(언제 했는지 (날짜 판단용))
+  country?: "KR" | "US";
 };
 
 // Context에서 제공할 API(하루1회제한,오늘의한번배지,부모리포트,경험치 정책)
 type TradeContextType = {
   trades: Trade[]; // 전체 거래 내역
-  buyStock: (stock: { id: number; name: string; price: number }) => boolean;
+  buyStock: (stock: {
+    id: number;
+    name: string;
+    price: number;
+    country?: "KR" | "US";
+  }) => boolean;
   sellStock: (stock: { id: number; name: string; price: number }) => boolean;
   hasBoughtToday: boolean; // 오늘 이미 샀는지
   isHoldingStock: (id: number) => boolean;
@@ -46,7 +52,12 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [trades]);
 
   //주식 구매
-  const buyStock = (stock: { id: number; name: string; price: number }) => {
+  const buyStock = (stock: {
+    id: number;
+    name: string;
+    price: number;
+    country?: "KR" | "US";
+  }) => {
     if (hasBoughtToday) return false; //1회제한
     const newTrade: Trade = {
       id: crypto.randomUUID(),
@@ -56,6 +67,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
       quantity: 1,
       type: "BUY",
       createdAt: new Date().toISOString(),
+      country: stock.country ?? "KR",
     };
 
     setTrades((prev) => [...prev, newTrade]);
