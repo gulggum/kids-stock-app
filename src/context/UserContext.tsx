@@ -509,7 +509,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         supabase
           .from("wallets")
           .update({ balance: newBalance })
-          .eq("user_id", prev.id);
+          .eq("user_id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("원화 저장 실패:", error);
+          });
       }
       return { ...prev, money: newBalance };
     });
@@ -531,7 +534,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         supabase
           .from("wallets")
           .update({ dollars: newDollars })
-          .eq("user_id", prev.id);
+          .eq("user_id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("dollars 저장 실패:", error);
+          });
       }
       return { ...prev, dollars: newDollars };
     });
@@ -545,7 +551,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         supabase
           .from("wallets")
           .update({ dollars: newDollars })
-          .eq("user_id", prev.id);
+          .eq("user_id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("dollars 저장 실패:", error);
+          });
       }
       return { ...prev, dollars: newDollars };
     });
@@ -575,7 +584,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         supabase
           .from("wallets")
           .update({ balance: newBalance })
-          .eq("user_id", prev.id);
+          .eq("user_id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("원화 저장 실패:", error);
+          });
       }
       return {
         ...prev,
