@@ -4,7 +4,6 @@ import BadgeListModal from "./BadgeListModal";
 import { ACHIEVEMENTS } from "../../data/rules/achievementRules";
 import { isUserOnline } from "../../utils/isUserOnline";
 import { cardSkins } from "../../data/static/cardSkins";
-import { useSkinItem } from "../../context/SkinItemContext";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import { getLevelTier } from "../../utils/getLevelTier";

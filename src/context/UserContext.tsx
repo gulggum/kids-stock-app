@@ -276,6 +276,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         profileImage: profile?.profile_image ?? "",
         ownedSkins: profile?.owned_skins ?? ["basic"],
         selectedSkin: profile?.selected_skin ?? "basic",
+        status: profile?.status ?? "😄 오늘은 지켜보는 날이에요",
         // DB 값이 있으면 DB 우선, 없으면 localStorage
         score: profile?.score ?? savedGameData.score,
         level: profile?.level ?? savedGameData.level,
@@ -683,6 +684,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setStorage(USER_KEY, user);
   }, [user]);
 
+  // ✅ Supabase 저장
+  if (user.id && user.id !== "guest") {
+    supabase
+      .from("profiles")
+      .update({ status })
+      .eq("id", user.id)
+      .then(({ error }) => {
+        if (error) console.error("상태 저장 실패:", error);
+      });
+  }
   return (
     <UserContext.Provider
       value={{

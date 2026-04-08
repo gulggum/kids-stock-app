@@ -18,7 +18,7 @@ const fetchRanking = async (): Promise<PublicUser[]> => {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, nickname, level, score, achievements, last_active, avatar, selected_skin",
+      "id, nickname, level, score, achievements, last_active, avatar, selected_skin,status",
     )
     .order("score", { ascending: false }); // score 높은 순
 
@@ -35,7 +35,7 @@ const fetchRanking = async (): Promise<PublicUser[]> => {
     profileImage: null, // 사진은 본인만 보임
     profileAvatar: user.avatar ?? null,
     selectedSkin: user.selected_skin ?? "basic",
-    status: "😄 오늘도 열심히!",
+    status: user.status ?? "😄 오늘도 열심히!",
     emoji: "🙂", // 나중에 profileAvatar로 교체 예정
     lastActive: user.last_active // ← 추가
       ? new Date(user.last_active).getTime()
