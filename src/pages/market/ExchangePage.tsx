@@ -123,16 +123,7 @@ const ExchangePage = () => {
           원화를 달러로, 달러를 원화로 바꿀 수 있어요!
         </BankSubtitle>
       </BankHeader>
-      {/* 💡 교육 안내 */}
-      <GuideCard>
-        <GuideTitle>💡 환율이 뭐예요?</GuideTitle>
-        <GuideText>
-          나라마다 쓰는 돈이 달라요. 미국은 달러($), 한국은 원(₩)을 써요.
-          <br />
-          환율은 두 나라 돈을 바꾸는 비율이에요. <br />
-          오늘은 $1 = {exchangeRate.toLocaleString()}원이에요!
-        </GuideText>
-      </GuideCard>
+
       {/* 환율 */}
       <RateCard>
         <RateText>💱 오늘 환율</RateText>
@@ -175,6 +166,8 @@ const ExchangePage = () => {
       {/* ── 환전 탭 ── */}
       {tab === "EXCHANGE" && (
         <>
+          {/* 금액 선택 */}
+          <SectionTitle>얼마나 바꿀까요?</SectionTitle>
           {/* 방향 토글 */}
           <ModeToggle>
             <ModeButton $active={mode === "BUY"} onClick={() => setMode("BUY")}>
@@ -188,8 +181,6 @@ const ExchangePage = () => {
             </ModeButton>
           </ModeToggle>
 
-          {/* 금액 선택 */}
-          <SectionTitle>얼마나 바꿀까요?</SectionTitle>
           <OptionGrid>
             {EXCHANGE_OPTIONS.map((opt) => (
               <OptionButton
@@ -230,17 +221,17 @@ const ExchangePage = () => {
           <ExchangeButton disabled={!selected} onClick={handleExchange}>
             {selected ? "💱 환전하기" : "금액을 선택해주세요"}
           </ExchangeButton>
-
-          {showEffect && <Effect>💱 환전 완료!</Effect>}
-
-          {/* 교육 안내 */}
+          {/* 💡 교육 안내 */}
           <GuideCard>
             <GuideTitle>💡 환율이 뭐예요?</GuideTitle>
             <GuideText>
               나라마다 쓰는 돈이 달라요. 미국은 달러($), 한국은 원(₩)을 써요.
+              <br />
+              환율은 두 나라 돈을 바꾸는 비율이에요. <br />
               오늘은 $1 = {exchangeRate.toLocaleString()}원이에요!
             </GuideText>
           </GuideCard>
+          {showEffect && <Effect>💱 환전 완료!</Effect>}
         </>
       )}
 
