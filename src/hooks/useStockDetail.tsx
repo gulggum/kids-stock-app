@@ -38,8 +38,8 @@ export type Company = {
 };
 
 type UseStockDetailReturn = {
-  period: "7d" | "1y";
-  setPeriod: (v: "7d" | "1y") => void;
+  period: "7d" | "30d";
+  setPeriod: (v: "7d" | "30d") => void;
 
   activeTab: "CHART" | "MY_STOCK";
   setActiveTab: (v: "CHART" | "MY_STOCK") => void;
@@ -69,7 +69,7 @@ type UseStockDetailReturn = {
 // ─────────────────────────────────────────
 export const useStockDetail = (company: Company): UseStockDetailReturn => {
   // UI 상태
-  const [period, setPeriod] = useState<"7d" | "1y">("7d");
+  const [period, setPeriod] = useState<"7d" | "30d">("7d");
   const [activeTab, setActiveTab] = useState<"CHART" | "MY_STOCK">("CHART");
 
   // 거래 이펙트 상태

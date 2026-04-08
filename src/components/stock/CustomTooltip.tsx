@@ -5,13 +5,21 @@ type CustomTooltipProps = {
   payload?: {
     value?: number;
   }[];
+  country: "KR" | "US";
 };
 
-const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+const CustomTooltip = ({ active, payload, country }: CustomTooltipProps) => {
   if (!active || !payload || !payload[0]?.value) return null;
+
+  const price = payload[0].value;
+
+  const formattedPrice =
+    country === "US"
+      ? `$${price.toLocaleString()}`
+      : `${price.toLocaleString()}원`;
   return (
     <TooltipCard>
-      <TooltipPrice>{payload[0].value.toLocaleString()}원</TooltipPrice>
+      <TooltipPrice>{formattedPrice}</TooltipPrice>
     </TooltipCard>
   );
 };

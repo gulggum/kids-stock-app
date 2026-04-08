@@ -17,35 +17,90 @@ export type ChartPoint = {
 type StockChartProps = {
   data: ChartPoint[]; // 차트에 그릴 데이터
   strokeColor: string; // 선 색 (상승/하락에 따라 부모에서 결정)
+  country: "KR" | "US";
+  period: "7d" | "30d";
+};
+// 최고/최저 커스텀 Dot
+const CustomDot = (props: any) => {
+  const { cx, cy, value, data, country } = props;
+  const isUS = country === "US";
+  if (!data || data.length === 0) return null;
+
+  const prices = data.map((d: ChartPoint) => d.price).filter(Boolean);
+  const max = Math.max(...prices);
+  const min = Math.min(...prices);
+
+  const isMax = value === max;
+  const isMin = value === min;
+
+  if (!isMax && !isMin) return null;
+
+  const isTop = isMax; // 최고가는 위에, 최저가는 아래에 라벨
+  const label = isMax
+    ? `최고 ${isUS ? `$${value.toLocaleString()}` : `${value.toLocaleString()}원`}`
+    : `최저 ${isUS ? `$${value.toLocaleString()}` : `${value.toLocaleString()}원`}`;
+  const color = isMax ? "#16a34a" : "#dc2626";
+
+  return (
+    <g>
+      {/* 점 */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={5}
+        fill={color}
+        stroke="#fff"
+        strokeWidth={2}
+      />
+      {/* 라벨 */}
+      <text
+        x={cx}
+        y={isTop ? cy - 14 : cy + 20}
+        textAnchor="middle"
+        fontSize={11}
+        fontWeight={700}
+        fill={color}
+      >
+        {label}
+      </text>
+    </g>
+  );
 };
 
-const StockChart = ({ data, strokeColor }: StockChartProps) => {
+const StockChart = ({
+  data,
+  strokeColor,
+  country,
+  period,
+}: StockChartProps) => {
   return (
     <ChartWrapper>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <LineChart
+          data={data}
+          margin={{ top: 55, bottom: 20, left: 15, right: 15 }}
+        >
           {/* 📅 X축: 날짜 (간단히 표시) */}
           <XAxis
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 10 }}
+            tick={{ fontSize: 11 }}
             tickFormatter={(date) => {
               const d = new Date(date);
               return `${d.getMonth() + 1}/${d.getDate()}`; // "4/7" 형식으로 짧게
             }}
-            interval="preserveStartEnd" // 첫날 마지막날만 표시
+            interval={period === "30d" ? Math.ceil(data.length / 5) : 0}
+            padding={{ left: 10, right: 10 }}
+            tickMargin={20}
           />
 
           {/* 📐 Y축: 숫자 숨김 (아이용 UX) */}
-          <YAxis
-            hide
-            domain={["auto", "auto"]} // ← 이거 추가
-          />
+          <YAxis hide domain={["auto", "auto"]} />
 
           {/* 💬 툴팁: 눌렀을 때 가격만 보여줌 */}
           <Tooltip
-            content={<CustomTooltip />}
+            content={<CustomTooltip country={country} />}
             contentStyle={{
               borderRadius: 12,
               border: "none",
@@ -59,7 +114,15 @@ const StockChart = ({ data, strokeColor }: StockChartProps) => {
             dataKey="price"
             stroke={strokeColor} // ⭐ 부모에서 내려준 색
             strokeWidth={4}
-            dot={false}
+            // ✅ 커스텀 Dot — 최고/최저만 표시
+            dot={(props) => (
+              <CustomDot
+                {...props}
+                data={data}
+                strokeColor={strokeColor}
+                country={country}
+              />
+            )}
             activeDot={{ r: 6 }}
             isAnimationActive={true} // ⭐ 애니메이션 ON
             animationDuration={600}
@@ -72,10 +135,9 @@ const StockChart = ({ data, strokeColor }: StockChartProps) => {
 
 const ChartWrapper = styled.div`
   width: 100%;
-  height: 220px;
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: 12px;
+  height: 250px;
+  background: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radius.md};
 `;
 
 export default StockChart;

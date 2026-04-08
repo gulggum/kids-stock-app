@@ -213,12 +213,12 @@ const AdminNewsCreate = () => {
 }
 
 규칙:
-- KR 뉴스 id: news_2026-${today}_kr_1 ~ news_2026-${today}_kr_3
-- US 뉴스 id: news_2026-${today}_us_1 ~ news_2026-${today}_us_3
+- KR 뉴스 id: news_${today}_kr_1 ~ news_${today}_kr_3
+- US 뉴스 id: news_${today}_us_1 ~ news_${today}_us_3
 - 오늘 날짜를 YYYY-MM-DD 형식으로 id에 포함
 - 뉴스는 총 6개 작성
 - 각 뉴스마다 퀴즈 1개 (총 6개)
-- answerIndex는 반드시 0, 1, 2 중 하나
+- answerIndex는 반드시 0, 1, 2 중 하나 (퀴즈정답 위치 랜덤으로 섞기)
 - stockIds는 뉴스와 관련된 대표 기업 2개 (예: 삼성전자, 애플 등)
 - createdAt과 date는 오늘 날짜로 동일하게 작성`}
           </PromptBox>

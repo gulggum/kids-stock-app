@@ -122,6 +122,8 @@ const StockDetail = () => {
                     strokeColor={
                       isUptrend ? theme.colors.up : theme.colors.down
                     }
+                    country={company.country}
+                    period={period}
                   />
                 )}
               </ChartPlaceholder>
@@ -221,7 +223,7 @@ const TabHeader = styled.div`
 
 const TabButton = styled.button<{ $active: boolean }>`
   flex: 1;
-  padding: 10px;
+  padding: 15px;
   border-radius: ${({ theme }) => theme.radius.md};
   border: none;
 
@@ -255,13 +257,12 @@ const TabContentBase = styled.div<{ $active: boolean }>`
    탭 내용 고정 컨테이너
    ========================= */
 const ContentSection = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  padding: 16px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-
-  height: 300px; /* 공간 고정 */
   position: relative;
-  overflow: hidden; /* 애니메이션 영역 밖 숨김 */
+  padding: 10px;
+  height: 340px; /* 공간 고정 */
+  margin-bottom: 20px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.surface};
 `;
 const MyStockContent = styled(TabContentBase)`
   display: flex;
@@ -281,7 +282,7 @@ const ChartContent = styled(TabContentBase)`
 
 const ChartSection = styled.div`
   background: ${({ theme }) => theme.colors.surface};
-  padding: 16px;
+
   border-radius: ${({ theme }) => theme.radius.lg};
   display: flex;
   flex-direction: column;
@@ -292,6 +293,7 @@ const ChartHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
 `;
 
 const ChartTitle = styled.div`
@@ -300,7 +302,7 @@ const ChartTitle = styled.div`
 `;
 
 const ChartPlaceholder = styled.div`
-  height: 200px;
+  height: 240px;
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.background};
   display: flex;

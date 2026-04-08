@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
 type ChartPeriodToggleProps = {
-  value: "7d" | "1y";
-  onChange: (value: "7d" | "1y") => void;
+  value: "7d" | "30d";
+  onChange: (value: "7d" | "30d") => void;
 };
 
 const ChartPeriodToggle = ({ value, onChange }: ChartPeriodToggleProps) => {
@@ -11,7 +11,7 @@ const ChartPeriodToggle = ({ value, onChange }: ChartPeriodToggleProps) => {
       <Button $active={value === "7d"} onClick={() => onChange("7d")}>
         7일
       </Button>
-      <Button $active={value === "1y"} onClick={() => onChange("1y")}>
+      <Button $active={value === "30d"} onClick={() => onChange("30d")}>
         30일
       </Button>
     </Wrapper>

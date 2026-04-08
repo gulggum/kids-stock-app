@@ -16,7 +16,7 @@ import { useNavigate } from "react-router";
 import StockCard from "../../components/stock/StockCard";
 import ExchangeRateInfo from "../../components/stock/ExchangeRateInfo";
 
-import { krwToUsd } from "../../utils/currency";
+import { krwToUsd, usdToKrw } from "../../utils/currency";
 import { getStorage, setStorage } from "../../utils/storage";
 import { useStocksQuery } from "../../hooks/useStocksQuery";
 import Loading from "../../components/Loading";
@@ -113,7 +113,7 @@ const Market = () => {
       description={stock.description}
       isFavorite={stock.isFavorite}
       usdPrice={
-        stock.country === "US" ? krwToUsd(stock.price, exchangeRate) : undefined
+        stock.country === "US" ? usdToKrw(stock.price, exchangeRate) : undefined
       }
       onToggleFavorite={() => toggleFavorite(stock.id)}
       onClick={() => handleCardClick(stock.id)}
