@@ -93,12 +93,20 @@ const BuySellSection = ({
 
       {/* 💰 구매 이펙트 */}
       {showMoneyEffect && (
-        <MoneyEffect>💰 -{myMoney.toLocaleString()}</MoneyEffect>
+        <MoneyEffect>
+          {company.country === "US"
+            ? `💰 -$${company.price.toLocaleString()}`
+            : `💰 -${myMoney.toLocaleString()}원`}
+        </MoneyEffect>
       )}
 
       {/* 💵 판매 이펙트 */}
       {showSellEffect && (
-        <SellEffect>💵 +{myMoney.toLocaleString()}</SellEffect>
+        <SellEffect>
+          {company.country === "US"
+            ? `💵 +$${company.price.toLocaleString()}`
+            : `💵 +${myMoney.toLocaleString()}원`}
+        </SellEffect>
       )}
     </Wrapper>
   );

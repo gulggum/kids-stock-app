@@ -24,12 +24,11 @@ const CharacterPage = () => {
     setProfileAvatar,
     setProfileImage,
   } = useCharacterProfile();
-
-  const { openModal, closeModal } = useModal();
+  // const { fileInputRef, cameraInputRef } = useCharacterProfile(); //프로필사진첨부시 활성화
+  const { openModal } = useModal();
   const { createToast } = useToast();
   const { selectSkin, selectedSkin, ownedSkins } = useSkinItem();
   const { achieved } = useAchievement(); //업적
-  const { fileInputRef, cameraInputRef } = useCharacterProfile(); //프로필사진첨부
   const navigate = useNavigate();
   const { user, expInfo } = useUser();
 
@@ -44,21 +43,22 @@ const CharacterPage = () => {
     cardSkins[0];
   const openProfileModal = () => {
     openModal({
-      title: "프로필 선택",
+      title: "프로필 캐릭터 선택",
       hideActions: true,
       customContent: (
         <ModalContent>
-          <UploadWrapper>
-            <CloseButton onClick={closeModal}>✖</CloseButton>
-            {/* 📸 업로드 버튼 */}
-            <UploadButton onClick={() => cameraInputRef.current?.click()}>
-              📸 사진 찍기
-            </UploadButton>
+          {/* TODO: Supabase Storage 연동 후 사진 업로드 기능 사용시 활성화
+<UploadWrapper>
+  <CloseButton onClick={closeModal}>✖</CloseButton>
+  <UploadButton onClick={() => cameraInputRef.current?.click()}>
+    📸 사진 찍기
+  </UploadButton>
+  <UploadButton onClick={() => fileInputRef.current?.click()}>
+    🖼 앨범 선택
+  </UploadButton>
+</UploadWrapper>
+*/}
 
-            <UploadButton onClick={() => fileInputRef.current?.click()}>
-              🖼 앨범 선택
-            </UploadButton>
-          </UploadWrapper>
           {/* 🧒 캐릭터 선택 */}
           <AvatarGrid
             onSelect={(avatar) => {
@@ -121,8 +121,8 @@ const CharacterPage = () => {
           <Settings size={22} color="gray" />
         </SettingButton>
       </Header>
-      {/* 📸 카메라 */}
-      <input
+      {/* TODO: Supabase Storage 연동 후 활성화 예정
+         <input
         ref={cameraInputRef}
         type="file"
         accept="image/*"
@@ -130,15 +130,14 @@ const CharacterPage = () => {
         style={{ display: "none" }}
         onChange={handleImageChange}
       />
-
-      {/* 🖼 앨범 */}
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
         style={{ display: "none" }}
-        onChange={handleImageChange}
-      />
+      onChange={handleImageChange}
+        />
+      */}
       <ProfileSection>
         {/* 내상태 (보유코인 및 뱃지모음) */}
         <StatusCard
@@ -241,25 +240,6 @@ const ModalContent = styled.div`
   gap: 14px;
 `;
 
-const UploadButton = styled.button`
-  padding: 12px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: none;
-
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-
-  font-weight: 700;
-  cursor: pointer;
-
-  transition: 0.2s;
-
-  &:hover {
-    transform: scale(1.03);
-    box-shadow: ${({ theme }) => theme.shadows.sm};
-  }
-`;
-
 const ConfirmImage = styled.div`
   display: flex;
   flex-direction: column;
@@ -280,29 +260,7 @@ const Text = styled.div`
   font-size: 14px;
 `;
 
-const UploadWrapper = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: space-around;
-`;
-const CloseButton = styled.button`
-  position: absolute;
-  top: -60px;
-  right: -5px;
-  padding: 3px 8px;
-
-  border-radius: ${({ theme }) => theme.radius.sm};
-  border: none;
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.background};
-  }
-  font-size: 18px;
-  z-index: 10000;
-  cursor: pointer;
-`;
-
 //마켓가기 스타일
-
 const Empty = styled.div`
   background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -345,3 +303,43 @@ const GoMarketButton = styled.button`
     box-shadow: none;
   }
 `;
+
+//* TODO: 캐릭터에 사진,이미지 진행시 활성화
+// const UploadWrapper = styled.div`
+//   position: relative;
+//   display: flex;
+//   justify-content: space-around;
+// `;
+// const CloseButton = styled.button`
+//   position: absolute;
+//   top: -60px;
+//   right: -5px;
+//   padding: 3px 8px;
+
+//   border-radius: ${({ theme }) => theme.radius.sm};
+//   border: none;
+//   &:hover {
+//     background-color: ${({ theme }) => theme.colors.background};
+//   }
+//   font-size: 18px;
+//   z-index: 10000;
+//   cursor: pointer;
+// `;
+// const UploadButton = styled.button`
+//   padding: 12px;
+//   border-radius: ${({ theme }) => theme.radius.md};
+//   border: none;
+
+//   background: ${({ theme }) => theme.colors.primary};
+//   color: white;
+
+//   font-weight: 700;
+//   cursor: pointer;
+
+//   transition: 0.2s;
+
+//   &:hover {
+//     transform: scale(1.03);
+//     box-shadow: ${({ theme }) => theme.shadows.sm};
+//   }
+// `;
