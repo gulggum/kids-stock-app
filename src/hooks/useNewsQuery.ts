@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../utils/supabase";
-import type { HomeNews, NewsQuiz } from "../data/mock/homeNewsMockData";
+import type { HomeNews, NewsQuiz } from "../types/newsType";
 
 /**
  * 뉴스 가져오기 훅

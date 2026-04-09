@@ -1,6 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
-import { ClipboardPaste, Send, RotateCcw, CheckCircle } from "lucide-react";
+import {
+  ClipboardPaste,
+  Send,
+  RotateCcw,
+  CheckCircle,
+  CopyCheck,
+  Copy,
+} from "lucide-react";
 import { supabase } from "../../utils/supabase";
 import type { HomeNews, NewsQuiz, NewsResponse } from "../../types/newsType";
 
@@ -24,6 +31,19 @@ const AdminNewsCreate = () => {
   const today = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
     .toISOString()
     .slice(0, 10); //한국시간기준
+
+  // 프롬프트 복사 상태 (복사 완료 피드백용)
+  const [copied, setCopied] = useState(false);
+  const promptRef = useRef<HTMLPreElement>(null);
+  // 프롬프트 복사 함수
+  const handleCopyPrompt = () => {
+    console.log(promptRef, copied);
+    if (!promptRef.current) return;
+    navigator.clipboard.writeText(promptRef.current.innerText).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   // --------------------------------------------------
   // JSON 파싱
@@ -155,9 +175,17 @@ const AdminNewsCreate = () => {
             </GuideItem>
           </SectionCard>
 
-          {/* ChatGPT 프롬프트 복사용 */}
-          <SectionTitle>💬 ChatGPT 프롬프트 (복사해서 사용)</SectionTitle>
-          <PromptBox>
+          {/* ChatGPT 프롬프트 복사용 — 제목 + 복사 버튼 나란히 */}
+          <PromptHeader>
+            <SectionTitle style={{ margin: 0 }}>
+              💬 ChatGPT 프롬프트 (복사해서 사용)
+            </SectionTitle>
+            <CopyButton onClick={handleCopyPrompt}>
+              {copied ? <CopyCheck size={14} /> : <Copy size={14} />}
+              {copied ? "복사됨!" : "복사"}
+            </CopyButton>
+          </PromptHeader>
+          <PromptBox ref={promptRef}>
             {`너는 어린이경제신문에서 일하는 기자야.
 
 내가 주는 한국 경제 뉴스 3개 + 세계 경제 뉴스 3개를
@@ -383,6 +411,34 @@ const SectionTitle = styled.p`
   font-weight: 700;
   color: ${({ theme }) => theme.colors.muted};
   margin: 8px 4px 0;
+`;
+// 프롬프트 헤더 — 제목 + 복사 버튼
+const PromptHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 4px 0;
+`;
+
+// 복사 버튼
+const CopyButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.card};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary};
+    color: white;
+    border-color: transparent;
+  }
 `;
 
 const SectionCard = styled.div`

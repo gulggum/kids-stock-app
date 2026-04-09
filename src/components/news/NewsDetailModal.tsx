@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { X, BookOpen, Brain } from "lucide-react";
 import { type HomeNews } from "../../types/newsType";
+import { useStocksQuery } from "../../hooks/useStocksQuery";
+import { useNavigate } from "react-router-dom";
 
 /**
  * 📰 뉴스 상세 모달
@@ -19,12 +21,16 @@ const NewsDetailModal = ({
   onRead: () => void;
   onGoQuiz: () => void;
 }) => {
+  const { stocks } = useStocksQuery();
+  const navigate = useNavigate();
   // 요약 줄바꿈 처리
   const lines = news.summary
     .split(/\n|(?<=\. )/) // \n 또는 ". " 뒤에서 분리
     .map((l) => l.trim())
     .filter((l) => l !== "");
 
+  // 뉴스 stockIds(기업명)로 실제 주식 찾기
+  const companies = stocks.filter((s) => news.stockIds?.includes(s.name));
   return (
     <Overlay onClick={onClose}>
       <Modal onClick={(e) => e.stopPropagation()}>
@@ -58,12 +64,23 @@ const NewsDetailModal = ({
           </ContentLines>
         </ContentBox>
 
-        {/* 관련 주식 */}
-        {news.stockIds && news.stockIds.length > 0 && (
+        {/* 관련 기업 — 클릭 시 마켓 상세로 이동 */}
+        {companies.length > 0 && (
           <StockRow>
-            {news.stockIds.map((stock, i) => (
-              <StockTag key={i}># {stock}</StockTag>
-            ))}
+            <CompanyGuide>관련기업 구경가기</CompanyGuide>
+            <TagRow>
+              {companies.map((company) => (
+                <StockTag
+                  key={company.id}
+                  onClick={() => {
+                    onClose(); // 모달 닫고
+                    navigate(`/market/${company.id}`);
+                  }}
+                >
+                  #{company.name}
+                </StockTag>
+              ))}
+            </TagRow>
           </StockRow>
         )}
 
@@ -239,6 +256,7 @@ const StockRow = styled.div`
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  align-items: center;
 `;
 
 const StockTag = styled.span`
@@ -249,6 +267,11 @@ const StockTag = styled.span`
   background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.primary};
   border: 1px solid ${({ theme }) => theme.colors.border};
+  cursor: pointer;
+  &:hover {
+    transform: translateX(2px);
+    text-decoration: underline;
+  }
 `;
 
 const HintBox = styled.div`
@@ -299,4 +322,18 @@ const ConfirmButton = styled.button`
   &:hover {
     opacity: 0.9;
   }
+`;
+// 관련기업 안내 텍스트
+const CompanyGuide = styled.div`
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 4px;
+`;
+
+// 태그 묶음
+const TagRow = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 `;

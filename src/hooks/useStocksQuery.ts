@@ -57,31 +57,8 @@ export function useStocksQuery() {
 
     setLoading(false);
   }, []);
-
   useEffect(() => {
     fetchStocks();
-
-    // 실시간 가격 업데이트
-    const channel = supabase
-      .channel("stocks-realtime")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "stocks" },
-        (payload) => {
-          setStocks((prev) =>
-            prev.map((s) =>
-              s.id === (payload.new as SupabaseStock).id
-                ? toStock(payload.new as SupabaseStock)
-                : s,
-            ),
-          );
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [fetchStocks]);
 
   return { stocks, loading, error, refetch: fetchStocks };

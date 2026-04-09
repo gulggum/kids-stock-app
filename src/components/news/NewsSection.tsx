@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { type HomeNews } from "../../types/newsType";
-import { marketMockData } from "../../data/mock/marketMock";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
+import { useStocksQuery } from "../../hooks/useStocksQuery";
 
 type Props = {
   news: HomeNews[];
@@ -12,6 +12,7 @@ type Props = {
 const NewsSection = ({ news, onClick }: Props) => {
   const navigate = useNavigate();
   const { isSolved } = useUser();
+  const { stocks } = useStocksQuery();
 
   return (
     <Section>
@@ -20,10 +21,7 @@ const NewsSection = ({ news, onClick }: Props) => {
       )}
 
       {news.map((item) => {
-        const companies = marketMockData.filter((s) =>
-          item.stockIds?.includes(s.id),
-        );
-
+        const companies = stocks.filter((s) => item.stockIds?.includes(s.name));
         return (
           <Card
             key={item.id}

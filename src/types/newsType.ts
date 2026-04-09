@@ -6,7 +6,7 @@ export type HomeNews = {
   title: string;
   summary: string;
   image?: string;
-  stockIds?: number[]; // ✅ number[] → string[] 로 변경 (기업명 저장)
+  stockIds?: string[];
   type: NewsType;
   country: NewsCountry;
   createdAt: string;

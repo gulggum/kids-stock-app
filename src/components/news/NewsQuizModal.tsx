@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { type NewsQuiz } from "../../data/mock/homeNewsMockData";
+import { type NewsQuiz } from "../../types/newsType";
 import { useState } from "react";
 
 /**
