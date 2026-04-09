@@ -95,6 +95,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
     rule3: false,
     rule4: false,
   });
+  const [reason, setReason] = useState("");
 
   const isAllChecked = Object.values(checks).every(Boolean);
 
@@ -142,7 +143,9 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
       name: company.name,
       price: company.price,
       country: company.country,
+      reason,
     });
+    console.log("구매 시 reason:", reason);
 
     setStorage("hasCompletedFirstBuy", true);
     setHasCompletedFirstBuy(true);
@@ -215,6 +218,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
           money={isUS ? (user.dollars ?? 0) : user.money}
           price={company.price}
           country={company.country}
+          onReasonChange={(r) => setReason(r)}
         />
       ),
       confirmText: "구매",

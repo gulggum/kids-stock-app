@@ -16,6 +16,7 @@ type Trade = {
   type: TradeType; //"buy","sell"
   createdAt: string; // ISO date(언제 했는지 (날짜 판단용))
   country?: "KR" | "US";
+  reason?: string;
 };
 
 // Context에서 제공할 API(하루1회제한,오늘의한번배지,부모리포트,경험치 정책)
@@ -26,6 +27,7 @@ type TradeContextType = {
     name: string;
     price: number;
     country?: "KR" | "US";
+    reason?: string;
   }) => boolean;
   sellStock: (stock: { id: number; name: string; price: number }) => boolean;
   hasBoughtToday: boolean; // 오늘 이미 샀는지
@@ -33,8 +35,6 @@ type TradeContextType = {
 };
 
 const TradeContext = createContext<TradeContextType>({} as TradeContextType);
-
-const TRADE_KEY = `trade_history`;
 
 export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -52,7 +52,6 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
         .order("created_at", { ascending: true });
 
       if (data) {
-        // snake_case → camelCase 변환
         setTrades(
           data.map((t) => ({
             id: t.id,
@@ -63,6 +62,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
             type: t.type,
             createdAt: t.created_at,
             country: t.country,
+            reason: t.reason,
           })),
         );
       }
@@ -88,6 +88,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     name: string;
     price: number;
     country?: "KR" | "US";
+    reason?: string;
   }) => {
     if (hasBoughtToday) return false; //1회제한
     const newTrade: Trade = {
@@ -99,6 +100,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
       type: "BUY",
       createdAt: new Date().toISOString(),
       country: stock.country ?? "KR",
+      reason: stock.reason,
     };
 
     setTrades((prev) => [...prev, newTrade]);
@@ -117,6 +119,7 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
           type: newTrade.type,
           country: newTrade.country,
           created_at: newTrade.createdAt,
+          reason: newTrade.reason ?? null,
         })
         .then(({ error }) => {
           if (error) console.error("거래 저장 실패:", error);

@@ -267,7 +267,7 @@ const AdminNewsCreate = () => {
 - 뉴스는 총 6개 작성
 - 각 뉴스마다 퀴즈 1개 (총 6개)
 - answerIndex는 반드시 0, 1, 2 중 하나 (퀴즈정답 위치 랜덤으로 섞기)
-- stockIds는 뉴스와 관련된 대표 기업 2개 (예: 삼성전자, 애플 등)
+- stockIds는 뉴스와 관련된 대표 기업 2개 (예: 삼성전자, 애플 등, 단 미국기업은 영어로 작성)
 - createdAt과 date는 오늘 날짜로 동일하게 작성`}
           </PromptBox>
 

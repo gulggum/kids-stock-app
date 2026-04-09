@@ -1,10 +1,20 @@
+import { useState } from "react";
 import styled from "styled-components";
 
 /**
  * 📌 TradeSummary
  * - 구매 / 판매 요약 UI
  * - ModalPopup customContent용
+ * - BUY일 때 투자 이유 선택 포함
+ * - onReasonChange로 선택한 이유를 부모에 전달
  */
+
+const REASONS = [
+  { emoji: "📰", label: "뉴스에서 봤어요" },
+  { emoji: "😍", label: "이 회사 제품을 좋아해요" },
+  { emoji: "🔥", label: "친구들이 사서요" },
+  { emoji: "🤔", label: "그냥 궁금해서요" },
+];
 
 type Props = {
   type: "BUY" | "SELL";
@@ -13,6 +23,7 @@ type Props = {
   name: string;
   buyPrice?: number; //평균 매수가
   country?: "KR" | "US";
+  onReasonChange?: (reason: string) => void;
 };
 
 const TradeSummary = ({
@@ -22,9 +33,13 @@ const TradeSummary = ({
   name,
   buyPrice,
   country,
+  onReasonChange,
 }: Props) => {
-  const isUS = country === "US";
+  const [selectedReason, setSelectedReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
+  const [showCustom, setShowCustom] = useState(false);
 
+  const isUS = country === "US";
   const fmt = (n: number) =>
     isUS ? `$${n.toLocaleString()}` : `${Math.round(n).toLocaleString()}원`;
 
@@ -36,6 +51,18 @@ const TradeSummary = ({
   // 수익률
   const profitRate = buyPrice ? (profit / buyPrice) * 100 : 0;
 
+  //선택이유
+  const handleSelectReason = (label: string) => {
+    setSelectedReason(label);
+    setShowCustom(false);
+    setCustomReason("");
+    onReasonChange?.(label);
+  };
+
+  const handleCustomChange = (value: string) => {
+    setCustomReason(value);
+    onReasonChange?.(value);
+  };
   return (
     <Wrapper>
       <Header>
@@ -84,6 +111,44 @@ const TradeSummary = ({
 
       {type === "SELL" && (
         <Notice>💡 판매한 {isUS ? "달러" : "돈"}는 2일 뒤에 들어와요</Notice>
+      )}
+
+      {/* 투자 이유 선택 — BUY일 때만 표시 */}
+      {type === "BUY" && (
+        <ReasonSection>
+          <ReasonTitle>잠깐! 🤔 왜 이 회사 주식을 사려고 하나요?</ReasonTitle>
+          <ReasonList>
+            {REASONS.map((r) => (
+              <ReasonButton
+                key={r.label}
+                $selected={selectedReason === r.label}
+                onClick={() => handleSelectReason(r.label)}
+              >
+                <ReasonEmoji>{r.emoji}</ReasonEmoji>
+                <ReasonLabel>{r.label}</ReasonLabel>
+              </ReasonButton>
+            ))}
+            <ReasonButton
+              $selected={showCustom}
+              onClick={() => {
+                setShowCustom(true);
+                setSelectedReason("");
+              }}
+            >
+              <ReasonEmoji>✏️</ReasonEmoji>
+              <ReasonLabel>직접 써볼게요</ReasonLabel>
+            </ReasonButton>
+          </ReasonList>
+
+          {showCustom && (
+            <CustomInput
+              placeholder="내 생각을 적어봐요 ✍️"
+              value={customReason}
+              onChange={(e) => handleCustomChange(e.target.value)}
+              maxLength={50}
+            />
+          )}
+        </ReasonSection>
       )}
     </Wrapper>
   );
@@ -184,4 +249,70 @@ const Notice = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 
   text-align: center;
+`;
+const ReasonSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+const ReasonTitle = styled.div`
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.text};
+`;
+const ReasonList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+const ReasonButton = styled.button<{ $selected: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 2px solid
+    ${({ theme, $selected }) =>
+      $selected ? theme.colors.primary : theme.colors.border};
+  background: ${({ theme, $selected }) =>
+    $selected ? theme.colors.primary + "15" : theme.colors.surface};
+  cursor: pointer;
+  transition: all 0.15s ease;
+  &:active {
+    transform: scale(0.97);
+  }
+`;
+const ReasonEmoji = styled.span`
+  font-size: 20px;
+`;
+const ReasonLabel = styled.span`
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+  color: ${({ theme }) => theme.colors.text};
+`;
+const CustomInput = styled.textarea`
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+  font-size: 13px;
+  font-family: inherit;
+  resize: none;
+  height: 70px;
+  outline: none;
+  color: ${({ theme }) => theme.colors.text};
+  &:focus {
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.muted};
+  }
 `;

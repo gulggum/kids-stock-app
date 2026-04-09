@@ -44,7 +44,7 @@ const ScrollContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-right: 4px;
+  padding: 4px 4px 4px 0;
 `;
 
 const BadgeItem = styled.div`
