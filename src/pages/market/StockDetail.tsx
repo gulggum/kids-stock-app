@@ -10,6 +10,7 @@ import BuySellSection from "../../components/stock/BuySellSection";
 import { useStockByIdQuery } from "../../hooks/useStocksQuery";
 import { useChart } from "../../hooks/useChart";
 import { useUser } from "../../context/UserContext";
+import StockReasonChart from "../../components/stock/StockReasonChart";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -160,7 +161,7 @@ const StockDetail = () => {
         <InvestmentNotice>
           💡 주식은 가격이 오르기도 내려가기도 해요
         </InvestmentNotice>
-
+        <StockReasonChart stockId={company.id} />
         {/* 🛒 구매/판매 */}
         <BuySellSection
           showGuideModal={showGuideModal}

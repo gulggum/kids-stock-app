@@ -190,24 +190,3 @@ const LockBadge = styled.span`
   background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.muted};
 `;
-
-const AddButton = styled.button`
-  padding: 6px 12px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  border: none;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-`;
-const DeleteButton = styled.button`
-  padding: 6px 8px;
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  background: #fff0f0;
-  color: #e74c3c;
-  font-size: 14px;
-  cursor: pointer;
-  flex-shrink: 0;
-`;

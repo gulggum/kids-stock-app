@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import ThemeToggleButton from "../ThemeToggleButton";
 import { NavLink } from "react-router-dom";
 import {
   Home,
@@ -47,9 +46,7 @@ const HeaderNav = () => {
         </NavItem>
       </Nav>
 
-      <RightBox>
-        <ThemeToggleButton />
-      </RightBox>
+      <RightBox>{/* <ThemeToggleButton /> */}</RightBox>
     </HeaderWrapper>
   );
 };

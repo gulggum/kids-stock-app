@@ -157,6 +157,8 @@ const SelectButton = styled.button`
 `;
 
 const StickyMyStatus = styled.div`
+  max-width: 1024px;
+  margin: 0 auto;
   position: fixed;
   top: 0;
   left: 0;
@@ -185,7 +187,7 @@ const StickyMyStatus = styled.div`
   }
 
   @media (min-width: 769px) {
-    top: 66px;
+    top: 60px;
   }
 `;
 

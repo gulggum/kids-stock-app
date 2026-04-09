@@ -158,6 +158,11 @@ export const cleanTheme: DefaultTheme = {
 export const GlobalStyle = createGlobalStyle`
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
+/* ✅ 여기 추가 — 모바일 너비로 제한 */
+#root {
+  max-width:1024px;
+  margin: 0 auto;
+}
 body {
 margin: 0 ;
 -webkit-font-smoothing: antialiased;

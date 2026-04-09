@@ -17,13 +17,8 @@ import ExpBarCard from "../components/character/ExpBarCard";
 import { Settings } from "lucide-react";
 
 const CharacterPage = () => {
-  const {
-    profileAvatar,
-    profileImage,
-    nickname,
-    setProfileAvatar,
-    setProfileImage,
-  } = useCharacterProfile();
+  const { profileAvatar, profileImage, nickname, setProfileAvatar } =
+    useCharacterProfile();
   // const { fileInputRef, cameraInputRef } = useCharacterProfile(); //프로필사진첨부시 활성화
   const { openModal } = useModal();
   const { createToast } = useToast();
@@ -78,37 +73,38 @@ const CharacterPage = () => {
     });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // TODO:  업로드 기능 사용시 활성화
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    const reader = new FileReader(); // 🔥 이게 필요
+  //   const reader = new FileReader(); // 🔥 이게 필요
 
-    reader.onloadend = () => {
-      const base64 = reader.result as string; // 🔥 여기서 생성됨
+  //   reader.onloadend = () => {
+  //     const base64 = reader.result as string; // 🔥 여기서 생성됨
 
-      openModal({
-        type: "CONFIRM",
-        title: "프로필 변경",
-        confirmText: "적용",
-        cancelText: "취소",
+  //     openModal({
+  //       type: "CONFIRM",
+  //       title: "프로필 변경",
+  //       confirmText: "적용",
+  //       cancelText: "취소",
 
-        customContent: (
-          <ConfirmImage>
-            <PreviewImage src={base64} /> {/* 🔥 url 말고 base64 */}
-            <Text>이 사진으로 변경할까요?</Text>
-          </ConfirmImage>
-        ),
+  //       customContent: (
+  //         <ConfirmImage>
+  //           <PreviewImage src={base64} /> {/* 🔥 url 말고 base64 */}
+  //           <Text>이 사진으로 변경할까요?</Text>
+  //         </ConfirmImage>
+  //       ),
 
-        onConfirm: () => {
-          setProfileImage(base64); // 🔥 이제 정상 작동
-          createToast("프로필 변경 완료 📸");
-        },
-      });
-    };
+  //       onConfirm: () => {
+  //         setProfileImage(base64); // 🔥 이제 정상 작동
+  //         createToast("프로필 변경 완료 📸");
+  //       },
+  //     });
+  //   };
 
-    reader.readAsDataURL(file); // 🔥 여기서 실행됨
-  };
+  //   reader.readAsDataURL(file); // 🔥 여기서 실행됨
+  // };
 
   return (
     <PageWrapper>
@@ -240,26 +236,6 @@ const ModalContent = styled.div`
   gap: 14px;
 `;
 
-const ConfirmImage = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-`;
-
-const PreviewImage = styled.img`
-  width: 80px;
-  height: 80px;
-  border-radius: 16px;
-  object-fit: cover;
-
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-`;
-
-const Text = styled.div`
-  font-size: 14px;
-`;
-
 //마켓가기 스타일
 const Empty = styled.div`
   background: ${({ theme }) => theme.colors.card};
@@ -342,4 +318,23 @@ const GoMarketButton = styled.button`
 //     transform: scale(1.03);
 //     box-shadow: ${({ theme }) => theme.shadows.sm};
 //   }
+// `;
+// const ConfirmImage = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: 12px;
+// `;
+
+// const PreviewImage = styled.img`
+//   width: 80px;
+//   height: 80px;
+//   border-radius: 16px;
+//   object-fit: cover;
+
+//   box-shadow: ${({ theme }) => theme.shadows.sm};
+// `;
+
+// const Text = styled.div`
+//   font-size: 14px;
 // `;
