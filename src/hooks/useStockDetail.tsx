@@ -219,8 +219,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
           price={company.price}
           country={company.country}
           onReasonChange={(reason) => {
-            setReason(reason); // UI용
-            reasonRef.current = reason; // 🔥 진짜 값
+            reasonRef.current = reason;
           }}
         />
       ),
