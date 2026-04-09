@@ -2,7 +2,8 @@
 // 언제,어떤종목을,어떻게 거래했는지 전부 기록하는 곳(구매,매도,히스토리)
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getStorage, setStorage } from "../utils/storage";
+import { useUser } from "./UserContext";
+import { supabase } from "../utils/supabase";
 
 type TradeType = "BUY" | "SELL";
 
@@ -36,9 +37,39 @@ const TradeContext = createContext<TradeContextType>({} as TradeContextType);
 const TRADE_KEY = `trade_history`;
 
 export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [trades, setTrades] = useState<Trade[]>(() =>
-    getStorage(TRADE_KEY, []),
-  );
+  const [trades, setTrades] = useState<Trade[]>([]);
+
+  const { user } = useUser();
+  // 3. 앱 시작 시 Supabase에서 불러오기 추가
+  useEffect(() => {
+    if (!user.id) return;
+
+    const fetchTrades = async () => {
+      const { data } = await supabase
+        .from("trades")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+
+      if (data) {
+        // snake_case → camelCase 변환
+        setTrades(
+          data.map((t) => ({
+            id: t.id,
+            stockId: t.stock_id,
+            stockName: t.stock_name,
+            price: t.price,
+            quantity: t.quantity,
+            type: t.type,
+            createdAt: t.created_at,
+            country: t.country,
+          })),
+        );
+      }
+    };
+
+    fetchTrades();
+  }, [user.id]); // user.id 바뀔 때만 실행
 
   //오늘 구매했는지 확인
   const hasBoughtToday = useMemo(() => {
@@ -71,11 +102,37 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     setTrades((prev) => [...prev, newTrade]);
+
+    // ✅ Supabase 저장 추가
+    if (user.id) {
+      supabase
+        .from("trades")
+        .insert({
+          id: newTrade.id,
+          user_id: user.id,
+          stock_id: newTrade.stockId,
+          stock_name: newTrade.stockName,
+          price: newTrade.price,
+          quantity: newTrade.quantity,
+          type: newTrade.type,
+          country: newTrade.country,
+          created_at: newTrade.createdAt,
+        })
+        .then(({ error }) => {
+          if (error) console.error("거래 저장 실패:", error);
+        });
+    }
+
     return true; //구매성공
   };
 
   //주식 판매
-  const sellStock = (stock: { id: number; name: string; price: number }) => {
+  const sellStock = (stock: {
+    id: number;
+    name: string;
+    price: number;
+    country?: "KR" | "US";
+  }) => {
     if (!isHoldingStock(stock.id)) return false;
 
     const newTrade: Trade = {
@@ -83,12 +140,33 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
       stockId: stock.id,
       stockName: stock.name,
       price: stock.price,
+      country: stock.country,
       quantity: 1,
       type: "SELL",
       createdAt: new Date().toISOString(),
     };
 
     setTrades((prev) => [...prev, newTrade]);
+
+    // ✅ Supabase 저장 추가
+    if (user.id) {
+      supabase
+        .from("trades")
+        .insert({
+          id: newTrade.id,
+          user_id: user.id,
+          stock_id: newTrade.stockId,
+          stock_name: newTrade.stockName,
+          price: newTrade.price,
+          quantity: newTrade.quantity,
+          type: newTrade.type,
+          country: newTrade.country,
+          created_at: newTrade.createdAt,
+        })
+        .then(({ error }) => {
+          if (error) console.error("거래 저장 실패:", error);
+        });
+    }
 
     return true;
   };
@@ -106,11 +184,6 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
 
     return quantity > 0;
   };
-
-  // TODO: Supabase 연동 시 localStorage 저장 제거, DB로 이전
-  useEffect(() => {
-    setStorage(TRADE_KEY, trades);
-  }, [trades]);
 
   return (
     <TradeContext.Provider

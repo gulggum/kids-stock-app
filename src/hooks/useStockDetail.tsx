@@ -238,6 +238,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
     setTimeout(() => setShowSellEffect(false), 900);
 
     sellStock(company);
+    console.log("여기판매스톡 나라보여?", sellStock);
     giveReward("SELL_STOCK");
   };
 
