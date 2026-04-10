@@ -20,9 +20,11 @@ type Props = {
 };
 
 const ExchangeRateInfo = ({ exchangeRate }: Props) => {
-  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useUser();
+
+  const [open, setOpen] = useState(false);
+  const [openMarket, setOpenMarket] = useState(false);
 
   return (
     <>
@@ -40,6 +42,14 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
           </ExchangeButton>
         </TopRow>
 
+        {/* 업데이트 안내 — 환율 바로 아래 왼쪽 정렬 */}
+        <UpdateRow>
+          <UpdateNotice>
+            📢 주식이랑 환율은 매일 아침 8~9시에 함께 바뀌어요!
+          </UpdateNotice>
+          <InfoIcon variant="question" onClick={() => setOpenMarket(true)} />
+        </UpdateRow>
+
         {/* 원화 / 달러 잔액 */}
         <WalletRow>
           <WalletItem>
@@ -55,7 +65,7 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
           </WalletItem>
         </WalletRow>
       </Wrapper>
-
+      {/* 환율 안내 모달 */}
       {open && (
         <InfoModal open={open} onClose={() => setOpen(false)}>
           <ModalContent>
@@ -78,6 +88,43 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
               </Hint>
             </ExampleCard>
           </ModalContent>
+        </InfoModal>
+      )}
+      {/* 주식시장 시간안내 모달 */}
+      {openMarket && (
+        <InfoModal
+          open={openMarket}
+          onClose={() => setOpenMarket(false)}
+          title="📈 주식 시장은 언제 열릴까요 ?"
+        >
+          <MarketInfo>
+            <MarketRow>
+              <MarketFlag>🇰🇷</MarketFlag>
+              <MarketText>
+                <MarketName>한국 주식시장</MarketName>
+                <MarketTime>오전 9시 ~ 오후 3시 30분</MarketTime>
+                <MarketSub>이 시간에만 주식을 사고 팔 수 있어요!</MarketSub>
+              </MarketText>
+            </MarketRow>
+            <MarketRow>
+              <MarketFlag>🇺🇸</MarketFlag>
+              <MarketText>
+                <MarketName>미국 주식시장</MarketName>
+                <MarketTime>밤 11시 30분 ~ 새벽 6시</MarketTime>
+                <MarketSub>한국과 시간이 달라서 밤에 열려요!</MarketSub>
+              </MarketText>
+            </MarketRow>
+            <InfoNote>
+              <Icon>💡</Icon>
+              <Text>
+                실제로는 주식 가격과 환율이 계속 바뀌어요.
+                <br />
+                하지만 키즈스톡에서는 이해하기 쉽게
+                <br />
+                하루에 한 번, 아침 8~9시에 함께 바뀌어요!
+              </Text>
+            </InfoNote>
+          </MarketInfo>
         </InfoModal>
       )}
     </>
@@ -138,7 +185,11 @@ const ExchangeButton = styled.button`
     outline-offset: 2px;
   }
 `;
-
+const UpdateNotice = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.muted};
+  text-align: left;
+`;
 const WalletRow = styled.div`
   display: flex;
   align-items: center;
@@ -222,4 +273,69 @@ const Hint = styled.div`
   border-radius: ${({ theme }) => theme.radius.sm};
   background: rgba(0, 0, 0, 0.03);
   color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+//설명모달스타일
+const UpdateRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const MarketInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+`;
+
+const MarketRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+`;
+
+const MarketFlag = styled.span`
+  font-size: 24px;
+`;
+
+const MarketText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const MarketName = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const MarketTime = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: 600;
+`;
+
+const MarketSub = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+const InfoNote = styled.div`
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  justify-content: flex-start;
+`;
+
+const Icon = styled.div`
+  font-size: 14px;
+  margin-top: 2px; // 살짝 위 정렬 보정
+`;
+
+const Text = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.muted};
+  line-height: 1.5;
+  text-align: left;
 `;
