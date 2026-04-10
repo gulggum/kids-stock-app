@@ -77,6 +77,15 @@ const LoginPage = () => {
       });
       return;
     }
+    //닉네임 중복방지
+    const isDuplicate = await checkNicknameDuplicate(guestNickname);
+    if (isDuplicate) {
+      setGuestNicknameStatus({
+        type: "error",
+        message: "이미 사용 중인 닉네임이에요",
+      });
+      return;
+    }
 
     // Supabase 익명 계정 생성 후 시작
     // 캐시 지워도 데이터 유지됨
