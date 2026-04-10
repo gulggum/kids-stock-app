@@ -65,7 +65,7 @@ const PortfolioPage = () => {
               ((currentPrice - item.buyPrice) / item.buyPrice) * 100;
             const profitAmount = (currentPrice - item.buyPrice) * item.quantity;
             const totalValue = currentPrice * item.quantity;
-            const isUp = profitRate >= 0;
+            const isUp = profitRate > 0;
 
             const buyPriceFmt = formatPrice(item.buyPrice, item.country);
             const currentPriceFmt = formatPrice(currentPrice, item.country);
