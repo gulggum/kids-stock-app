@@ -146,24 +146,23 @@ const PortfolioPage = () => {
 
                 <Profit $isUp={isUp} role="status">
                   {isUp ? "📈 +" : "📉 "}
-                  {isUS
-                    ? `$${Math.abs(profitAmount).toFixed(2)}`
-                    : `${Math.abs(Math.round(profitAmount)).toLocaleString()}원`}{" "}
-                  ({profitRate.toFixed(1)}%)
-                  {isUp ? " 올라갔어요!" : " 내려갔어요"}
-                  <TipHint>
-                    {isUp ? (
-                      <>
-                        💡 가격이 오르고 있어요! <br />더 오를지 생각해보고
-                        기다려볼까요? 😊
-                      </>
-                    ) : (
-                      <>
-                        💡 가격이 내려가고 있어요! <br />더 떨어질지 생각해보고
-                        팔아볼까요? 😊
-                      </>
-                    )}
-                  </TipHint>
+                  ...
+                  {/* profitRate가 0이 아닐 때만 표시 */}
+                  {profitRate !== 0 && (
+                    <TipHint>
+                      {isUp ? (
+                        <>
+                          💡 가격이 오르고 있어요! <br />더 오를지 생각해보고
+                          기다려볼까요? 😊
+                        </>
+                      ) : (
+                        <>
+                          💡 가격이 내려가고 있어요! <br />더 떨어질지
+                          생각해보고 팔아볼까요? 😊
+                        </>
+                      )}
+                    </TipHint>
+                  )}
                 </Profit>
               </ItemCard>
             );
