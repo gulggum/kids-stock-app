@@ -353,7 +353,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         nickname,
         role: "user",
         money: 1000000,
-        coin: 1000,
+        coin: 300,
       }));
       setIsLoggedIn(true); // 게스트도 로그인 상태로 처리
       return;
@@ -380,7 +380,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       nickname,
       role: "user",
       money: 1000000,
-      coin: 1000,
+      coin: 300,
     }));
 
     setIsLoggedIn(true);
@@ -390,7 +390,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ✅ 회원가입
   // ─────────────────────────────────────────
   const signUp = async (email: string, password: string, nickname: string) => {
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -406,7 +406,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ✅ 로그인
   // ─────────────────────────────────────────
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
