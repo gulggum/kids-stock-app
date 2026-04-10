@@ -234,17 +234,10 @@ const Wrapper = styled.div`
 `;
 
 const StickyHeader = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 10;
-
   display: flex;
   flex-direction: column;
   gap: 12px;
-
   padding-bottom: 10px;
-
-  backdrop-filter: blur(8px);
 `;
 
 const Title = styled.h2`

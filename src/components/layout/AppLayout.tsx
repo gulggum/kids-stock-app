@@ -85,15 +85,13 @@ const Layout = styled.div<{ $variant?: "home" | "default" }>`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  overflow-x: hidden;
 `;
 
 const Main = styled.main`
   padding: 16px;
   padding-bottom: 90px;
-  overflow-x: hidden;
   width: 100%;
-  height: 100vh;
+  overflow-x: hidden;
 `;
 
 const Footer = styled.footer`

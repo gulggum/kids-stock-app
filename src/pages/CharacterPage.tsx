@@ -193,7 +193,6 @@ const PageWrapper = styled.div`
   flex-direction: column;
   gap: 20px;
   padding: 16px 5px;
-  height: 100%;
 `;
 
 const Title = styled.h2`

@@ -12,9 +12,8 @@ type Props = {
   country?: "KR" | "US";
 };
 
-const StockDetailHeader = ({ money, animateMoney, onBack, country }: Props) => {
+const StockDetailHeader = ({ money, animateMoney, onBack }: Props) => {
   const { user } = useUser();
-  const isUS = country === "US";
 
   return (
     <StickyHeader>

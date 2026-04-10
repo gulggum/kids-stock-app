@@ -172,6 +172,7 @@ background: ${(props) => props.theme.colors.background};
 color: ${(props) => props.theme.colors.text};
 line-height: 1.4;
 font-size: 16px;
+overflow-x: hidden;
 
 }
 
