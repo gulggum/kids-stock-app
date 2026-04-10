@@ -39,12 +39,11 @@ const Home = () => {
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading } = useNewsQuery();
   //ㄴ>useQuery로 가져오는 과정에서 string으로 전부 변환됌(주의)
+
   //웰컴 안내문구(앱 활동하도록 안내 )
-  const [showWelcome, setShowWelcome] = useState(() => {
-    const val = getStorage("hasCompletedFirstBuy", false);
-    console.log("hasCompletedFirstBuy:", val); // ← 추가
-    return !val;
-  });
+  const [showWelcome, setShowWelcome] = useState(
+    () => !getStorage("hasCompletedFirstBuy", false),
+  );
 
   // 오늘의 지식 상태
   const {
