@@ -134,7 +134,7 @@ const defaultUser: User = {
   level: 1,
   exp: 0,
   score: 0,
-  coin: 500,
+  coin: 300,
   money: 0,
   dollars: 0,
   ownedSkins: ["basic"],
@@ -289,7 +289,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         status: profile?.status ?? "😄 오늘은 지켜보는 날이에요",
         // DB 값이 있으면 DB 우선, 없으면 localStorage
         score: profile?.score ?? savedGameData.score,
-        level: profile?.level ?? savedGameData.level,
+        level: (profile?.level ?? 1) > 1 ? profile!.level : savedGameData.level,
+        coin:
+          (profile?.coin ?? 300) !== 300 ? profile!.coin : savedGameData.coin, // ← 추가
+        exp: (profile?.exp ?? 0) > 0 ? profile!.exp : savedGameData.exp,
         totalKnowledge: totalKnowledge ?? 0,
         //new Set으로 (로컬과,supabase에있는것 )중복제거
         quizProgress: [
@@ -302,6 +305,27 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           ]),
         ],
       });
+      // TODO: 월요일에 지우고(위에 셋유저를 아래껄로 바꾸고 커밋 끝!)
+      // coin: profile?.coin ?? savedGameData.coin,
+      // exp: profile?.exp ?? savedGameData.exp,
+      // level: profile?.level ?? savedGameData.level,
+      if (
+        savedGameData.level > 1 ||
+        savedGameData.coin !== 300 ||
+        savedGameData.exp > 0
+      ) {
+        supabase
+          .from("profiles")
+          .update({
+            level: savedGameData.level,
+            coin: savedGameData.coin,
+            exp: savedGameData.exp,
+          })
+          .eq("id", userId)
+          .then(({ error }) => {
+            if (error) console.error("초기 데이터 마이그레이션 실패:", error);
+          });
+      }
 
       setIsLoggedIn(true);
     } catch (err) {
@@ -413,12 +437,35 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const spendCoin = (amount: number) => {
     if (user.coin < amount) return false;
-    setUser((prev) => ({ ...prev, coin: prev.coin - amount }));
+    setUser((prev) => {
+      const newCoin = prev.coin - amount;
+      if (prev.id && prev.id !== "guest") {
+        supabase
+          .from("profiles")
+          .update({ coin: newCoin })
+          .eq("id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("coin 저장 실패:", error);
+          });
+      }
+      return { ...prev, coin: newCoin };
+    });
     return true;
   };
-
   const addCoin = (amount: number) => {
-    setUser((prev) => ({ ...prev, coin: prev.coin + amount }));
+    setUser((prev) => {
+      const newCoin = prev.coin + amount;
+      if (prev.id && prev.id !== "guest") {
+        supabase
+          .from("profiles")
+          .update({ coin: newCoin })
+          .eq("id", prev.id)
+          .then(({ error }) => {
+            if (error) console.error("coin 저장 실패:", error);
+          });
+      }
+      return { ...prev, coin: newCoin };
+    });
   };
 
   const addExp = (amount: number) => {
@@ -433,10 +480,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (prev.id) {
         supabase
           .from("profiles")
-          .update({ level: newLevel })
+          .update({ level: newLevel, exp: newExp })
           .eq("id", prev.id)
           .then(({ error }) => {
-            if (error) console.error("level 저장 실패:", error);
+            if (error) console.error("level/exp 저장 실패:", error);
           });
       }
 
