@@ -13,6 +13,8 @@ import { useReward } from "../context/RewardContext";
 import ExpBarCard from "../components/character/ExpBarCard";
 import { useKnowledge } from "../hooks/Useknowledge";
 import KnowledgePopup from "../components/KnowledgePopup";
+import { getStorage } from "../utils/storage";
+import WelcomePopup from "../components/WelcomePopup";
 
 /**
  * 🏠 홈 화면
@@ -37,6 +39,12 @@ const Home = () => {
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading } = useNewsQuery();
   //ㄴ>useQuery로 가져오는 과정에서 string으로 전부 변환됌(주의)
+  //웰컴 안내문구(앱 활동하도록 안내 )
+  const [showWelcome, setShowWelcome] = useState(() => {
+    const val = getStorage("hasCompletedFirstBuy", false);
+    console.log("hasCompletedFirstBuy:", val); // ← 추가
+    return !val;
+  });
 
   // 오늘의 지식 상태
   const {
@@ -258,6 +266,8 @@ const Home = () => {
           isDone={hasTodayKnowledge}
         />
       )}
+      {/* 웰컴팝업 */}
+      {showWelcome && <WelcomePopup onClose={() => setShowWelcome(false)} />}
     </Wrapper>
   );
 };
