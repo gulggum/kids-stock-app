@@ -57,9 +57,6 @@ const StockDetail = () => {
     return <LoadingText>회사를 찾을 수 없어요 🥲</LoadingText>;
   }
 
-  const isUptrend =
-    chartData.length > 1 &&
-    chartData[chartData.length - 1].price > chartData[0].price;
   const isHolding = isHoldingStock(company.id);
 
   return (
@@ -123,9 +120,7 @@ const StockDetail = () => {
                 ) : (
                   <StockChart
                     data={chartData}
-                    strokeColor={
-                      isUptrend ? theme.colors.up : theme.colors.down
-                    }
+                    strokeColor={theme.colors.muted}
                     country={company.country}
                     period={period}
                   />

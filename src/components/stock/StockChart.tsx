@@ -6,7 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import CustomTooltip from "./CustomTooltip";
 
 export type ChartPoint = {
@@ -22,7 +22,9 @@ type StockChartProps = {
 };
 // 최고/최저 커스텀 Dot
 const CustomDot = (props: any) => {
+  const theme = useTheme();
   const { cx, cy, value, data, country } = props;
+
   const isUS = country === "US";
   if (!data || data.length === 0) return null;
 
@@ -36,7 +38,7 @@ const CustomDot = (props: any) => {
   if (!isMax && !isMin) return null;
 
   const isTop = isMax || isMin; // 최고가는 위에, 최저가는 아래에 라벨
-  const color = isMax ? "#16a34a" : "#dc2626";
+  const color = isMax ? theme.colors.up : theme.colors.down;
 
   return (
     <g>
@@ -79,9 +81,9 @@ const CustomDot = (props: any) => {
 
 const StockChart = ({
   data,
-  strokeColor,
   country,
   period,
+  strokeColor,
 }: StockChartProps) => {
   return (
     <ChartWrapper>
@@ -122,7 +124,8 @@ const StockChart = ({
           <Line
             type="monotone"
             dataKey="price"
-            stroke={strokeColor} // ⭐ 부모에서 내려준 색
+            stroke="#22C55E"
+            strokeOpacity={0.9}
             strokeWidth={4}
             // ✅ 커스텀 Dot — 최고/최저만 표시
             dot={(props) => (

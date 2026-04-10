@@ -176,6 +176,7 @@ const ChangeRate = styled.div<{ $positive: boolean }>`
   font-weight: 600;
   color: ${({ theme, $positive }) =>
     $positive ? theme.colors.up : theme.colors.down};
+  font-weight: 600;
 `;
 
 const DollarPrice = styled.span`

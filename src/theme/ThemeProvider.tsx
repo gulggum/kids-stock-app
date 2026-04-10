@@ -80,8 +80,8 @@ export const kidTheme: DefaultTheme = {
     accentPink: "#FF8FA3",
 
     // 📈 상태
-    up: "#22C55E",
-    down: "#EF4444",
+    up: "#FF5A5F",
+    down: "#347ff7",
 
     // ✏️ 텍스트 (부드럽게 수정)
     text: "#1E3A5F",
@@ -130,8 +130,8 @@ export const cleanTheme: DefaultTheme = {
     accentPink: "#EC4899",
 
     // 📈 주식 컬러 (조금 더 전문적)
-    up: "#15803D",
-    down: "#B91C1C",
+    up: "#FF5A5F",
+    down: "#347ff7",
 
     // 🖋 텍스트 (조금 더 묵직하게)
     text: "#0B1F3A",

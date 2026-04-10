@@ -253,16 +253,16 @@ const Section = styled.div`
 
 const SectionTitle = styled.h3`
   font-size: 16px;
+  align-items: center;
   font-weight: 800;
   display: flex;
   flex-wrap: wrap; /* 줄바꿈 허용 */
-  margin-bottom: 10px;
 `;
 
 const Progress = styled.span`
-  font-size: 12px;
-  margin-left: 8px;
-  color: ${({ theme }) => theme.colors.primary};
+  font-size: 10px;
+  margin-left: 2px;
+  color: ${({ theme }) => theme.colors.secondary};
   white-space: nowrap; /* 0 / 2 줄바꿈 방지 */
 `;
 const CalendarSection = styled.section`

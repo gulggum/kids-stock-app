@@ -31,18 +31,13 @@ const StockDetailHeader = ({ money, animateMoney, onBack, country }: Props) => {
           <MoneyLabel>🇰🇷 원화</MoneyLabel>
           <MoneyAmount>{money.toLocaleString()}원</MoneyAmount>
         </MoneyItem>
-
-        {isUS && (
-          <>
-            <Divider />
-            <MoneyItem>
-              <MoneyLabel>🇺🇸 달러</MoneyLabel>
-              <MoneyAmount $isDollar>
-                ${(user.dollars ?? 0).toLocaleString()}
-              </MoneyAmount>
-            </MoneyItem>
-          </>
-        )}
+        <Divider />
+        <MoneyItem>
+          <MoneyLabel>🇺🇸 달러</MoneyLabel>
+          <MoneyAmount $isDollar>
+            ${(user.dollars ?? 0).toLocaleString()}
+          </MoneyAmount>
+        </MoneyItem>
       </MoneyBar>
     </StickyHeader>
   );
@@ -52,7 +47,7 @@ export default StockDetailHeader;
 
 const StickyHeader = styled.div`
   position: sticky;
-  top: 0;
+  top: -20px;
   z-index: 10;
   padding: 12px 0;
   display: flex;
@@ -108,7 +103,6 @@ const MoneyBar = styled.div`
 
 const MoneyItem = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 4px;
   flex: 1;

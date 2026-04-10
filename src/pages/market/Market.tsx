@@ -141,45 +141,38 @@ const Market = () => {
 
         {/* 환율 표시 */}
         <ExchangeRateInfo exchangeRate={exchangeRate} />
-
-        {/* 검색 */}
-        <SearchInput
-          placeholder="회사 검색 (삼성, apple 등)"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {/* 필터 탭 */}
-        <FilterBar>
-          <FilterButton
-            $active={filter === "ALL"}
-            onClick={() => setFilter("ALL")}
-          >
-            🌍 전체
-          </FilterButton>
-
-          <FilterButton
-            $active={filter === "KR"}
-            onClick={() => setFilter("KR")}
-          >
-            🇰🇷 한국
-          </FilterButton>
-
-          <FilterButton
-            $active={filter === "US"}
-            onClick={() => setFilter("US")}
-          >
-            🇺🇸 미국
-          </FilterButton>
-
-          <FilterButton
-            $active={filter === "FAVORITE"}
-            onClick={() => setFilter("FAVORITE")}
-          >
-            ⭐ 찜
-          </FilterButton>
-        </FilterBar>
       </StickyHeader>
+      {/* 검색 */}
+      <SearchInput
+        placeholder="회사 검색 (삼성, apple 등)"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* 필터 탭 */}
+      <FilterBar>
+        <FilterButton
+          $active={filter === "ALL"}
+          onClick={() => setFilter("ALL")}
+        >
+          🌍 전체
+        </FilterButton>
+
+        <FilterButton $active={filter === "KR"} onClick={() => setFilter("KR")}>
+          🇰🇷 한국
+        </FilterButton>
+
+        <FilterButton $active={filter === "US"} onClick={() => setFilter("US")}>
+          🇺🇸 미국
+        </FilterButton>
+
+        <FilterButton
+          $active={filter === "FAVORITE"}
+          onClick={() => setFilter("FAVORITE")}
+        >
+          ⭐ 찜
+        </FilterButton>
+      </FilterBar>
 
       {/* 검색 결과 없음 */}
       {search && filteredStocks.length === 0 && filter !== "FAVORITE" && (
@@ -257,6 +250,7 @@ const StickyHeader = styled.div`
 const Title = styled.h2`
   font-family: ${({ theme }) => theme.fonts.title};
   font-size: 22px;
+  margin-bottom: -8px;
 `;
 
 const SearchInput = styled.input`
