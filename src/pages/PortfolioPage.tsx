@@ -48,6 +48,14 @@ const PortfolioPage = () => {
             <GoMarketButton onClick={() => navigate("/market")}>
               📈 마켓 바로가기
             </GoMarketButton>
+            <TipBox>
+              <TipTitle>💡 투자 꿀팁!</TipTitle>
+              <TipText>
+                주식은 <strong>쌀 때 사서 비쌀 때 파는</strong> 게 핵심이에요!
+                <br />
+                📉 가격이 내려갈 때 사고 → 📈 올라가면 팔아봐요
+              </TipText>
+            </TipBox>
           </Empty>
         ) : (
           portfolio.map((item) => {
@@ -143,6 +151,19 @@ const PortfolioPage = () => {
                     : `${Math.abs(Math.round(profitAmount)).toLocaleString()}원`}{" "}
                   ({profitRate.toFixed(1)}%)
                   {isUp ? " 올라갔어요!" : " 내려갔어요"}
+                  <TipHint>
+                    {isUp ? (
+                      <>
+                        💡 가격이 오르고 있어요! <br />더 오를지 생각해보고
+                        기다려볼까요? 😊
+                      </>
+                    ) : (
+                      <>
+                        💡 가격이 내려가고 있어요! <br />더 떨어질지 생각해보고
+                        팔아볼까요? 😊
+                      </>
+                    )}
+                  </TipHint>
                 </Profit>
               </ItemCard>
             );
@@ -335,4 +356,33 @@ const Profit = styled.div<{ $isUp: boolean }>`
   background: ${({ theme, $isUp }) =>
     $isUp ? theme.colors.up + "15" : theme.colors.down + "15"};
   color: ${({ theme, $isUp }) => ($isUp ? theme.colors.up : theme.colors.down)};
+`;
+
+const TipBox = styled.div`
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.primary}10;
+  border: 1px solid ${({ theme }) => theme.colors.primary}20;
+  text-align: left;
+`;
+
+const TipTitle = styled.div`
+  font-size: 13px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: 6px;
+`;
+
+const TipText = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.text};
+  line-height: 1.6;
+`;
+
+const TipHint = styled.div`
+  font-size: 11px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.muted};
+  margin-top: 4px;
 `;
