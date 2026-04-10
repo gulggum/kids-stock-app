@@ -37,7 +37,6 @@ const AdminNewsCreate = () => {
   const promptRef = useRef<HTMLPreElement>(null);
   // 프롬프트 복사 함수
   const handleCopyPrompt = () => {
-    console.log(promptRef, copied);
     if (!promptRef.current) return;
     navigator.clipboard.writeText(promptRef.current.innerText).then(() => {
       setCopied(true);

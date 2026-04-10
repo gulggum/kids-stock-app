@@ -398,9 +398,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       },
     });
 
-    console.log("signUp data:", data);
-    console.log("signUp error:", error);
-
     if (error) return { error: error.message };
     return { error: null };
   };
@@ -413,9 +410,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       email,
       password,
     });
-
-    console.log("signIn data:", data);
-    console.log("signIn error:", error);
 
     if (error) return { error: error.message };
     return { error: null };
@@ -586,14 +580,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const addDollars = (amount: number) => {
     setUser((prev) => {
       const newDollars = (prev.dollars ?? 0) + amount;
-      console.log(
-        "addDollars 실행:",
-        newDollars,
-        "isLoggedIn:",
-        isLoggedIn,
-        "id:",
-        prev.id,
-      );
+
       // 로그인 상태면 DB도 업데이트
       if (isLoggedIn && prev.id) {
         supabase
