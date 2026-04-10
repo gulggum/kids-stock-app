@@ -78,7 +78,6 @@ const CommunityCard = ({
           </NameRow>
           <Level>Lv. {user.level}</Level>
         </Info>
-        <LevelTitle $text={textColor}>{title}</LevelTitle>
       </Top>
 
       <BadgeRow>
@@ -98,6 +97,7 @@ const CommunityCard = ({
             +{user.badges.length - 3}
           </MoreBadgeButton>
         )}
+        <LevelTitle $text={textColor}>{title}</LevelTitle>
       </BadgeRow>
 
       <Status>{user.status}</Status>

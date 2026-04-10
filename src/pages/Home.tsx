@@ -131,7 +131,7 @@ const Home = () => {
   const month = today.getMonth() + 1;
 
   // 뉴스 읽은 기록 (퀴즈 푼 뉴스)
-  const readNewsIds = JSON.parse(localStorage.getItem("quiz_progress") || "[]");
+  const readNewsIds = user.quizProgress;
   const currentKRNews = newsTab === "today" ? todayKRNews : yesterdayKRNews;
   const currentUSNews = newsTab === "today" ? todayUSNews : yesterdayUSNews;
   const currentReadCount =

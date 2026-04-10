@@ -262,6 +262,8 @@ const TopName = styled.div`
   text-align: center;
   font-size: 12px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const TopScore = styled.div`
