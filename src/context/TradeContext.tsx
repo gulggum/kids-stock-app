@@ -29,7 +29,12 @@ type TradeContextType = {
     country?: "KR" | "US";
     reason?: string;
   }) => boolean;
-  sellStock: (stock: { id: number; name: string; price: number }) => boolean;
+  sellStock: (stock: {
+    id: number;
+    name: string;
+    price: number;
+    country?: "KR" | "US";
+  }) => boolean;
   hasBoughtToday: boolean; // 오늘 이미 샀는지
   isHoldingStock: (id: number) => boolean;
 };

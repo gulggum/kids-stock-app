@@ -80,8 +80,8 @@ export const kidTheme: DefaultTheme = {
     accentPink: "#FF8FA3",
 
     // 📈 상태
-    up: "#FF5A5F",
-    down: "#347ff7",
+    up: "#22C55E",
+    down: "#EF4444",
 
     // ✏️ 텍스트 (부드럽게 수정)
     text: "#1E3A5F",

@@ -8,6 +8,8 @@ import { playMoneySound } from "../utils/sounds";
 import TradeSummary from "../components/stock/TradeSummary";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
+import { usePortfolio } from "../context/PortfolioContext";
+import SellSummary from "../components/stock/SellSummary";
 
 /**
  * 📌 useStockDetail
@@ -106,8 +108,17 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   const { user, spendMoney, addMoney, spendDollars, addDollars } = useUser();
   const { giveReward } = useReward();
   const navigate = useNavigate();
+  const { portfolio } = usePortfolio();
+
+  //수량만큼 판매
+  const sellQuantityRef = useRef(1);
 
   const isUS = company.country === "US";
+
+  // 현재 종목 포트폴리오 정보 (평균 매수가, 보유 수량)
+  const currentPortfolioItem = portfolio.find((p) => p.id === company.id);
+  const holdingQuantity = currentPortfolioItem?.quantity ?? 0;
+  const avgBuyPrice = currentPortfolioItem?.buyPrice ?? company.price;
 
   // 체크리스트 토글
   const toggleCheck = (key: keyof GuideChecks) => {
@@ -232,19 +243,22 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   // ─── 판매 로직 ────────────────────────────
   const handleSellConfirm = () => {
     playMoneySound();
+    const qty = sellQuantityRef.current;
+    const totalPrice = company.price * qty;
 
     // ✅ 미국 주식 판매 → 달러로 받기 / 한국 주식 → 원화로 받기
     if (isUS) {
-      addDollars(company.price);
+      addDollars(totalPrice);
     } else {
-      addMoney(company.price);
+      addMoney(totalPrice);
     }
 
     setShowSellEffect(true);
     setTimeout(() => setShowSellEffect(false), 900);
 
-    sellStock(company);
-    console.log("여기판매스톡 나라보여?", sellStock);
+    for (let i = 0; i < qty; i++) {
+      sellStock({ ...company, country: company.country });
+    }
     giveReward("SELL_STOCK");
   };
 
@@ -262,13 +276,16 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
       type: "CONFIRM",
       title: "판매할까요?",
       customContent: (
-        <TradeSummary
-          type="SELL"
+        <SellSummary
           name={company.name}
-          money={isUS ? (user.dollars ?? 0) : user.money}
           price={company.price}
-          buyPrice={company.price}
+          buyPrice={avgBuyPrice}
+          holdingQuantity={holdingQuantity}
+          money={isUS ? (user.dollars ?? 0) : user.money}
           country={company.country}
+          onQuantityChange={(qty) => {
+            sellQuantityRef.current = qty;
+          }}
         />
       ),
       confirmText: "판매",

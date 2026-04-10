@@ -115,13 +115,15 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
               </MarketText>
             </MarketRow>
             <InfoNote>
-              <Icon>💡</Icon>
+              <InfoTitle>
+                <Icon>✋</Icon>
+                잠깐!
+              </InfoTitle>
               <Text>
-                실제로는 주식 가격과 환율이 계속 바뀌어요.
+                <strong>실제로는 주식 가격과 환율이 계속 바뀌어요.</strong>
                 <br />
-                하지만 키즈스톡에서는 이해하기 쉽게
-                <br />
-                하루에 한 번, 아침 8~9시에 함께 바뀌어요!
+                키즈스톡에서는 이해하기 쉽게 하루에 한 번, <br />
+                아침 8~9시에 함께 바뀌어요!
               </Text>
             </InfoNote>
           </MarketInfo>
@@ -323,19 +325,31 @@ const MarketSub = styled.div`
 `;
 const InfoNote = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 6px;
-  align-items: flex-start;
-  justify-content: flex-start;
+
+  padding: 10px 12px;
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  background: rgba(59, 130, 246, 0.08);
 `;
 
-const Icon = styled.div`
-  font-size: 14px;
-  margin-top: 2px; // 살짝 위 정렬 보정
+const InfoTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 12px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const Icon = styled.span`
+  font-size: 16px;
 `;
 
 const Text = styled.div`
   font-size: 11px;
-  color: ${({ theme }) => theme.colors.muted};
+  color: ${({ theme }) => theme.colors.textSecondary};
   line-height: 1.5;
-  text-align: left;
 `;

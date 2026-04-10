@@ -21,7 +21,12 @@ const MyFriendsSection = ({ users, friends, onToggleFriend }: Props) => {
   if (myFriends.length === 0) {
     return (
       <Section>
-        <Title>👥 내 친구</Title>
+        <Title>
+          👥 내 친구{" "}
+          <span style={{ fontSize: "10px", fontWeight: "500", color: "grey" }}>
+            ( 즐겨찾기 기능이에요 )
+          </span>
+        </Title>
         <EmptyBox>
           <EmptyEmoji>🫂</EmptyEmoji>
           <EmptyText>아직 친구가 없어요</EmptyText>
