@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import { useMemo, useState } from "react";
 import NewsQuizModal from "../components/news/NewsQuizModal";
 import NewsDetailModal from "../components/news/NewsDetailModal";
@@ -11,6 +11,8 @@ import { useUser } from "../context/UserContext";
 import AttendanceCalendar from "../components/AttendanceCalendar";
 import { useReward } from "../context/RewardContext";
 import ExpBarCard from "../components/character/ExpBarCard";
+import { useKnowledge } from "../hooks/Useknowledge";
+import KnowledgePopup from "../components/KnowledgePopup";
 
 /**
  * 🏠 홈 화면
@@ -35,6 +37,16 @@ const Home = () => {
   // ✅ 실제 API 데이터 (하루 1번만 호출)
   const { data, isLoading } = useNewsQuery();
   //ㄴ>useQuery로 가져오는 과정에서 string으로 전부 변환됌(주의)
+
+  // 오늘의 지식 상태
+  const {
+    hasTodayKnowledge,
+    isOpen,
+    todayKnowledge,
+    openKnowledge,
+    confirmKnowledge,
+    closeKnowledge,
+  } = useKnowledge();
 
   // ✅ 오늘 뉴스
   const todayKRNews = useMemo(
@@ -139,6 +151,19 @@ const Home = () => {
           neededExp={expInfo.neededExp}
           progress={expInfo.progress}
         />
+        {/* 💡 오늘의 지식 버튼 */}
+        <KnowledgeButton onClick={openKnowledge} $done={hasTodayKnowledge}>
+          <KnowledgeEmoji>💡</KnowledgeEmoji>
+          <KnowledgeText>
+            <KnowledgeTitle>오늘의 지식 한 스푼</KnowledgeTitle>
+            <KnowledgeSub>
+              {hasTodayKnowledge
+                ? "오늘 지식 완료! ✅"
+                : "탭해서 지식 얻기 +EXP 🧠"}
+            </KnowledgeSub>
+          </KnowledgeText>
+          {!hasTodayKnowledge && <NewBadge>NEW</NewBadge>}
+        </KnowledgeButton>
       </Section>
 
       {/* 📰 오늘의 뉴스 */}
@@ -222,6 +247,15 @@ const Home = () => {
           quiz={activeQuiz}
           onClose={() => setActiveQuiz(null)}
           onCorrect={() => handleQuizCorrect(activeQuiz.newsId)}
+        />
+      )}
+      {/* 🧠 오늘의 지식 모달 */}
+      {isOpen && todayKnowledge && (
+        <KnowledgePopup
+          knowledge={todayKnowledge}
+          onConfirm={confirmKnowledge}
+          onClose={closeKnowledge}
+          isDone={hasTodayKnowledge}
         />
       )}
     </Wrapper>
@@ -360,5 +394,68 @@ const CountryTab = styled.button<{ $active: boolean }>`
     $active ? theme.colors.primary : theme.colors.surface};
 
   color: ${({ $active }) => ($active ? "white" : "#666")};
+`;
+
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+`;
+
+const KnowledgeButton = styled.button<{ $done: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme, $done }) =>
+    $done ? theme.colors.surface : theme.colors.primary + "15"};
+  cursor: pointer;
+  text-align: left;
+  border: 2px solid
+    ${({ theme, $done }) =>
+      $done ? theme.colors.border : theme.colors.primary + "40"};
+  animation: ${({ $done }) =>
+    $done
+      ? "none"
+      : css`
+          ${pulse} 2s ease-in-out infinite
+        `};
+  transition: all 0.15s ease;
+  &:active {
+    transform: scale(0.97);
+  }
+`;
+
+const KnowledgeEmoji = styled.span`
+  font-size: 24px;
+`;
+
+const KnowledgeText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+`;
+
+const KnowledgeTitle = styled.div`
+  font-size: 14px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const KnowledgeSub = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+
+const NewBadge = styled.div`
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
 `;
 export default Home;

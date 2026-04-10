@@ -31,18 +31,17 @@ const AchievementContext = createContext<AchievementContextType>(
 );
 
 export const AchievementProvider = ({ children }: { children: ReactNode }) => {
+  // ✅ 업적 달성 팝업 상태
+  const [popupAchievement, setPopupAchievement] = useState<string | null>(null);
+
   // → 거래 목록 (trades.length로 총 거래 횟수 계산)
   const { trades } = useTrade();
   // → 현재 총 자산 (현금 + 주식 평가액)
   const { totalAsset } = usePortfolio();
   // → 보상 지급 함수
   const { giveCustomReward } = useReward();
-
   // → 유저 정보 + 업적 추가 함수(  //  user.achievements를 단일 출처로 사용)
   const { user, addAchievement } = useUser();
-
-  // ✅ 업적 달성 팝업 상태
-  const [popupAchievement, setPopupAchievement] = useState<string | null>(null);
 
   const closePopupAchievement = () => setPopupAchievement(null);
 
@@ -82,6 +81,7 @@ export const AchievementProvider = ({ children }: { children: ReactNode }) => {
       totalQuizCorrect: user.quizProgress.length,
       totalLoss,
       hasBankrupt: user.hasBankrupt,
+      totalKnowledge: user.totalKnowledge ?? 0,
       uniqueStocks: [
         ...new Set(
           trades.filter((t) => t.type === "BUY").map((t) => t.stockId),
@@ -122,6 +122,7 @@ export const AchievementProvider = ({ children }: { children: ReactNode }) => {
     user.streak,
     user.quizProgress,
     user.hasBankrupt,
+    user.totalKnowledge,
   ]);
 
   return (

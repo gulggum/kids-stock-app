@@ -55,6 +55,8 @@ export type User = {
   profileAvatar: ProfileAvatarType | null;
 
   hasBankrupt: boolean;
+
+  totalKnowledge: number; //오늘의 지식
 };
 
 type ExpInfo = {
@@ -150,6 +152,7 @@ const defaultUser: User = {
   profileImage: null,
   profileAvatar: null,
   hasBankrupt: false,
+  totalKnowledge: 0,
 };
 
 // ─────────────────────────────────────────
@@ -260,7 +263,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("newsLog error:", newsLogError);
       }
 
+      //오늘의퀴즈
       const solvedQuizIds = newsLogs?.map((log) => log.news_id) ?? [];
+
+      //오늘의지식한스푼 선택해서 불러오기
+      const { count: totalKnowledge } = await supabase
+        .from("user_knowledge_log")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId);
 
       // localStorage + Supabase 합치기 (중복 제거)
       const savedGameData = getStorage(USER_KEY, defaultUser);
@@ -280,6 +290,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         // DB 값이 있으면 DB 우선, 없으면 localStorage
         score: profile?.score ?? savedGameData.score,
         level: profile?.level ?? savedGameData.level,
+        totalKnowledge: totalKnowledge ?? 0,
         //new Set으로 (로컬과,supabase에있는것 )중복제거
         quizProgress: [
           ...new Set([...savedGameData.quizProgress, ...solvedQuizIds]),

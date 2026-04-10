@@ -22,6 +22,7 @@ export type AchievementState = {
   hasBankrupt: boolean; // 파산 경험 여부 (자산이 0 이하로 떨어진 적 있는지)
   uniqueStocks: number; // 보유해본 종목 수 (중복 제외, 한 번이라도 산 종목)
   totalNewsRead: number; // 뉴스 누적 읽은 횟수
+  totalKnowledge: number; //오늘의지식 횟수
 };
 export type Achievement = {
   id: string;
@@ -45,6 +46,30 @@ export type Achievement = {
 };
 
 export const ACHIEVEMENTS: Achievement[] = [
+  // 지식 관련 업적 추가
+  {
+    id: "KNOWLEDGE_5",
+    tier: "COMMON",
+    badge: {
+      title: "지식 탐험가",
+      description: "오늘의 지식을 5번 확인했어요!",
+      emoji: "🧠",
+    },
+    reward: { coin: 20, exp: 30 },
+    condition: (state) => state.totalKnowledge >= 5,
+  },
+  {
+    id: "KNOWLEDGE_30",
+    tier: "RARE",
+    badge: {
+      title: "지식 전문가",
+      description: "오늘의 지식을 30번이나 확인했어요!",
+      emoji: "🧠✨",
+    },
+    reward: { coin: 50, exp: 60 },
+    condition: (state) => state.totalKnowledge >= 30,
+  },
+
   // ===============================
   // 📈 투자 관련 업적
   // ===============================
@@ -94,7 +119,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     condition: (state) => state.totalTrades >= 30,
   },
 
-  // ✅ 포트폴리오 다양성 (여러 종목 사보기 유도)
+  // ✅ 포트폴리오 다양성
   {
     id: "STOCK_3_KINDS",
     tier: "COMMON",
@@ -112,7 +137,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "포트폴리오 마스터",
       description: "5가지 종목에 분산투자!",
-      emoji: "🗂️",
+      emoji: "🎯",
     },
     reward: { coin: 60, exp: 60 },
     condition: (state) => state.uniqueStocks >= 5,
@@ -128,7 +153,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "110만원 달성",
       description: "자산이 110만원을 넘었어요!",
-      emoji: "💵",
+      emoji: "🪙",
     },
     reward: { coin: 40, exp: 50 },
     condition: (state) => state.totalAsset >= 1100000,
@@ -150,14 +175,14 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "150만원 돌파",
       description: "엄청난 자산가가 됐어요!",
-      emoji: "🤑",
+      emoji: "👑💰",
     },
     reward: { coin: 150, exp: 100, score: 20 },
     condition: (state) => state.totalAsset >= 1500000,
   },
 
   // ===============================
-  // 😅 실패 업적 (실패도 재밌어야 함!)
+  // 😅 실패 업적
   // ===============================
 
   {
@@ -177,14 +202,14 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "전설의 바닥",
       description: "파산해도 다시 일어서는 투자자!",
-      emoji: "💪",
+      emoji: "💪🔥",
     },
     reward: { exp: 100, coin: 50 },
     condition: (state) => state.hasBankrupt === true,
   },
 
   // ===============================
-  // 🧠 퀴즈 업적 (현재 0개!)
+  // 🧠 퀴즈 업적
   // ===============================
 
   {
@@ -242,7 +267,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "경제 기자",
       description: "뉴스를 10개나 읽었어요!",
-      emoji: "🗞️",
+      emoji: "📰✨",
     },
     reward: { coin: 40, exp: 50 },
     condition: (state) => state.totalNewsRead >= 10,
@@ -265,7 +290,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: "LEVEL_10",
-    tier: "LEGEND", // RARE → LEGEND로 격상
+    tier: "LEGEND",
     badge: {
       title: "투자 마스터",
       description: "최고 레벨 달성! 당신은 진짜 투자왕!",
@@ -285,7 +310,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "3일 연속 출석",
       description: "3일 연속으로 나타났어요!",
-      emoji: "✅",
+      emoji: "🐣",
     },
     reward: { coin: 20, exp: 20 },
     condition: (state) => state.streak >= 3,
@@ -318,7 +343,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "1년 개근왕",
       description: "365일 연속 출석! 넌 전설이야!",
-      emoji: "🌈",
+      emoji: "👑🔥",
     },
     reward: { coin: 500, exp: 300, score: 50 },
     condition: (state) => state.streak >= 365,

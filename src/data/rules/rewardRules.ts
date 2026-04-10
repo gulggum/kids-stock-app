@@ -24,6 +24,9 @@ export const REWARD_RULES = {
   ATTENDANCE_DAILY: { coin: 20, exp: 10, score: 1 },
   ATTENDANCE_STREAK_7: { coin: 50, exp: 40 },
 
+  // 💡 오늘의 지식 확인
+  DAILY_KNOWLEDGE: { coin: 3, exp: 10 },
+
   // 📈 투자 행동
   FIRST_INVEST: { coin: 30, exp: 40, score: 5 },
   BUY_STOCK: { coin: 5, exp: 10, score: 2 },
