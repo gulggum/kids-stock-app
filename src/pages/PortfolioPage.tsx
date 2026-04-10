@@ -146,8 +146,11 @@ const PortfolioPage = () => {
 
                 <Profit $isUp={isUp} role="status">
                   {isUp ? "📈 +" : "📉 "}
-                  ...
-                  {/* profitRate가 0이 아닐 때만 표시 */}
+                  {isUS
+                    ? `$${Math.abs(profitAmount).toFixed(2)}`
+                    : `${Math.abs(Math.round(profitAmount)).toLocaleString()}원`}{" "}
+                  ({profitRate.toFixed(1)}%)
+                  {isUp ? " 올라갔어요!" : " 내려갔어요"}
                   {profitRate !== 0 && (
                     <TipHint>
                       {isUp ? (
