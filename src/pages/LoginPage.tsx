@@ -229,6 +229,7 @@ const LoginPage = () => {
               <span style={{ fontSize: "14px" }}>⭐</span>
               쉽고 재밌는 주식 놀이터
             </SubDesc>
+            <SmallDesc>가볍게 시작하는 주식 체험 앱</SmallDesc>
             <GuestButton onClick={() => setMode("guest")}>
               게스트로 시작하기
             </GuestButton>
@@ -639,6 +640,14 @@ const SubDesc = styled.p`
   font-weight: 500;
   color: #c47c00;
   margin-bottom: 16px;
+`;
+
+const SmallDesc = styled.p`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin-top: -8px;
+  margin-bottom: 16px;
+  text-align: center;
 `;
 
 const BottomDesc = styled.p`

@@ -16,7 +16,7 @@ const ExpBarCard = ({
   progress,
 }: ExpBarCardProps) => {
   const { expInfo, user } = useUser();
-  const [displayProgress, setDisplayProgress] = useState(expInfo.progress);
+  const [displayProgress, setDisplayProgress] = useState(progress);
   useEffect(() => {
     if (expInfo.progress === 0 && displayProgress > 90) {
       // 👉 레벨업 순간
@@ -29,7 +29,7 @@ const ExpBarCard = ({
     } else {
       setDisplayProgress(expInfo.progress);
     }
-  }, [expInfo.progress]);
+  }, [progress]);
   return (
     <Wrapper>
       <TopRow>
@@ -41,7 +41,7 @@ const ExpBarCard = ({
         <Bar>
           <Fill
             $isFull={displayProgress >= 100}
-            style={{ width: `${progress}%` }}
+            style={{ width: `${displayProgress}%` }}
           />
         </Bar>
         <ExpText>
