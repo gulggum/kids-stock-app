@@ -65,7 +65,7 @@ const PortfolioPage = () => {
               ((currentPrice - item.buyPrice) / item.buyPrice) * 100;
             const profitAmount = (currentPrice - item.buyPrice) * item.quantity;
             const totalValue = currentPrice * item.quantity;
-            const isUp = profitRate > 0;
+            const isUp = profitRate >= 0;
 
             const buyPriceFmt = formatPrice(item.buyPrice, item.country);
             const currentPriceFmt = formatPrice(currentPrice, item.country);
@@ -144,13 +144,19 @@ const PortfolioPage = () => {
                   </PriceGroup>
                 </Info>
 
-                <Profit $isUp={isUp} role="status">
-                  {isUp ? "📈 +" : "📉 "}
-                  {isUS
-                    ? `$${Math.abs(profitAmount).toFixed(2)}`
-                    : `${Math.abs(Math.round(profitAmount)).toLocaleString()}원`}{" "}
-                  ({profitRate.toFixed(1)}%)
-                  {isUp ? " 올라갔어요!" : " 내려갔어요"}
+                <Profit $isUp={isUp} $isZero={profitRate === 0} role="status">
+                  {profitRate === 0 ? (
+                    <>
+                      📊 아직 변동이 없어요
+                      <TipHint>
+                        ⏰ 내일 가격이 어떻게 바뀔지 기대해봐요!
+                      </TipHint>
+                    </>
+                  ) : isUp ? (
+                    `📈 +${isUS ? `$${Math.abs(profitAmount).toFixed(2)}` : `${Math.abs(Math.round(profitAmount)).toLocaleString()}원`} (${profitRate.toFixed(1)}%) 올라갔어요!`
+                  ) : (
+                    `📉 ${isUS ? `$${Math.abs(profitAmount).toFixed(2)}` : `${Math.abs(Math.round(profitAmount)).toLocaleString()}원`} (${profitRate.toFixed(1)}%) 내려갔어요`
+                  )}
                   {profitRate !== 0 && (
                     <TipHint>
                       {isUp ? (
@@ -350,14 +356,19 @@ const Divider = styled.div`
   margin: 2px 0;
 `;
 
-const Profit = styled.div<{ $isUp: boolean }>`
+const Profit = styled.div<{ $isUp: boolean; $isZero?: boolean }>`
   font-weight: 800;
   font-size: 14px;
   padding: 8px 12px;
   border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme, $isUp }) =>
-    $isUp ? theme.colors.up + "15" : theme.colors.down + "15"};
-  color: ${({ theme, $isUp }) => ($isUp ? theme.colors.up : theme.colors.down)};
+  background: ${({ theme, $isUp, $isZero }) =>
+    $isZero
+      ? theme.colors.surface
+      : $isUp
+        ? theme.colors.up + "15"
+        : theme.colors.down + "15"};
+  color: ${({ theme, $isUp, $isZero }) =>
+    $isZero ? theme.colors.muted : $isUp ? theme.colors.up : theme.colors.down};
 `;
 
 const TipBox = styled.div`
