@@ -181,6 +181,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         const {
           data: { session },
         } = await supabase.auth.getSession();
+
         if (session?.user) {
           await loadUserFromDB(session.user.id);
         } else {
@@ -294,6 +295,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           (profile?.coin ?? 300) !== 300 ? profile!.coin : savedGameData.coin, // ← 추가
         exp: (profile?.exp ?? 0) > 0 ? profile!.exp : savedGameData.exp,
         totalKnowledge: totalKnowledge ?? 0,
+        attendance: profile?.attendance ?? savedGameData.attendance,
+        streak: profile?.streak ?? savedGameData.streak,
         //new Set으로 (로컬과,supabase에있는것 )중복제거
         quizProgress: [
           ...new Set([...savedGameData.quizProgress, ...solvedQuizIds]),
@@ -664,11 +667,23 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const nextStreak = user.attendance.includes(yesterday)
       ? user.streak + 1
       : 1;
+
+    const newAttendance = [...user.attendance, today];
     setUser((prev) => ({
       ...prev,
       attendance: [...prev.attendance, today],
       streak: nextStreak,
     }));
+
+    if (user.id && user.id !== "guest") {
+      supabase
+        .from("profiles")
+        .update({ attendance: newAttendance, streak: nextStreak })
+        .eq("id", user.id)
+        .then(({ error }) => {
+          if (error) console.error("출석 저장 실패:", error);
+        });
+    }
     giveReward("ATTENDANCE_DAILY");
     if (nextStreak % 7 === 0) giveReward("ATTENDANCE_STREAK_7");
   };

@@ -77,8 +77,13 @@ const MiniCard = styled.div`
 `;
 
 const Name = styled.div`
+  width: 100%;
+  text-align: center;
   font-size: 12px;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const AddButton = styled.button`
