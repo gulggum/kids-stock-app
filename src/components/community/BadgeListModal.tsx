@@ -39,7 +39,7 @@ const BadgeListModal = ({ badges }: BadgeListModalProps) => {
 export default BadgeListModal;
 
 const ScrollContainer = styled.div`
-  max-height: 300px;
+  max-height: 360px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

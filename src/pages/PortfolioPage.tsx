@@ -161,13 +161,15 @@ const PortfolioPage = () => {
                     <TipHint>
                       {isUp ? (
                         <>
-                          💡 가격이 오르고 있어요! <br />더 사볼지, 팔지,
-                          기다릴지 생각해볼까요? 😊
+                          💡 가격이 오르고 있어요! <br />
+                          지금 팔면 이익을 챙길 수 있어요. 더 오를 것 같으면
+                          기다려봐요! 😊
                         </>
                       ) : (
                         <>
                           💡 가격이 내려가고 있어요! <br />
-                          기다릴지, 팔지, 더 사볼지 생각해볼까요? 😊
+                          지금 팔면 손해일 수 있어요. 다시 오를 때까지
+                          기다려볼까요? 😊
                         </>
                       )}
                     </TipHint>
@@ -178,6 +180,10 @@ const PortfolioPage = () => {
           })
         )}
       </ListSection>
+      <strong style={{ textAlign: "center" }}>
+        💡선택에 따라 결과가 달라지고,
+        <br /> 기다림도 중요한 경험이에요! 😊
+      </strong>
 
       <InfoModal
         open={openInfo === "buyPrice"}
