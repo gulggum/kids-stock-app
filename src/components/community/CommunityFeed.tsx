@@ -34,6 +34,26 @@ const CommunityFeed = ({
     startIndex,
     startIndex + USERS_PER_PAGE,
   );
+
+  // 보여줄 페이지 번호 계산 함수
+  const getPageNumbers = () => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    pages.push(1);
+    if (currentPage > 3) pages.push("...");
+    for (
+      let i = Math.max(2, currentPage - 1);
+      i <= Math.min(totalPages - 1, currentPage + 1);
+      i++
+    ) {
+      pages.push(i);
+    }
+    if (currentPage < totalPages - 2) pages.push("...");
+    pages.push(totalPages);
+    return pages;
+  };
   return (
     <SectionBlock>
       <SectionTitle>친구들은 이렇게 하고 있어요</SectionTitle>
@@ -70,15 +90,19 @@ const CommunityFeed = ({
       </SearchWrapper>
 
       <Pagination>
-        {Array.from({ length: totalPages }).map((_, i) => (
-          <PageButton
-            key={i}
-            $active={currentPage === i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-          >
-            {i + 1}
-          </PageButton>
-        ))}
+        {getPageNumbers().map((page, i) =>
+          page === "..." ? (
+            <Ellipsis key={`ellipsis-${i}`}>...</Ellipsis>
+          ) : (
+            <PageButton
+              key={page}
+              $active={currentPage === page}
+              onClick={() => setCurrentPage(page)}
+            >
+              {page}
+            </PageButton>
+          ),
+        )}
       </Pagination>
     </SectionBlock>
   );
@@ -181,4 +205,14 @@ const EmptyHint = styled.p`
   color: ${({ theme }) => theme.colors.muted};
   margin: 0;
   text-align: center;
+`;
+
+const Ellipsis = styled.span`
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.muted};
 `;
