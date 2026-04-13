@@ -24,8 +24,9 @@ const WelcomePopup = ({ onClose }: Props) => {
           <ContentText>
             <strong>주식</strong>은 회사의 작은 조각을 사는 거예요.
           </ContentText>
+          <ContentText>회사가 잘 되면 내 돈도 같이 늘어나요!📈</ContentText>
           <ContentText>
-            회사가 잘 되면 내 돈도 같이 늘어나요! 📈
+            💰 시작 자금 <strong>100만원</strong>으로 시작해요!
           </ContentText>
         </ContentBox>
 
@@ -44,17 +45,19 @@ const WelcomePopup = ({ onClose }: Props) => {
           </GuideStep>
         </GuideBox>
 
-        <MarketButton onClick={() => {
-          onClose();
-          navigate("/market");
-        }}>
+        <MarketButton
+          onClick={() => {
+            onClose();
+            navigate("/market");
+          }}
+        >
           🏪 마켓 구경하러 가기
         </MarketButton>
 
         <LaterButton onClick={onClose}>나중에</LaterButton>
       </Modal>
     </Overlay>,
-    document.body
+    document.body,
   );
 };
 
@@ -92,7 +95,9 @@ const Modal = styled.div`
   animation: ${popIn} 0.35s ease;
 `;
 
-const Emoji = styled.div`font-size: 48px;`;
+const Emoji = styled.div`
+  font-size: 48px;
+`;
 
 const Title = styled.div`
   font-size: 18px;
@@ -163,7 +168,9 @@ const MarketButton = styled.button`
   font-family: inherit;
   cursor: pointer;
   transition: transform 0.15s ease;
-  &:active { transform: scale(0.97); }
+  &:active {
+    transform: scale(0.97);
+  }
 `;
 
 const LaterButton = styled.button`
