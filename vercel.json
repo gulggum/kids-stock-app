@@ -1,12 +1,12 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/.well-known/:path*",
-      "destination": "/.well-known/:path*"
+      "src": "^/\\.well-known/(.*)",
+      "dest": "/.well-known/$1"
     },
     {
-      "source": "/((?!api/|\\.well-known/).*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "crons": [
