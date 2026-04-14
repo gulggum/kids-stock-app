@@ -86,6 +86,14 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
         >
           <MarketInfo>
             <MarketRow>
+              <MarketFlag>📅</MarketFlag>
+              <MarketText>
+                <MarketName>운영 요일</MarketName>
+                <MarketTime>월요일 ~ 금요일</MarketTime>
+                <MarketSub>주말과 공휴일에는 주식시장이 쉬어요!</MarketSub>
+              </MarketText>
+            </MarketRow>
+            <MarketRow>
               <MarketFlag>🇰🇷</MarketFlag>
               <MarketText>
                 <MarketName>한국 주식시장</MarketName>
@@ -101,6 +109,7 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
                 <MarketSub>한국과 시간이 달라서 밤에 열려요!</MarketSub>
               </MarketText>
             </MarketRow>
+
             <InfoNote>
               <InfoTitle>
                 <Icon>✋</Icon>
