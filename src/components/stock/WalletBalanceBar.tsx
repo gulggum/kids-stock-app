@@ -1,6 +1,6 @@
 // 📍 src/components/WalletBalanceBar.tsx 새로 만들기
 
-import styled, { keyframes, css } from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 

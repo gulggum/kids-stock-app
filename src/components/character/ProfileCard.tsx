@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import type { ProfileAvatarType } from "../../data/static/profileAvatars";
 import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
@@ -35,7 +35,10 @@ const ProfileCard = ({
   return (
     <Wrapper $skin={currentSkin} $text={textColor}>
       <Top>
-        <ImageWrapper onClick={onClick}>
+        <ImageWrapper
+          onClick={onClick}
+          $isEmpty={!profileImage && !profileAvatar}
+        >
           {profileImage ? (
             <img src={profileImage} />
           ) : profileAvatar ? (
@@ -64,6 +67,10 @@ const ProfileCard = ({
 export default ProfileCard;
 
 /* ================= 스타일 ================= */
+const borderPulse = keyframes`
+  0%, 100% { box-shadow: 0 0 0px transparent; }
+  50% { box-shadow: 0 0 8px 3px rgba(99, 179, 237, 0.8); }
+`;
 
 const Wrapper = styled.div<{ $skin: any; $text: string }>`
   border-radius: ${({ theme }) => theme.radius.md};
@@ -80,13 +87,18 @@ const Wrapper = styled.div<{ $skin: any; $text: string }>`
   box-shadow: ${({ theme }) => theme.shadows.sm};
 `;
 
-const ImageWrapper = styled.div`
+const ImageWrapper = styled.div<{ $isEmpty: boolean }>`
   width: 90px;
   height: 90px;
   border-radius: 50%;
   overflow: hidden;
   background: white;
   cursor: pointer;
+  ${({ $isEmpty }) =>
+    $isEmpty &&
+    css`
+      animation: ${borderPulse} 2s ease-in-out infinite;
+    `}
 
   img {
     width: 100%;

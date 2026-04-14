@@ -8,12 +8,11 @@
  * 4️⃣ 달러 → 원 계산 예시 제공
  */
 
-import styled, { css, keyframes } from "styled-components";
+import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import InfoModal from "../InfoModal";
 import InfoIcon from "../InfoIcon";
-import { useUser } from "../../context/UserContext";
 import WalletBalanceBar from "./WalletBalanceBar";
 
 type Props = {
@@ -22,7 +21,6 @@ type Props = {
 
 const ExchangeRateInfo = ({ exchangeRate }: Props) => {
   const navigate = useNavigate();
-  const { user } = useUser();
 
   const [open, setOpen] = useState(false);
   const [openMarket, setOpenMarket] = useState(false);
@@ -126,11 +124,6 @@ export default ExchangeRateInfo;
 
 /* ================= 스타일 ================= */
 
-const borderPulse = keyframes`
-  0%, 100% { box-shadow: 0 0 0px transparent; }
-  50% { box-shadow: 0 0 6px 2px rgba(99, 179, 237, 0.7); }
-`;
-
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -185,42 +178,6 @@ const UpdateNotice = styled.div`
   font-size: 11px;
   color: ${({ theme }) => theme.colors.muted};
   text-align: left;
-`;
-const WalletRow = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.card};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-  animation: ${borderPulse} 2s ease-in-out infinite;
-`;
-
-const WalletItem = styled.div<{ $clickable?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-  justify-content: center;
-  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
-`;
-
-const WalletFlag = styled.span`
-  font-size: 16px;
-`;
-
-const WalletAmount = styled.span<{ $isDollar?: boolean }>`
-  font-size: 15px;
-  font-weight: 800;
-  color: ${({ theme, $isDollar }) =>
-    $isDollar ? theme.colors.accentGreen : theme.colors.primary};
-`;
-
-const WalletDivider = styled.div`
-  width: 1px;
-  height: 24px;
-  background: ${({ theme }) => theme.colors.border};
-  margin: 0 8px;
 `;
 
 const ModalContent = styled.div`

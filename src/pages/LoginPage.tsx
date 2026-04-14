@@ -69,6 +69,20 @@ const LoginPage = () => {
       });
       return;
     }
+    if (guestNickname.trim().length < 2) {
+      setGuestNicknameStatus({
+        type: "error",
+        message: "닉네임은 2글자 이상이에요",
+      });
+      return;
+    }
+    if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(guestNickname)) {
+      setGuestNicknameStatus({
+        type: "error",
+        message: "올바른 닉네임을 입력해주세요",
+      });
+      return;
+    }
 
     if (!isValidNickname(guestNickname)) {
       setGuestNicknameStatus({
@@ -107,6 +121,16 @@ const LoginPage = () => {
     setNick(value);
     if (!value) {
       setStatus({ type: null, message: "" });
+      return;
+    }
+    // ✅ 2글자 미만
+    if (value.trim().length < 2) {
+      setStatus({ type: "error", message: "닉네임은 2글자 이상이에요" });
+      return;
+    }
+    // ✅ 초성만 입력 방지 (ㄱ~ㅎ, ㅏ~ㅣ)
+    if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(value)) {
+      setStatus({ type: "error", message: "올바른 닉네임을 입력해주세요" });
       return;
     }
     if (!isValidNickname(value)) {

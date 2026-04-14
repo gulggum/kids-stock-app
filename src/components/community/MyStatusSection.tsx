@@ -165,8 +165,7 @@ const StickyMyStatus = styled.div`
   right: 0;
   z-index: 20;
   padding: 16px 24px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
+  background: ${({ theme }) => theme.colors.card};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;

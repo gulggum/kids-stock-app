@@ -26,9 +26,6 @@ const StockDetailHeader = ({ onBack }: Props) => {
 export default StockDetailHeader;
 
 const StickyHeader = styled.div`
-  position: sticky;
-  top: -20px;
-  z-index: 10;
   padding: 12px 0;
   display: flex;
   flex-direction: column;

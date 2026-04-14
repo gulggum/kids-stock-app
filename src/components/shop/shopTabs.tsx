@@ -61,13 +61,10 @@ const TabBar = styled.div`
   position: sticky;
   top: 0;
   z-index: 5;
-
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 15px 0;
-
-  backdrop-filter: blur(8px);
 `;
 const TabGroup = styled.div`
   display: flex;

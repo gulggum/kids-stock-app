@@ -82,8 +82,8 @@ const Nav = styled.nav`
 
   height: 64px;
   background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 
