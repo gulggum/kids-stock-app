@@ -8,12 +8,13 @@
  * 4️⃣ 달러 → 원 계산 예시 제공
  */
 
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import InfoModal from "../InfoModal";
 import InfoIcon from "../InfoIcon";
 import { useUser } from "../../context/UserContext";
+import WalletBalanceBar from "./WalletBalanceBar";
 
 type Props = {
   exchangeRate: number;
@@ -51,19 +52,7 @@ const ExchangeRateInfo = ({ exchangeRate }: Props) => {
         </UpdateRow>
 
         {/* 원화 / 달러 잔액 */}
-        <WalletRow>
-          <WalletItem>
-            <WalletFlag>🇰🇷</WalletFlag>
-            <WalletAmount>{user.money.toLocaleString()}원</WalletAmount>
-          </WalletItem>
-          <WalletDivider />
-          <WalletItem>
-            <WalletFlag>🇺🇸</WalletFlag>
-            <WalletAmount $isDollar>
-              ${(user.dollars ?? 0).toLocaleString()}
-            </WalletAmount>
-          </WalletItem>
-        </WalletRow>
+        <WalletBalanceBar />
       </Wrapper>
       {/* 환율 안내 모달 */}
       {open && (
@@ -137,6 +126,11 @@ export default ExchangeRateInfo;
 
 /* ================= 스타일 ================= */
 
+const borderPulse = keyframes`
+  0%, 100% { box-shadow: 0 0 0px transparent; }
+  50% { box-shadow: 0 0 6px 2px rgba(99, 179, 237, 0.7); }
+`;
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -199,14 +193,16 @@ const WalletRow = styled.div`
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.card};
   box-shadow: ${({ theme }) => theme.shadows.sm};
+  animation: ${borderPulse} 2s ease-in-out infinite;
 `;
 
-const WalletItem = styled.div`
+const WalletItem = styled.div<{ $clickable?: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
   flex: 1;
   justify-content: center;
+  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
 `;
 
 const WalletFlag = styled.span`

@@ -70,6 +70,7 @@ const AppLayout = () => {
 export default AppLayout;
 
 const Layout = styled.div<{ $variant?: "home" | "default" }>`
+  background-attachment: fixed;
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;

@@ -3,7 +3,7 @@
 // - 뒤로가기 버튼 + 내가 가진 돈 표시 (감소 애니메이션 포함)
 
 import styled from "styled-components";
-import { useUser } from "../../context/UserContext";
+import WalletBalanceBar from "./WalletBalanceBar";
 
 type Props = {
   money: number;
@@ -12,32 +12,13 @@ type Props = {
   country?: "KR" | "US";
 };
 
-const StockDetailHeader = ({ money, animateMoney, onBack }: Props) => {
-  const { user } = useUser();
-
+const StockDetailHeader = ({ onBack }: Props) => {
   return (
     <StickyHeader>
       <BackButton onClick={onBack} aria-label="이전 페이지로 돌아가기">
         ← 돌아가기
       </BackButton>
-
-      <MoneyBar
-        className={animateMoney ? "decrease" : ""}
-        role="status"
-        aria-live="polite"
-      >
-        <MoneyItem>
-          <MoneyLabel>🇰🇷 원화</MoneyLabel>
-          <MoneyAmount>{money.toLocaleString()}원</MoneyAmount>
-        </MoneyItem>
-        <Divider />
-        <MoneyItem>
-          <MoneyLabel>🇺🇸 달러</MoneyLabel>
-          <MoneyAmount $isDollar>
-            ${(user.dollars ?? 0).toLocaleString()}
-          </MoneyAmount>
-        </MoneyItem>
-      </MoneyBar>
+      <WalletBalanceBar />
     </StickyHeader>
   );
 };
@@ -84,45 +65,4 @@ const BackButton = styled.button`
     outline: 2px solid ${({ theme }) => theme.colors.primary};
     outline-offset: 2px;
   }
-`;
-
-const MoneyBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 14px 16px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.card};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-  transition: transform 0.18s ease;
-  &.decrease {
-    transform: scale(0.97);
-  }
-`;
-
-const MoneyItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-`;
-
-const MoneyLabel = styled.span`
-  font-size: 12px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const MoneyAmount = styled.strong<{ $isDollar?: boolean }>`
-  font-size: 17px;
-  font-weight: 800;
-  color: ${({ theme, $isDollar }) =>
-    $isDollar ? theme.colors.accentGreen : theme.colors.primary};
-`;
-
-const Divider = styled.div`
-  width: 1px;
-  height: 36px;
-  background: ${({ theme }) => theme.colors.border};
-  margin: 0 8px;
 `;

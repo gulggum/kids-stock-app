@@ -20,6 +20,7 @@ import AdminStats from "../pages/admin/AdminStats";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import SettingsPage from "../pages/SettingsPage";
 import ExchangePage from "../pages/market/ExchangePage";
+import TradeHistoryPage from "../pages/market/TradeHistoryPage";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
@@ -53,6 +54,7 @@ export const router = createBrowserRouter([
         element: <CharacterPage />,
       },
       { path: "settings", element: <SettingsPage /> },
+      { path: "history", element: <TradeHistoryPage /> },
     ],
   },
   // ⭐ 관리자 페이지(별도 분리)

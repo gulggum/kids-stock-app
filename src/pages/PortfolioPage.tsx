@@ -181,7 +181,7 @@ const PortfolioPage = () => {
         )}
       </ListSection>
       <strong style={{ textAlign: "center" }}>
-        💡선택에 따라 결과가 달라지고,
+        선택에 따라 결과가 달라지고,
         <br /> 기다림도 중요한 경험이에요! 😊
       </strong>
 
