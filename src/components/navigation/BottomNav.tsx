@@ -81,7 +81,7 @@ const Nav = styled.nav`
   align-items: center;
 
   height: 64px;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 

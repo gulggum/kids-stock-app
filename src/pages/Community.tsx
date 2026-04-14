@@ -28,7 +28,7 @@ const Community = () => {
     nickname: user.nickname,
     level: user.level,
     score: user.score,
-    badges: user.badges,
+    badges: user.achievements,
     profileImage: user.profileImage,
     profileAvatar: user.profileAvatar,
     selectedSkin: user.selectedSkin ?? "basic",
