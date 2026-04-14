@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.kids_stock_app.twa",
+        "sha256_cert_fingerprints": ["C8:2C:EF:C4:12:ED:39:09:73:2A:69:E4:94:66:08:1B:DB:61:3C:77:44:1A:44:07:BB:0F:C0:50:73:36:03:5E"]
+      }
+    }]
