@@ -138,9 +138,6 @@ export const isValidNickname = (nickname: string) => {
     .replace(/\s/g, "")
     .replace(/[^가-힣a-z0-9]/g, "");
 
-  console.log("입력:", nickname);
-  console.log("정리:", normalized);
-
   return !bannedWords.some((word) =>
     normalized.includes(word.normalize("NFC")),
   );
