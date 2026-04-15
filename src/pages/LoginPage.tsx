@@ -114,6 +114,7 @@ const LoginPage = () => {
       });
       return;
     }
+
     navigate("/");
   };
 
@@ -165,6 +166,10 @@ const LoginPage = () => {
       });
       return;
     }
+    setStatus({
+      type: null,
+      message: "",
+    });
   };
 
   // ─────────────────────────────────────────
