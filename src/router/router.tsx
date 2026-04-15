@@ -26,6 +26,7 @@ import InquiryHistoryPage from "../pages/setting/InquiryHistoryPage";
 import InquiryDetailPage from "../pages/setting/InquiryDetailPage";
 import AdminInquiryListPage from "../pages/admin/AdminInquiryListPage";
 import AdminInquiryDetailPage from "../pages/admin/AdminInquiryDetailPage";
+import PrivacyPolicyPage from "../pages/setting/PrivacyPolicyPage";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
       { path: "inquiry", element: <InquiryPage /> },
       { path: "inquiry/history", element: <InquiryHistoryPage /> },
       { path: "inquiry/history/:id", element: <InquiryDetailPage /> },
+      { path: "privacy-policy", element: <PrivacyPolicyPage /> },
     ],
   },
   // ⭐ 관리자 페이지(별도 분리)

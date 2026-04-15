@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   LayoutDashboard,
   MessageCircle,
+  ChevronLeft,
 } from "lucide-react";
 import { useUser } from "../../context/UserContext";
 import { useModal } from "../../context/UIContext/ModalContext";
@@ -94,7 +95,7 @@ const SettingsPage = () => {
           icon: <ShieldCheck size={18} />,
           label: "개인정보 처리방침",
           description: "개인정보 보호 정책을 확인해요",
-          onClick: () => handleComingSoon("개인정보 처리방침"),
+          onClick: () => navigate("/privacy-policy"),
           color: "#5F7FA6",
         },
       ],
@@ -105,7 +106,9 @@ const SettingsPage = () => {
     <PageWrapper>
       {/* 헤더 */}
       <Header>
-        <BackButton onClick={() => navigate(-1)}>←</BackButton>
+        <BackButton onClick={() => navigate(-1)}>
+          <ChevronLeft size={20} />
+        </BackButton>
         <HeaderTitle>설정</HeaderTitle>
         <div style={{ width: 36 }} />
       </Header>
@@ -201,15 +204,14 @@ const Header = styled.div`
 const BackButton = styled.button`
   width: 36px;
   height: 36px;
-  border-radius: 50%;
   border: none;
-  background: ${({ theme }) => theme.colors.surface};
-  font-size: 18px;
-  cursor: pointer;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.card};
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.15s;
+  cursor: pointer;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
 
   &:hover {
     background: ${({ theme }) => theme.colors.border};
