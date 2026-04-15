@@ -46,14 +46,18 @@ const LoginPage = () => {
   // ─────────────────────────────────────────
   // 게스트 닉네임 자동 추천
   // ─────────────────────────────────────────
-  const handleGenerateNickname = (
+  const handleGenerateNickname = async (
     setNick: (n: string) => void,
     setStatus: (s: {
       type: "error" | "success" | null;
       message: string;
     }) => void,
   ) => {
-    const generated = generateNickname();
+    let generated = generateNickname();
+
+    while (await checkNicknameDuplicate(generated)) {
+      generated = generateNickname();
+    }
     setNick(generated);
     setStatus({ type: "success", message: "사용 가능한 닉네임이에요 ✓" });
   };
@@ -101,16 +105,22 @@ const LoginPage = () => {
       return;
     }
 
-    // Supabase 익명 계정 생성 후 시작
-    // 캐시 지워도 데이터 유지됨
-    await startGuest(guestNickname);
+    const result = await startGuest(guestNickname);
+
+    if (result?.error) {
+      setGuestNicknameStatus({
+        type: "error",
+        message: result.error,
+      });
+      return;
+    }
     navigate("/");
   };
 
   // ─────────────────────────────────────────
   // 닉네임 실시간 욕설 필터
   // ─────────────────────────────────────────
-  const handleNicknameChange = (
+  const handleNicknameChange = async (
     value: string,
     setNick: (n: string) => void,
     setStatus: (s: {
@@ -129,14 +139,31 @@ const LoginPage = () => {
       return;
     }
     // ✅ 초성만 입력 방지 (ㄱ~ㅎ, ㅏ~ㅣ)
-    if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(value)) {
-      setStatus({ type: "error", message: "올바른 닉네임을 입력해주세요" });
+    if (!/^[가-힣a-zA-Z0-9]+$/.test(value)) {
+      setStatus({
+        type: "error",
+        message: "한글, 영어, 숫자만 사용할 수 있어요",
+      });
       return;
     }
+    // ✅ 욕설 / 금지어
     if (!isValidNickname(value)) {
-      setStatus({ type: "error", message: "사용할 수 없는 닉네임이에요" });
-    } else {
-      setStatus({ type: null, message: "" });
+      setStatus({
+        type: "error",
+        message: "사용할 수 없는 닉네임이에요",
+      });
+      return;
+    }
+
+    // ✅ 중복 체크
+    const isDuplicate = await checkNicknameDuplicate(value);
+
+    if (isDuplicate) {
+      setStatus({
+        type: "error",
+        message: "이미 사용 중인 닉네임이에요",
+      });
+      return;
     }
   };
 
@@ -149,6 +176,18 @@ const LoginPage = () => {
 
     if (!email || !password) {
       setError("이메일과 비밀번호를 입력해주세요");
+      setIsLoading(false);
+      return;
+    }
+
+    if (nickname.trim().length < 2) {
+      setError("닉네임은 2글자 이상이에요");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!/^[가-힣a-zA-Z0-9]+$/.test(nickname)) {
+      setError("한글, 영어, 숫자만 사용할 수 있어요");
       setIsLoading(false);
       return;
     }
@@ -299,16 +338,14 @@ const LoginPage = () => {
               </GenerateButton>
             </NicknameWrapper>
 
-            {guestNicknameStatus.message && (
-              <StatusText $type={guestNicknameStatus.type}>
-                {guestNicknameStatus.message}
-              </StatusText>
-            )}
+            <StatusText $type={guestNicknameStatus.type}>
+              {guestNicknameStatus.message || " "}
+            </StatusText>
 
             <Notice>
-              💡 게스트 기록은 자동으로 저장돼요
+              💡 게스트 기록은 지금 기기에만 저장돼요
               <br />
-              이메일로 가입하면 다른 기기에서도 사용 가능해요
+              이메일로 가입하면 다른 기기에서도 계속 사용할 수 있어요
             </Notice>
 
             <Button onClick={handleGuestStart}>시작하기!</Button>
@@ -360,11 +397,9 @@ const LoginPage = () => {
                     🎲
                   </GenerateButton>
                 </NicknameWrapper>
-                {nicknameStatus.message && (
-                  <StatusText $type={nicknameStatus.type}>
-                    {nicknameStatus.message}
-                  </StatusText>
-                )}
+                <StatusText $type={nicknameStatus.type}>
+                  {nicknameStatus.message || " "}
+                </StatusText>
               </>
             )}
             <Input
@@ -591,6 +626,7 @@ const GenerateButton = styled.button`
 
 const StatusText = styled.p<{ $type: "error" | "success" | null }>`
   width: 100%;
+  min-height: 18px;
   font-size: 12px;
   margin-bottom: 10px;
   color: ${({ $type }) => ($type === "error" ? "#e74c3c" : "#2ecc71")};

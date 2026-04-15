@@ -1,10 +1,147 @@
-// utils/nicknameFilter.ts
-const bannedWords = ["바보", "멍청이", "욕", "꺼져", "죽어", "싫어", "미워"];
+const bannedWords = [
+  // 한국어 욕설 / 비하
+  "바보",
+  "멍청이",
+  "병신",
+  "븅신",
+  "고자",
+  "찌질이",
+  "또라이",
+  "미친",
+  "미이친",
+  "정신병",
+  "염병",
+  "개새끼",
+  "개놈",
+  "새끼",
+  "꺼져",
+  "죽어",
+  "죽인다",
+  "싫어",
+  "미워",
+  "짜증",
+  "재수없",
+  "닥쳐",
+  "지랄",
+  "ㅈㄹ",
+  "좆",
+  "존나",
+  "존내",
+  "존맛",
+  "좇",
+  "씹",
+  "씹새",
+  "시발",
+  "씨발",
+  "씨이발",
+  "시1발",
+  "섹스",
+  "섹",
+  "야동",
+  "야사",
+  "보지",
+  "자지",
+  "꼴려",
+  "꼴릿",
+  "딸딸이",
+  "딸치",
+  "19금",
+  "19",
+  "섹시",
+  "유두",
+  "가슴",
+  "팬티",
+  "브라",
+
+  // 혐오 / 차별
+  "장애인",
+  "흑형",
+  "틀딱",
+  "급식충",
+  "한남",
+  "김치녀",
+  "맘충",
+  "틀니",
+  "페미",
+  "일베",
+  "메갈",
+
+  // 영어 욕설
+  "fuck",
+  "fucking",
+  "fuk",
+  "shit",
+  "shitty",
+  "bitch",
+  "bitches",
+  "ass",
+  "asshole",
+  "bastard",
+  "damn",
+  "wtf",
+  "hell",
+  "crap",
+  "idiot",
+  "stupid",
+  "loser",
+  "dumb",
+  "moron",
+  "retard",
+  "suck",
+  "sucker",
+  "jerk",
+  "freak",
+  "kill",
+  "die",
+  "dead",
+  "suicide",
+  "sex",
+  "sexy",
+  "porn",
+  "xxx",
+  "boob",
+  "nude",
+  "naked",
+  "dick",
+  "penis",
+  "vagina",
+  "gay",
+  "lesbian",
+  "slut",
+  "whore",
+
+  // 우회 표현
+  "tlqkf",
+  "tq",
+  "wtf",
+  "18",
+  "19",
+  "xx",
+  "ㅅㅂ",
+  "ㅂㅅ",
+  "ㅄ",
+  "ㅄ아",
+  "ㅅㄲ",
+  "ㅈㄴ",
+  "ㅈㄹ",
+  "ㄲㅈ",
+  "ㅁㅊ",
+  "ㄷㅊ",
+];
 
 export const isValidNickname = (nickname: string) => {
   if (!nickname.trim()) return false;
 
-  const lower = nickname.toLowerCase();
+  const normalized = nickname
+    .normalize("NFC")
+    .toLowerCase()
+    .replace(/\s/g, "")
+    .replace(/[^가-힣a-z0-9]/g, "");
 
-  return !bannedWords.some((word) => lower.includes(word));
+  console.log("입력:", nickname);
+  console.log("정리:", normalized);
+
+  return !bannedWords.some((word) =>
+    normalized.includes(word.normalize("NFC")),
+  );
 };

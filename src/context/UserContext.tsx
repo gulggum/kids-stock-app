@@ -73,7 +73,7 @@ type ExpInfo = {
 type UserContextType = {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
-  startGuest: (nickname: string) => Promise<void>; //게스트로그인(로컬에만 저장)
+  startGuest: (nickname: string) => Promise<{ error: string | null }>; //게스트로그인(로컬에만 저장)
 
   // ✅ 새로 추가 — 로그인 상태
   isLoading: boolean; // 세션 확인 중인지 (앱 첫 로드 시)
@@ -290,10 +290,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         status: profile?.status ?? "😄 오늘은 지켜보는 날이에요",
         // DB 값이 있으면 DB 우선, 없으면 localStorage
         score: profile?.score ?? savedGameData.score,
-        level: (profile?.level ?? 1) > 1 ? profile!.level : savedGameData.level,
-        coin:
-          (profile?.coin ?? 300) !== 300 ? profile!.coin : savedGameData.coin, // ← 추가
-        exp: (profile?.exp ?? 0) > 0 ? profile!.exp : savedGameData.exp,
+        level: profile?.level ?? savedGameData.level,
+        coin: profile?.coin ?? savedGameData.coin,
+        exp: profile?.exp ?? savedGameData.exp,
         totalKnowledge: totalKnowledge ?? 0,
         attendance: profile?.attendance ?? savedGameData.attendance,
         streak: profile?.streak ?? savedGameData.streak,
@@ -343,7 +342,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // ✅ 게스트 시작 (localStorage에만 저장)
-  const startGuest = async (nickname: string) => {
+  const startGuest = async (
+    nickname: string,
+  ): Promise<{ error: string | null }> => {
     // ✅ Supabase 익명 계정 생성
     const { data, error } = await supabase.auth.signInAnonymously();
     const anonymousUser = data?.user;
@@ -359,16 +360,21 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         coin: 300,
       }));
       setIsLoggedIn(true); // 게스트도 로그인 상태로 처리
-      return;
+      return { error: null };
     }
     // ✅ profiles에 닉네임 저장
-    await supabase
+    const { error: profileError } = await supabase
       .from("profiles")
       .update({
         nickname,
         role: "user",
       })
       .eq("id", anonymousUser.id);
+
+    if (profileError?.code === "23505") {
+      await supabase.auth.signOut();
+      return { error: "이미 사용 중인 닉네임이에요" };
+    }
 
     // ✅ wallets 생성
     await supabase.from("wallets").upsert({
@@ -387,6 +393,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }));
 
     setIsLoggedIn(true);
+    return { error: null };
   };
 
   // ─────────────────────────────────────────

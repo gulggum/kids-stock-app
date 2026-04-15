@@ -1,4 +1,4 @@
-import { supabase } from "../utils/supabase"; // 지금 위치 기준
+import { supabase } from "../utils/supabase";
 
 export const checkNicknameDuplicate = async (nickname: string) => {
   const { data, error } = await supabase
