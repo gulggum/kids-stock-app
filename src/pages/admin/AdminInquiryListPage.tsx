@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useInquiry, type InquiryWithProfile } from "../../hooks/useInquiry";
 import { useEffect, useState } from "react";
 import { getDateKey } from "../../utils/date";
+import { ChevronLeft } from "lucide-react";
 
 const statusMap = {
   pending: { label: "접수됨", color: "#F59E0B" },
@@ -28,6 +29,9 @@ export default function AdminInquiryListPage() {
   return (
     <Container>
       <Header>
+        <BackButton onClick={() => navigate(-1)}>
+          <ChevronLeft size={20} />
+        </BackButton>
         <Title>문의 관리</Title>
         <Count>{inquiryList.length}건</Count>
       </Header>
@@ -151,4 +155,16 @@ const StatusBadge = styled.div<{ $color: string }>`
   font-weight: 700;
   color: ${({ $color }) => $color};
   background: ${({ $color }) => `${$color}18`};
+`;
+const BackButton = styled.button`
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.card};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
 `;

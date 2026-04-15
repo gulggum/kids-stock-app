@@ -2,13 +2,15 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import type { Inquiry } from "../../types/UserType";
 import { useInquiry, type InquiryWithProfile } from "../../hooks/useInquiry";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useModal } from "../../context/UIContext/ModalContext";
+import { ChevronLeft } from "lucide-react";
 
 export default function AdminInquiryDetailPage() {
   const { id } = useParams();
   const { getInquiryById, updateInquiry } = useInquiry();
   const { openModal, closeModal } = useModal();
+  const navigate = useNavigate();
 
   const [status, setStatus] = useState<Inquiry["status"]>("checking");
   const [answer, setAnswer] = useState("");
@@ -69,7 +71,13 @@ export default function AdminInquiryDetailPage() {
 
   return (
     <Container>
-      <Title>문의 답변</Title>
+      <TopWrap>
+        <BackButton onClick={() => navigate(-1)}>
+          <ChevronLeft size={20} />
+        </BackButton>
+        <Title>문의 답변</Title>
+        <div style={{ width: "50px" }}></div>
+      </TopWrap>
 
       <Card>
         <Label>유저</Label>
@@ -115,6 +123,12 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+`;
+
+const TopWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const Title = styled.h2`
@@ -195,4 +209,17 @@ const SaveButton = styled.button`
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.primary};
   cursor: pointer;
+`;
+const BackButton = styled.button`
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.card};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  margin-right: 15px;
 `;
