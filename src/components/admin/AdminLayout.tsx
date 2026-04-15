@@ -4,6 +4,8 @@ import { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
 import { cleanTheme, GlobalStyle } from "../../theme/ThemeProvider";
+import { ModalProvider, useModal } from "../../context/UIContext/ModalContext";
+import ModalPopup from "../ModalPopup";
 
 /**
  * 관리자 페이지 전체 레이아웃
@@ -21,24 +23,48 @@ const AdminLayout = () => {
   // ⭐ 모바일 sidebar 열림 상태
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const AdminModalBridge = () => {
+    const { modal, closeModal } = useModal();
+    if (!modal) return null;
+    return (
+      <ModalPopup
+        {...modal}
+        onConfirm={() => {
+          modal.onConfirm?.();
+          closeModal();
+        }}
+        onCancel={
+          modal.type === "CONFIRM"
+            ? () => {
+                modal.onCancel?.();
+                closeModal();
+              }
+            : undefined
+        }
+      />
+    );
+  };
+
   return (
     <ThemeProvider theme={cleanTheme}>
       <GlobalStyle />
-      <Layout>
-        {/* 모바일 overlay */}
-        {sidebarOpen && <Overlay onClick={() => setSidebarOpen(false)} />}
+      <ModalProvider>
+        <Layout>
+          {/* 모바일 overlay */}
+          {sidebarOpen && <Overlay onClick={() => setSidebarOpen(false)} />}
+          <AdminModalBridge />
+          <AdminSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
-        <AdminSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+          <Content>
+            {/* Header에서 sidebar 열기 */}
+            <AdminHeader setOpen={setSidebarOpen} />
 
-        <Content>
-          {/* Header에서 sidebar 열기 */}
-          <AdminHeader setOpen={setSidebarOpen} />
-
-          <Main>
-            <Outlet />
-          </Main>
-        </Content>
-      </Layout>
+            <Main>
+              <Outlet />
+            </Main>
+          </Content>
+        </Layout>
+      </ModalProvider>
     </ThemeProvider>
   );
 };
