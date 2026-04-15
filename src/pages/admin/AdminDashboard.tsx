@@ -1,12 +1,25 @@
 // 관리자 메인 대시보드 — Supabase 실제 데이터 연결
 import styled from "styled-components";
-import { Newspaper, Users, TrendingUp, BookOpen } from "lucide-react";
+import {
+  Newspaper,
+  Users,
+  TrendingUp,
+  BookOpen,
+  MessageCircle,
+} from "lucide-react";
 import { useAdminStats } from "../../hooks/Useadminstats";
 
 const AdminDashboard = () => {
   const { stats, loading } = useAdminStats();
 
   const cards = [
+    {
+      icon: <MessageCircle size={20} />,
+      label: "문의 요청",
+      value: loading ? "..." : `${stats.totalInquiries}건`,
+      color: "#FF8FA3",
+      desc: "유저가 남긴 문의",
+    },
     {
       icon: <Newspaper size={20} />,
       label: "오늘 뉴스",

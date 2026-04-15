@@ -19,3 +19,16 @@ export type PublicUser = {
   lastActive: number;
   selectedSkin: string;
 };
+
+//문의사항 타입
+export type Inquiry = {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  category: string;
+  status: "pending" | "checking" | "done";
+  answer: string | null;
+  created_at: string;
+  answered_at: string | null;
+};

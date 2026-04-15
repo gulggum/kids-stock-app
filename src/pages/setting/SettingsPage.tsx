@@ -9,10 +9,11 @@ import {
   Palette,
   ShieldCheck,
   LayoutDashboard,
+  MessageCircle,
 } from "lucide-react";
-import { useUser } from "../context/UserContext";
-import { useModal } from "../context/UIContext/ModalContext";
-import { useToast } from "../context/UIContext/ToastContext";
+import { useUser } from "../../context/UserContext";
+import { useModal } from "../../context/UIContext/ModalContext";
+import { useToast } from "../../context/UIContext/ToastContext";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
@@ -82,6 +83,13 @@ const SettingsPage = () => {
     {
       title: "기타",
       items: [
+        {
+          icon: <MessageCircle size={18} />,
+          label: "문의하기",
+          description: "불편한 점이나 궁금한 점을 남겨요",
+          onClick: () => navigate("/inquiry"),
+          color: "#FF8FA3",
+        },
         {
           icon: <ShieldCheck size={18} />,
           label: "개인정보 처리방침",

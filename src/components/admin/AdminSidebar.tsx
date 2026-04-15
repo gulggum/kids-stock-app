@@ -44,6 +44,9 @@ const AdminSidebar = ({ open, setOpen }: Props) => {
         <MenuItem to="/admin/stats" onClick={() => setOpen(false)}>
           통계
         </MenuItem>
+        <MenuItem to="/admin/inquiries" onClick={() => setOpen(false)}>
+          문의 관리
+        </MenuItem>
       </Menu>
     </Sidebar>
   );

@@ -18,9 +18,14 @@ import AdminRanking from "../pages/admin/AdminRanking";
 import AdminItems from "../pages/admin/AdminItems";
 import AdminStats from "../pages/admin/AdminStats";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
-import SettingsPage from "../pages/SettingsPage";
+import SettingsPage from "../pages/setting/SettingsPage";
 import ExchangePage from "../pages/market/ExchangePage";
 import TradeHistoryPage from "../pages/market/TradeHistoryPage";
+import InquiryPage from "../pages/setting/InquiryPage";
+import InquiryHistoryPage from "../pages/setting/InquiryHistoryPage";
+import InquiryDetailPage from "../pages/setting/InquiryDetailPage";
+import AdminInquiryListPage from "../pages/admin/AdminInquiryListPage";
+import AdminInquiryDetailPage from "../pages/admin/AdminInquiryDetailPage";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
@@ -55,6 +60,9 @@ export const router = createBrowserRouter([
       },
       { path: "settings", element: <SettingsPage /> },
       { path: "history", element: <TradeHistoryPage /> },
+      { path: "inquiry", element: <InquiryPage /> },
+      { path: "inquiry/history", element: <InquiryHistoryPage /> },
+      { path: "inquiry/history/:id", element: <InquiryDetailPage /> },
     ],
   },
   // ⭐ 관리자 페이지(별도 분리)
@@ -71,6 +79,8 @@ export const router = createBrowserRouter([
       { path: "ranking", element: <AdminRanking /> },
       { path: "items", element: <AdminItems /> },
       { path: "stats", element: <AdminStats /> },
+      { path: "inquiries", element: <AdminInquiryListPage /> },
+      { path: "inquiries/:id", element: <AdminInquiryDetailPage /> },
     ],
   },
 

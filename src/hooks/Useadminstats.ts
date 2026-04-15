@@ -9,6 +9,7 @@ export type AdminStats = {
   todayNews: number; // 오늘 등록된 뉴스
   todayTrades: number; // 오늘 거래 수
   todayQuizzes: number; // 오늘 퀴즈 푼 수
+  totalInquiries: number; //문의 건수
   // 통계용
   reasonStats: { reason: string; count: number }[]; // 투자 이유 분포
   topStocks: { stock_name: string; count: number }[]; // 인기 종목 TOP5
@@ -20,6 +21,7 @@ export function useAdminStats() {
     todayNews: 0,
     todayTrades: 0,
     todayQuizzes: 0,
+    totalInquiries: 0,
     reasonStats: [],
     topStocks: [],
   });
@@ -54,6 +56,11 @@ export function useAdminStats() {
         .select("*", { count: "exact", head: true })
         .eq("date", today)
         .eq("quiz_done", true);
+      // 문의 건수
+
+      const { count: totalInquiries } = await supabase
+        .from("inquiries")
+        .select("*", { count: "exact", head: true });
 
       // 투자 이유 분포
       const { data: reasonData } = await supabase
@@ -91,6 +98,7 @@ export function useAdminStats() {
         todayNews: todayNews ?? 0,
         todayTrades: todayTrades ?? 0,
         todayQuizzes: todayQuizzes ?? 0,
+        totalInquiries: totalInquiries ?? 0,
         reasonStats,
         topStocks,
       });
