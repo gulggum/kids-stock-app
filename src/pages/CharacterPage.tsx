@@ -10,7 +10,7 @@ import { useSkinItem } from "../context/SkinItemContext";
 import { cardSkins } from "../data/static/cardSkins";
 import { useAchievement } from "../context/AchievementContext";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 import ExpBarCard from "../components/character/ExpBarCard";
@@ -187,7 +187,10 @@ const CharacterPage = () => {
 };
 
 export default CharacterPage;
-
+const borderPulse = keyframes`
+  0%, 100% { box-shadow: 0 0 0px transparent; }
+  50% { box-shadow: 0 0 6px 2px rgba(99, 179, 237, 0.7); }
+`;
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -217,11 +220,15 @@ const SettingButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
-  border-radius: ${({ theme }) => theme.radius.sm};
+  padding: 4px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
   &:hover {
     background: ${({ theme }) => theme.colors.background};
   }
+  animation: ${borderPulse} 2s ease-in-out infinite;
 `;
 
 const ProfileSection = styled.div`
