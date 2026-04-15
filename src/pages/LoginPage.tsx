@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 import { generateNickname } from "../utils/nickname";
-import { isValidNickname } from "../utils/nicknameFilter";
 import {
   checkNicknameDuplicate,
   validateNickname,
