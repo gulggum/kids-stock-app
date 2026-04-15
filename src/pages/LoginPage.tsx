@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
@@ -17,7 +17,7 @@ type EmailMode = "login" | "signup";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, startGuest } = useUser();
+  const { signIn, signUp, startGuest, isLoggedIn } = useUser();
   const { createToast } = useToast();
 
   // 메인 모드: 선택화면 / 게스트 / 이메일
@@ -44,6 +44,12 @@ const LoginPage = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn]);
 
   // ─────────────────────────────────────────
   // 게스트 닉네임 자동 추천
@@ -179,7 +185,6 @@ const LoginPage = () => {
         setError("이메일 또는 비밀번호가 틀렸어요");
       } else {
         createToast("👋 환영해요! 주식 놀이터에서 재미있게 시작해보세요!");
-        navigate("/");
       }
     } else {
       const { error } = await signUp(email, password, nickname);
