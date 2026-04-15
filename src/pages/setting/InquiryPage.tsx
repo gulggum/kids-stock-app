@@ -172,6 +172,7 @@ const PageWrapper = styled.div`
   padding: 16px;
   min-height: 100dvh;
   background: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.radius.md};
 `;
 
 const Header = styled.div`
