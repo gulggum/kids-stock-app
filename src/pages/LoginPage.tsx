@@ -4,7 +4,10 @@ import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 import { generateNickname } from "../utils/nickname";
 import { isValidNickname } from "../utils/nicknameFilter";
-import { checkNicknameDuplicate } from "../services/userService";
+import {
+  checkNicknameDuplicate,
+  validateNickname,
+} from "../services/userService";
 import logo from "../assets/images/logo.png";
 import bgImage from "../assets/images/bgImage.png";
 import { useToast } from "../context/UIContext/ToastContext";
@@ -45,6 +48,7 @@ const LoginPage = () => {
 
   // ─────────────────────────────────────────
   // 게스트 닉네임 자동 추천
+  // 중복되지 않는 랜덤 닉네임 생성
   // ─────────────────────────────────────────
   const handleGenerateNickname = async (
     setNick: (n: string) => void,
@@ -58,49 +62,25 @@ const LoginPage = () => {
     while (await checkNicknameDuplicate(generated)) {
       generated = generateNickname();
     }
+
     setNick(generated);
-    setStatus({ type: "success", message: "사용 가능한 닉네임이에요 ✓" });
+    setStatus({
+      type: null,
+      message: "",
+    });
   };
 
   // ─────────────────────────────────────────
   // 게스트 시작
+  // 닉네임 최종 검증 후 게스트 로그인
   // ─────────────────────────────────────────
   const handleGuestStart = async () => {
-    if (!guestNickname.trim()) {
-      setGuestNicknameStatus({
-        type: "error",
-        message: "닉네임을 입력해주세요",
-      });
-      return;
-    }
-    if (guestNickname.trim().length < 2) {
-      setGuestNicknameStatus({
-        type: "error",
-        message: "닉네임은 2글자 이상이에요",
-      });
-      return;
-    }
-    if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(guestNickname)) {
-      setGuestNicknameStatus({
-        type: "error",
-        message: "올바른 닉네임을 입력해주세요",
-      });
-      return;
-    }
+    const errorMessage = await validateNickname(guestNickname);
 
-    if (!isValidNickname(guestNickname)) {
+    if (errorMessage) {
       setGuestNicknameStatus({
         type: "error",
-        message: "사용할 수 없는 닉네임이에요",
-      });
-      return;
-    }
-    //닉네임 중복방지
-    const isDuplicate = await checkNicknameDuplicate(guestNickname);
-    if (isDuplicate) {
-      setGuestNicknameStatus({
-        type: "error",
-        message: "이미 사용 중인 닉네임이에요",
+        message: errorMessage,
       });
       return;
     }
@@ -119,7 +99,8 @@ const LoginPage = () => {
   };
 
   // ─────────────────────────────────────────
-  // 닉네임 실시간 욕설 필터
+  // 닉네임 입력 실시간 검증
+  // 입력 중 형식 / 욕설 / 중복 체크
   // ─────────────────────────────────────────
   const handleNicknameChange = async (
     value: string,
@@ -130,48 +111,30 @@ const LoginPage = () => {
     }) => void,
   ) => {
     setNick(value);
+
     if (!value) {
-      setStatus({ type: null, message: "" });
-      return;
-    }
-    // ✅ 2글자 미만
-    if (value.trim().length < 2) {
-      setStatus({ type: "error", message: "닉네임은 2글자 이상이에요" });
-      return;
-    }
-    // ✅ 초성만 입력 방지 (ㄱ~ㅎ, ㅏ~ㅣ)
-    if (!/^[가-힣a-zA-Z0-9]+$/.test(value)) {
       setStatus({
-        type: "error",
-        message: "한글, 영어, 숫자만 사용할 수 있어요",
-      });
-      return;
-    }
-    // ✅ 욕설 / 금지어
-    if (!isValidNickname(value)) {
-      setStatus({
-        type: "error",
-        message: "사용할 수 없는 닉네임이에요",
+        type: null,
+        message: "",
       });
       return;
     }
 
-    // ✅ 중복 체크
-    const isDuplicate = await checkNicknameDuplicate(value);
+    const errorMessage = await validateNickname(value);
 
-    if (isDuplicate) {
+    if (errorMessage) {
       setStatus({
         type: "error",
-        message: "이미 사용 중인 닉네임이에요",
+        message: errorMessage,
       });
       return;
     }
+
     setStatus({
       type: null,
       message: "",
     });
   };
-
   // ─────────────────────────────────────────
   // 이메일 로그인/회원가입
   // ─────────────────────────────────────────
@@ -179,27 +142,27 @@ const LoginPage = () => {
     setError(null);
     setIsLoading(true);
 
+    // 회원가입일 때만 닉네임 검사
+    if (emailMode === "signup") {
+      const errorMessage = await validateNickname(nickname);
+
+      if (errorMessage) {
+        setError(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+    }
+
     if (!email || !password) {
       setError("이메일과 비밀번호를 입력해주세요");
       setIsLoading(false);
       return;
     }
 
-    if (nickname.trim().length < 2) {
-      setError("닉네임은 2글자 이상이에요");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!/^[가-힣a-zA-Z0-9]+$/.test(nickname)) {
-      setError("한글, 영어, 숫자만 사용할 수 있어요");
-      setIsLoading(false);
-      return;
-    }
     // ✅ 이메일 형식 체크
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      setError("올바른 이메일 형식이 아니에요 (예: test@gmail.com)");
+      setError(`올바른 이메일 형식이 아니에요 (예: test@gmail.com)`);
       setIsLoading(false);
       return;
     }
@@ -220,28 +183,17 @@ const LoginPage = () => {
         navigate("/");
       }
     } else {
-      if (!nickname) {
-        setError("닉네임을 입력해주세요");
-        setIsLoading(false);
-        return;
-      }
-
-      if (!isValidNickname(nickname)) {
-        setError("사용할 수 없는 닉네임이에요");
-        setIsLoading(false);
-        return;
-      }
-
-      const isDuplicate = await checkNicknameDuplicate(nickname);
-      if (isDuplicate) {
-        setError("이미 사용 중인 닉네임이에요");
-        setIsLoading(false);
-        return;
-      }
-
       const { error } = await signUp(email, password, nickname);
       if (error) {
-        setError("회원가입에 실패했어요. 다시 시도해주세요");
+        if (
+          error.includes("already registered") ||
+          error.includes("already exists") ||
+          error.includes("User already registered")
+        ) {
+          setError("이미 가입된 이메일이에요");
+        } else {
+          setError("회원가입에 실패했어요. 다시 시도해주세요");
+        }
       } else {
         createToast("🎉 가입 완료!");
         setEmailMode("login");
@@ -364,13 +316,26 @@ const LoginPage = () => {
             <TabWrapper>
               <Tab
                 $active={emailMode === "login"}
-                onClick={() => setEmailMode("login")}
+                onClick={() => {
+                  setEmailMode("login");
+                  setError(null);
+                  setNicknameStatus({ type: null, message: "" });
+                  setPassword("");
+                  setEmail("");
+                }}
               >
                 로그인
               </Tab>
               <Tab
                 $active={emailMode === "signup"}
-                onClick={() => setEmailMode("signup")}
+                onClick={() => {
+                  setEmailMode("signup");
+                  setError(null);
+                  setNicknameStatus({ type: null, message: "" });
+                  setNickname("");
+                  setPassword("");
+                  setEmail("");
+                }}
               >
                 회원가입
               </Tab>
