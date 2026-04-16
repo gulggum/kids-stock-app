@@ -1,15 +1,10 @@
-// CharacterContext, ScoreContext 정리예정
-
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../utils/supabase";
-import { getStorage, setStorage } from "../utils/storage";
 import { LEVEL_RULES, type LevelTier } from "../data/rules/levelTitles";
 import { getDateKey } from "../utils/date";
 import type { RewardType } from "../data/rules/rewardRules";
 import type { ProfileAvatarType } from "../data/static/profileAvatars";
 import { getLevelTier } from "../utils/getLevelTier";
-
-const USER_KEY = "user";
 
 // ─────────────────────────────────────────
 // 📌 타입 정의
@@ -166,10 +161,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true); // 처음엔 세션 확인 중
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // localStorage에서 게임 데이터 불러오기 (level, exp 등)
-  const [user, setUser] = useState<User>(() =>
-    getStorage(USER_KEY, defaultUser),
-  );
+  const [user, setUser] = useState<User>(defaultUser);
+
+  const currentUserIdRef = useRef("");
 
   // ─────────────────────────────────────────
   // ✅ 앱 시작 시 Supabase 세션 확인
@@ -187,10 +181,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           setUser(defaultUser);
           setIsLoggedIn(false);
-          setIsLoading(false); // 🔥 이거 필수
+          setIsLoading(false);
         }
       } catch (err) {
         console.error("initAuth 에러:", err);
+        setIsLoading(false);
       }
     };
 
@@ -201,9 +196,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // TOKEN_REFRESHED 무시 — 탭 전환 시 불필요한 재호출 방지
+      if (event === "TOKEN_REFRESHED") return;
+
       if (event === "SIGNED_IN" && session?.user) {
+        // stale closure 방지 — user.id 대신 ref 사용
         if (currentUserIdRef.current !== session.user.id) {
-          // ← user.id 대신 ref
           await loadUserFromDB(session.user.id);
         }
       }
@@ -222,66 +220,50 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ✅ DB에서 유저 데이터 불러오기
   // 로그인 성공 시 호출됨
   // ─────────────────────────────────────────
-
-  const currentUserIdRef = useRef<string>("");
-
   const loadUserFromDB = async (userId: string) => {
     try {
       setIsLoading(true);
       currentUserIdRef.current = userId;
-      // ✅ profile
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .maybeSingle();
 
-      if (profileError) {
-        console.error("profile error:", profileError);
-      }
+      // ✅ 병렬 fetch — 4개 쿼리 동시 실행 (순차 대비 ~3배 빠름)
+      const [
+        { data: profile, error: profileError },
+        { data: wallet, error: walletError },
+        { data: newsLogs, error: newsLogError },
+        { count: totalKnowledge },
+      ] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+        supabase
+          .from("wallets")
+          .select("*")
+          .eq("user_id", userId)
+          .maybeSingle(),
+        supabase
+          .from("user_news_log")
+          .select("news_id")
+          .eq("user_id", userId)
+          .eq("quiz_done", true),
+        supabase
+          .from("user_knowledge_log")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", userId),
+      ]);
 
-      // 앱 열 때마다 last_active 업데이트 (온라인 표시용)
-      await supabase
+      // last_active는 fire-and-forget (로딩 안 막음)
+      supabase
         .from("profiles")
         .update({ last_active: new Date().toISOString() })
         .eq("id", userId);
 
-      // ✅ wallet (maybeSingle로 안전하게)
-      const { data: wallet, error: walletError } = await supabase
-        .from("wallets")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
+      if (profileError) console.error("profile error:", profileError);
+      if (walletError) console.error("wallet error:", walletError);
+      if (newsLogError) console.error("newsLog error:", newsLogError);
 
-      if (walletError) {
-        console.error("wallet error:", walletError);
-      }
-
-      // ✅ 퀴즈 푼 기록 가져오기 (다른 기기 동기화)
-      const { data: newsLogs, error: newsLogError } = await supabase
-        .from("user_news_log")
-        .select("news_id")
-        .eq("user_id", userId)
-        .eq("quiz_done", true);
-
-      if (newsLogError) {
-        console.error("newsLog error:", newsLogError);
-      }
-
-      //오늘의퀴즈
       const solvedQuizIds = newsLogs?.map((log) => log.news_id) ?? [];
 
-      //오늘의지식한스푼 선택해서 불러오기
-      const { count: totalKnowledge } = await supabase
-        .from("user_knowledge_log")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId);
-
-      // localStorage + Supabase 합치기 (중복 제거)
-      const savedGameData = getStorage(USER_KEY, defaultUser);
-
+      // ✅ DB가 source of truth — 로컬 병합 제거
       setUser({
-        ...savedGameData,
+        ...defaultUser,
         id: userId,
         nickname: profile?.nickname ?? "유저",
         role: profile?.role ?? "user",
@@ -292,52 +274,20 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         ownedSkins: profile?.owned_skins ?? ["basic"],
         selectedSkin: profile?.selected_skin ?? "basic",
         status: profile?.status ?? "😄 오늘은 지켜보는 날이에요",
-        // DB 값이 있으면 DB 우선, 없으면 localStorage
-        score: profile?.score ?? savedGameData.score,
-        level: profile?.level ?? savedGameData.level,
-        coin: profile?.coin ?? savedGameData.coin,
-        exp: profile?.exp ?? savedGameData.exp,
+        score: profile?.score ?? 0,
+        level: profile?.level ?? 1,
+        coin: profile?.coin ?? 300,
+        exp: profile?.exp ?? 0,
         totalKnowledge: totalKnowledge ?? 0,
-        attendance: profile?.attendance ?? savedGameData.attendance,
-        streak: profile?.streak ?? savedGameData.streak,
-        //new Set으로 (로컬과,supabase에있는것 )중복제거
-        quizProgress: [
-          ...new Set([...savedGameData.quizProgress, ...solvedQuizIds]),
-        ],
-        achievements: [
-          ...new Set([
-            ...savedGameData.achievements, //로컬
-            ...(profile?.achievements ?? []), //supabase
-          ]),
-        ],
+        attendance: profile?.attendance ?? [],
+        streak: profile?.streak ?? 0,
+        quizProgress: solvedQuizIds,
+        achievements: profile?.achievements ?? [],
       });
-      // TODO: 월요일에 지우고(위에 셋유저를 아래껄로 바꾸고 커밋 끝!)
-      // coin: profile?.coin ?? savedGameData.coin,
-      // exp: profile?.exp ?? savedGameData.exp,
-      // level: profile?.level ?? savedGameData.level,
-      if (
-        savedGameData.level > 1 ||
-        savedGameData.coin !== 300 ||
-        savedGameData.exp > 0
-      ) {
-        supabase
-          .from("profiles")
-          .update({
-            level: savedGameData.level,
-            coin: savedGameData.coin,
-            exp: savedGameData.exp,
-          })
-          .eq("id", userId)
-          .then(({ error }) => {
-            if (error) console.error("초기 데이터 마이그레이션 실패:", error);
-          });
-      }
 
       setIsLoggedIn(true);
     } catch (err) {
       console.error("loadUserFromDB 에러:", err);
-
-      // ❗ 에러 나도 앱 안 멈추게
       setUser(defaultUser);
       setIsLoggedIn(false);
     } finally {
@@ -345,7 +295,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ✅ 게스트 시작 (localStorage에만 저장)
+  // ✅ 게스트 시작
   const startGuest = async (
     nickname: string,
   ): Promise<{ error: string | null }> => {
@@ -367,16 +317,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       return { error: null };
     }
     // ✅ profiles에 닉네임 저장
-    const { error: profileError } = await supabase.from("profiles").upsert(
-      {
-        id: anonymousUser.id,
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({
         nickname,
         role: "user",
-      },
-      {
-        onConflict: "id",
-      },
-    );
+      })
+      .eq("id", anonymousUser.id);
 
     if (profileError?.code === "23505") {
       await supabase.auth.signOut();
@@ -704,17 +651,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isCheckedToday = user.attendance.includes(today);
 
-  // 변경 — localStorage + Supabase 동시 저장
   const isSolved = (quizId: string) => user.quizProgress.includes(quizId);
-  // ↑ 빠른 응답을 위해 localStorage 먼저 체크 (그대로 유지
+
   const markSolved = (
     quizId: string,
     giveReward: (type: RewardType) => void,
   ): boolean => {
-    // 중복 체크 — localStorage 기준
     if (user.quizProgress.includes(quizId)) return false;
 
-    // 1️⃣ localStorage 즉시 업데이트 (빠른 UI 반응)
+    // 1️⃣ UI 즉시 업데이트 (빠른 UI 반응)
     setUser((prev) => ({
       ...prev,
       quizProgress: [...prev.quizProgress, quizId],
@@ -763,11 +708,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         });
     }
   };
-
-  // ✅ 게임 데이터 localStorage 저장 (기존과 동일)
-  useEffect(() => {
-    setStorage(USER_KEY, user);
-  }, [user]);
 
   return (
     <UserContext.Provider
