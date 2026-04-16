@@ -1,6 +1,6 @@
 // CharacterContext, ScoreContext 정리예정
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { getStorage, setStorage } from "../utils/storage";
 import { LEVEL_RULES, type LevelTier } from "../data/rules/levelTitles";
@@ -202,12 +202,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        // 이미 같은 유저면 무시
-        if (user.id !== session.user.id) {
+        if (currentUserIdRef.current !== session.user.id) {
+          // ← user.id 대신 ref
           await loadUserFromDB(session.user.id);
         }
       }
       if (event === "SIGNED_OUT") {
+        currentUserIdRef.current = "";
         setUser(defaultUser);
         setIsLoggedIn(false);
       }
@@ -221,10 +222,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ✅ DB에서 유저 데이터 불러오기
   // 로그인 성공 시 호출됨
   // ─────────────────────────────────────────
+
+  const currentUserIdRef = useRef<string>("");
+
   const loadUserFromDB = async (userId: string) => {
     try {
       setIsLoading(true);
-
+      currentUserIdRef.current = userId;
       // ✅ profile
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
@@ -363,13 +367,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       return { error: null };
     }
     // ✅ profiles에 닉네임 저장
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .update({
+    const { error: profileError } = await supabase.from("profiles").upsert(
+      {
+        id: anonymousUser.id,
         nickname,
         role: "user",
-      })
-      .eq("id", anonymousUser.id);
+      },
+      {
+        onConflict: "id",
+      },
+    );
 
     if (profileError?.code === "23505") {
       await supabase.auth.signOut();

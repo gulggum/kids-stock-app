@@ -185,6 +185,7 @@ const LoginPage = () => {
         setError("이메일 또는 비밀번호가 틀렸어요");
       } else {
         createToast("👋 환영해요! 주식 놀이터에서 재미있게 시작해보세요!");
+        navigate("/");
       }
     } else {
       const { error } = await signUp(email, password, nickname);
