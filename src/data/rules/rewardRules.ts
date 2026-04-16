@@ -14,18 +14,18 @@ export type RewardRule = {
 
 export const REWARD_RULES = {
   // 📅 뉴스 확인
-  READ_NEWS: { coin: 3, exp: 5 },
+  READ_NEWS: { coin: 5, exp: 8 },
 
   // 📘 퀴즈
-  QUIZ_CORRECT: { coin: 5, exp: 15, score: 3 },
-  QUIZ_STREAK_3: { coin: 10, exp: 30, score: 10 },
+  QUIZ_CORRECT: { coin: 8, exp: 20, score: 3 },
+  QUIZ_STREAK_3: { coin: 15, exp: 40, score: 10 },
 
   // 📅 출석
-  ATTENDANCE_DAILY: { coin: 20, exp: 10, score: 1 },
-  ATTENDANCE_STREAK_7: { coin: 50, exp: 40 },
+  ATTENDANCE_DAILY: { coin: 30, exp: 15, score: 1 },
+  ATTENDANCE_STREAK_7: { coin: 70, exp: 50 },
 
   // 💡 오늘의 지식 확인
-  DAILY_KNOWLEDGE: { coin: 3, exp: 10 },
+  DAILY_KNOWLEDGE: { coin: 15, exp: 20 },
 
   // 📈 투자 행동
   FIRST_INVEST: { coin: 30, exp: 40, score: 5 },
@@ -39,8 +39,7 @@ export const REWARD_RULES = {
   // 🎒 소비
   ITEM_PURCHASE: { exp: 20 },
 
-  // 🏆 레벨업
-  LEVEL_UP: { coin: 30 },
+  // 🏆 레벨업은 ExpBarCard컴포넌트 에서 코인 차등 지급함
 } satisfies Record<string, RewardRule>;
 
 export type RewardType = keyof typeof REWARD_RULES;

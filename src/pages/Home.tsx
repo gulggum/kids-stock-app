@@ -169,6 +169,7 @@ const Home = () => {
                 : "탭해서 지식 얻기 +EXP 🧠"}
             </KnowledgeSub>
           </KnowledgeText>
+          {!hasTodayKnowledge && <Reward>+20 EXP</Reward>}
           {!hasTodayKnowledge && <NewBadge>NEW</NewBadge>}
         </KnowledgeButton>
       </Section>
@@ -411,6 +412,7 @@ const pulse = keyframes`
 `;
 
 const KnowledgeButton = styled.button<{ $done: boolean }>`
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -466,5 +468,37 @@ const NewBadge = styled.div`
   border-radius: 999px;
   background: ${({ theme }) => theme.colors.primary};
   color: white;
+`;
+
+const Reward = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 60px;
+
+  background: white;
+  color: #2563eb;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  padding: 4px 10px;
+  border-radius: 6px;
+
+  transform: rotate(-7deg);
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 10px;
+    background: #bff0c6;
+    backdrop-filter: blur(2px);
+    border-radius: 2px;
+  }
 `;
 export default Home;

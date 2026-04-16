@@ -34,7 +34,7 @@ const NewsSection = ({ news, onClick }: Props) => {
                 <Title>{item.title}</Title>
               </TitleRow>
 
-              {!isSolved(item.id) && <Reward>+15 EXP</Reward>}
+              {!isSolved(item.id) && <Reward>+20 EXP</Reward>}
 
               {isSolved(item.id) && (
                 <CompletedStamp>

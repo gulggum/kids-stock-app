@@ -56,6 +56,7 @@ export type User = {
 
 type ExpInfo = {
   level: number;
+  title: string;
   currentExp: number;
   neededExp: number;
   progress: number;
@@ -489,6 +490,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     if (!nextRule)
       return {
         level: currentRule.level,
+        title: currentRule.title,
         currentExp: 0,
         neededExp: 1,
         progress: 100,
@@ -497,6 +499,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const neededExp = nextRule.requiredExp - currentRule.requiredExp;
     return {
       level: currentRule.level,
+      title: currentRule.title,
       currentExp: currentLevelExp,
       neededExp,
       progress: (currentLevelExp / neededExp) * 100,

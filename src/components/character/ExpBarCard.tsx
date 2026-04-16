@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useUser } from "../../context/UserContext";
+import { useModal } from "../../context/UIContext/ModalContext";
+import { useReward } from "../../context/RewardContext";
 
 type ExpBarCardProps = {
   level: number;
   currentExp: number;
   neededExp: number;
   progress: number;
+};
+// 레벨별 코인 헬퍼
+const getLevelUpCoin = (level: number) => {
+  if (level <= 3) return 30;
+  if (level <= 5) return 50;
+  if (level <= 7) return 80;
+  return 120; // 8~10
 };
 
 const ExpBarCard = ({
@@ -16,15 +25,47 @@ const ExpBarCard = ({
   progress,
 }: ExpBarCardProps) => {
   const { expInfo, user } = useUser();
+  const { openModal } = useModal(); // ← 추가
+  const { giveCustomReward } = useReward();
   const [displayProgress, setDisplayProgress] = useState(progress);
-  useEffect(() => {
-    if (expInfo.progress === 0 && displayProgress > 90) {
-      // 👉 레벨업 순간
 
-      setDisplayProgress(100); // 일단 꽉 채움
+  useEffect(() => {
+    console.log(
+      "progress:",
+      progress,
+      "displayProgress:",
+      displayProgress,
+      "expInfo.progress:",
+      expInfo.progress,
+    );
+    if (expInfo.progress < 20 && displayProgress > 50) {
+      setDisplayProgress(100);
 
       setTimeout(() => {
-        setDisplayProgress(0); // 그 다음 리셋
+        setDisplayProgress(expInfo.progress);
+
+        // ✅ 레벨업 팝업 + 코인 지급
+        const coin = getLevelUpCoin(expInfo.level);
+        openModal({
+          type: "INFO",
+          customContent: (
+            <LevelUpContent>
+              <LevelUpEmoji>🎉</LevelUpEmoji>
+              <LevelUpTitle>레벨 업!</LevelUpTitle>
+              <LevelUpBadge>
+                Lv.{expInfo.level} {expInfo.title}
+              </LevelUpBadge>
+              <LevelUpDesc>축하해요! 한 단계 성장했어요 ✨</LevelUpDesc>
+              <LevelUpReward>
+                <RewardChip>🪙 +{coin} 코인 지급!</RewardChip>
+              </LevelUpReward>
+            </LevelUpContent>
+          ),
+          confirmText: "야호!",
+          onConfirm: () => {
+            giveCustomReward({ coin });
+          },
+        });
       }, 400);
     } else {
       setDisplayProgress(expInfo.progress);
@@ -164,6 +205,10 @@ const Fill = styled.div<{ $isFull: boolean }>`
     }
   `}
 `;
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+`;
 
 const ExpText = styled.div`
   position: absolute;
@@ -174,4 +219,49 @@ const ExpText = styled.div`
   font-size: 11px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.primary};
+`;
+const LevelUpContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+`;
+
+const LevelUpEmoji = styled.div`
+  font-size: 48px;
+  animation: ${pulse} 0.6s ease-in-out;
+`;
+
+const LevelUpTitle = styled.div`
+  font-size: 22px;
+  font-weight: 900;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const LevelUpBadge = styled.div`
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+`;
+
+const LevelUpDesc = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const LevelUpReward = styled.div`
+  margin-top: 4px;
+`;
+
+const RewardChip = styled.div`
+  padding: 8px 20px;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.primary + "15"};
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 15px;
+  font-weight: 900;
 `;
