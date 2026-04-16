@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-type TabType = "NEW" | "HOT" | "hair" | "hat" | "top" | "accessory";
+export type TabType = "ALL" | "NEW" | "COMMON" | "SPECIAL" | "LEGEND";
 
 type Props = {
   activeTab: TabType;
@@ -9,87 +9,73 @@ type Props = {
 
 export const ShopTabs = ({ activeTab, setActiveTab }: Props) => {
   return (
-    <TabBar>
-      {/* 윗줄 */}
-      <TabGroup>
-        <TabButton
-          $active={activeTab === "NEW"}
-          onClick={() => setActiveTab("NEW")}
-        >
-          NEW
-        </TabButton>
-        <TabButton
-          $active={activeTab === "HOT"}
-          onClick={() => setActiveTab("HOT")}
-        >
-          HOT
-        </TabButton>
-      </TabGroup>
+    <TabRow>
+      <TabButton
+        $active={activeTab === "ALL"}
+        onClick={() => setActiveTab("ALL")}
+      >
+        전체
+      </TabButton>
 
-      {/* 아랫줄 */}
-      <TabGroup>
-        <TabButton
-          $active={activeTab === "hair"}
-          onClick={() => setActiveTab("hair")}
-        >
-          💇 머리
-        </TabButton>
-        <TabButton
-          $active={activeTab === "hat"}
-          onClick={() => setActiveTab("hat")}
-        >
-          🧢 모자
-        </TabButton>
-        <TabButton
-          $active={activeTab === "top"}
-          onClick={() => setActiveTab("top")}
-        >
-          👕 옷
-        </TabButton>
-        <TabButton
-          $active={activeTab === "accessory"}
-          onClick={() => setActiveTab("accessory")}
-        >
-          ✨ 악세
-        </TabButton>
-      </TabGroup>
-    </TabBar>
+      <TabButton
+        $active={activeTab === "NEW"}
+        onClick={() => setActiveTab("NEW")}
+      >
+        NEW
+      </TabButton>
+
+      <TabButton
+        $active={activeTab === "COMMON"}
+        onClick={() => setActiveTab("COMMON")}
+      >
+        기본
+      </TabButton>
+
+      <TabButton
+        $active={activeTab === "SPECIAL"}
+        onClick={() => setActiveTab("SPECIAL")}
+      >
+        스페셜
+      </TabButton>
+
+      <TabButton
+        $active={activeTab === "LEGEND"}
+        onClick={() => setActiveTab("LEGEND")}
+      >
+        전설
+      </TabButton>
+    </TabRow>
   );
 };
 
-const TabBar = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 15px 0;
-`;
-const TabGroup = styled.div`
+const TabRow = styled.div`
   display: flex;
   gap: 8px;
   overflow-x: auto;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
 `;
 
 const TabButton = styled.button<{ $active: boolean }>`
-  padding: 8px 14px;
+  flex-shrink: 0;
+  padding: 10px 14px;
   border-radius: 999px;
   border: none;
-
-  font-size: 13px;
   font-weight: 700;
-
   cursor: pointer;
+  white-space: nowrap;
 
   background: ${({ $active, theme }) =>
     $active ? theme.colors.primary : theme.colors.surface};
 
-  color: ${({ $active }) => ($active ? "white" : "inherit")};
+  color: ${({ $active }) => ($active ? "#fff" : "inherit")};
 
-  white-space: nowrap;
+  transition: 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
 `;

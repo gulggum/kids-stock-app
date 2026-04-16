@@ -2,21 +2,18 @@
 // 상점 페이지 -> 전체목록 + 설명
 import { useToast } from "../context/UIContext/ToastContext";
 import { useSkinItem } from "../context/SkinItemContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useModal } from "../context/UIContext/ModalContext";
 import { playCoinSound } from "../utils/sounds";
 import { useReward } from "../context/RewardContext";
 // 👉 새로 만든 카드 데이터
-import { cardSkins, type CardSkin } from "../data/static/cardSkins";
+import { cardSkins, isNewItem, type CardSkin } from "../data/static/cardSkins";
 import { MysteryBox } from "../components/shop/mysteryBox";
 import { isCardUnlocked } from "../utils/getLevelTier";
 import { useUser } from "../context/UserContext";
-
-// -----------------------------
-// 📌 탭 타입 (필터용)
-// -----------------------------
-type TabType = "ALL" | "HOT" | "COMMON" | "SPECIAL" | "LEGEND";
+import { supabase } from "../utils/supabase";
+import { ShopTabs, type TabType } from "../components/shop/shopTabs";
 
 const Shop = () => {
   // -----------------------------
@@ -33,6 +30,24 @@ const Shop = () => {
   // -----------------------------
   const [activeTab, setActiveTab] = useState<TabType>("ALL");
   const [sparkleId, setSparkleId] = useState<string | null>(null); // 구매 애니메이션용
+  const [profiles, setProfiles] = useState<{ selected_skin: string | null }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("selected_skin");
+
+      if (error) {
+        console.error("db에서 프로필 불러오기 실패", error);
+        return;
+      }
+      setProfiles(data || []);
+    };
+    fetchProfiles();
+  });
 
   // -----------------------------
   // 💰 구매 처리 함수
@@ -62,18 +77,59 @@ const Shop = () => {
   // -----------------------------
   // 📌 필터링된 카드 목록
   // -----------------------------
-  const filteredSkins = cardSkins.filter((item) => {
-    if (item.id === "basic") return false; // ← 이 한 줄 추가
+  //인기스킨 hot
+  const skinUsageMap = profiles.reduce(
+    (acc, user) => {
+      if (!user.selected_skin) return acc;
+      if (user.selected_skin === "basic") return acc;
 
-    if (activeTab === "ALL") return true;
-    if (activeTab === "HOT")
-      return (
-        item.rarity === "COMMON" ||
-        item.rarity === "SPECIAL" ||
-        item.rarity === "LEGEND"
-      );
-    return item.rarity === activeTab;
-  });
+      acc[user.selected_skin] = (acc[user.selected_skin] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const hotSkinIds = [...cardSkins]
+    .sort((a, b) => (skinUsageMap[b.id] || 0) - (skinUsageMap[a.id] || 0))
+    .slice(0, 3)
+    .map((item) => item.id);
+  const filteredSkins = cardSkins
+    .filter((item) => {
+      if (item.id === "basic") return false;
+
+      if (activeTab === "ALL") return true;
+
+      if (activeTab === "NEW") {
+        return isNewItem(item.releasedAt);
+      }
+
+      return item.rarity === activeTab;
+    })
+    .sort((a, b) => {
+      const aIsHot = hotSkinIds.includes(a.id);
+      const bIsHot = hotSkinIds.includes(b.id);
+
+      const aIsNew = isNewItem(a.releasedAt);
+      const bIsNew = isNewItem(b.releasedAt);
+
+      // 1순위: HOT
+      if (aIsHot && !bIsHot) return -1;
+      if (!aIsHot && bIsHot) return 1;
+
+      // 2순위: NEW
+      if (aIsNew && !bIsNew) return -1;
+      if (!aIsNew && bIsNew) return 1;
+
+      // 3순위: rarity
+      const rarityOrder = {
+        LEGEND: 3,
+        SPECIAL: 2,
+        COMMON: 1,
+      };
+
+      return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+    });
+
   return (
     <Wrapper>
       {/* ----------------------------- */}
@@ -91,38 +147,7 @@ const Shop = () => {
       {/* ----------------------------- */}
       {/* 📌 탭 (필터 버튼) */}
       {/* ----------------------------- */}
-      <TabRow>
-        <TabButton
-          $active={activeTab === "ALL"}
-          onClick={() => setActiveTab("ALL")}
-        >
-          전체
-        </TabButton>
-        <TabButton
-          $active={activeTab === "HOT"}
-          onClick={() => setActiveTab("HOT")}
-        >
-          인기
-        </TabButton>
-        <TabButton
-          $active={activeTab === "COMMON"}
-          onClick={() => setActiveTab("COMMON")}
-        >
-          기본
-        </TabButton>
-        <TabButton
-          $active={activeTab === "SPECIAL"}
-          onClick={() => setActiveTab("SPECIAL")}
-        >
-          스페셜
-        </TabButton>
-        <TabButton
-          $active={activeTab === "LEGEND"}
-          onClick={() => setActiveTab("LEGEND")}
-        >
-          전설
-        </TabButton>
-      </TabRow>
+      <ShopTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* ----------------------------- */}
       {/* 🧩 카드 목록 */}
@@ -136,6 +161,8 @@ const Shop = () => {
           //캐릭터레벨별 상점잠금
           const unlocked = isCardUnlocked(user.level, item.unlockLevel);
           const locked = !unlocked;
+          const isNew = isNewItem(item.releasedAt);
+          const isHot = hotSkinIds.includes(item.id);
           return (
             <Card
               key={item.id}
@@ -173,12 +200,17 @@ const Shop = () => {
                 });
               }}
             >
-              {locked && <LockText>🔒 Lv.{item.unlockLevel}</LockText>}
               {/* 카드 이미지 */}
               <CardImage $skin={item} />
-
+              {/* New, Hot 카드 배지 */}
+              {isHot && <HotBadge>HOT</HotBadge>}
+              {isNew && <NewBadge>NEW</NewBadge>}
               {/* 카드 이름 */}
-              <Name>{item.name}</Name>
+              <Name>
+                <NameText> {item.name} </NameText>
+
+                {locked && <LockText>🔒 Lv.{item.unlockLevel}</LockText>}
+              </Name>
 
               {/* 가격 (미보유만 표시) */}
               {!owned && <Price>{item.price} 코인</Price>}
@@ -224,6 +256,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 100vh;
 `;
 
 const Title = styled.h2`
@@ -235,25 +268,6 @@ const CoinBar = styled.div`
   padding: 12px;
   border-radius: 12px;
   background: ${({ theme }) => theme.colors.surface};
-`;
-
-const TabRow = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const TabButton = styled.button<{ $active: boolean }>`
-  flex: 1;
-  padding: 10px;
-  border-radius: 999px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-
-  background: ${({ $active, theme }) =>
-    $active ? theme.colors.primary : theme.colors.surface};
-
-  color: ${({ $active }) => ($active ? "#fff" : "inherit")};
 `;
 
 const Grid = styled.div`
@@ -333,11 +347,15 @@ const CardImage = styled.div<{ $skin: any }>`
 `;
 
 const Name = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 6px;
   font-weight: 700;
   font-size: 14px;
 `;
 
+const NameText = styled.div``;
 const Price = styled.div`
   font-size: 12px;
   color: ${({ theme }) => theme.colors.muted};
@@ -351,9 +369,8 @@ const Status = styled.div`
 
 const Badge = styled.div<{ $rarity: string }>`
   position: absolute;
-  top: 6px;
+  top: 3px;
   right: 6px;
-
   font-size: 14px;
 `;
 
@@ -392,4 +409,38 @@ const LockText = styled.div`
   font-size: 11px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.muted};
+`;
+
+const NewBadge = styled.div`
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  z-index: 2;
+
+  padding: 4px 7px;
+  border-radius: 999px;
+
+  background: linear-gradient(135deg, #60a5fa, #38bdf8);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.35);
+`;
+
+const HotBadge = styled.div`
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  z-index: 2;
+
+  padding: 4px 7px;
+  border-radius: 999px;
+
+  background: linear-gradient(135deg, #fb7185, #f97316);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.35);
 `;
