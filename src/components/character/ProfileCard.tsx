@@ -67,7 +67,9 @@ const ProfileCard = ({
       </Bottom>
       {/* 🏠 집 뱃지 */}
       {equippedHouse && (
-        <HouseBadge dangerouslySetInnerHTML={{ __html: equippedHouse.badge }} />
+        <HouseBadge>
+          <img src={equippedHouse.badge} alt={equippedHouse.name} />
+        </HouseBadge>
       )}
     </Wrapper>
   );
@@ -269,10 +271,10 @@ const LevelTitle = styled.div<{ $text: string }>`
 // 스타일 추가
 const HouseBadge = styled.div`
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 40px;
-  height: 40px;
+  top: 4px;
+  right: 20px;
+  width: 80px;
+  height: 120px;
   z-index: 5;
 
   svg,

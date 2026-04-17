@@ -205,10 +205,7 @@ const Shop = () => {
                     return;
                   }
                   if (owned) {
-                    equipHouse(house.id);
-                    createToast(
-                      equipped ? "착용 해제했어요" : "착용했어요! 🏠",
-                    );
+                    createToast("이미 보유한 집이에요 😊");
                     return;
                   }
                   openModal({
@@ -220,9 +217,9 @@ const Shop = () => {
                     customContent: (
                       <PreviewCard>
                         {/* 뱃지 미리보기 */}
-                        <PreviewBadge
-                          dangerouslySetInnerHTML={{ __html: house.badge }}
-                        />
+                        <PreviewBadge>
+                          <img src={house.badge} alt={house.name} />
+                        </PreviewBadge>
                         <PreviewName>{house.name}</PreviewName>
                       </PreviewCard>
                     ),
@@ -231,9 +228,10 @@ const Shop = () => {
                 }}
               >
                 {/* 집 뱃지 이미지 */}
-                <HouseBadgePreview
-                  dangerouslySetInnerHTML={{ __html: house.badge }}
-                />
+                <HouseBadgePreview>
+                  {" "}
+                  <img src={house.badge} alt={house.name} />
+                </HouseBadgePreview>
 
                 {/* 레벨 배지 */}
                 <HouseLevelBadge $color={tier.color}>
@@ -250,8 +248,7 @@ const Shop = () => {
                 <Status>
                   {locked && "🔒 잠김"}
                   {!locked && !owned && "🔒 구매하기"}
-                  {owned && !equipped && "🎒 보유중"}
-                  {equipped && "⭐ 착용중"}
+                  {owned && "🎒 보유중"}
                 </Status>
               </Card>
             );
@@ -549,7 +546,7 @@ const HotBadge = styled.div`
 `;
 const HouseBadgePreview = styled.div`
   width: 80px;
-  height: 80px;
+  height: 120px;
   margin: 0 auto;
 
   svg,

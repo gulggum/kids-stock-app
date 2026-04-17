@@ -109,7 +109,9 @@ const CommunityCard = ({
       <Status>{user.status}</Status>
       {/* 🏠 집 뱃지 */}
       {equippedHouse && (
-        <HouseBadge dangerouslySetInnerHTML={{ __html: equippedHouse.badge }} />
+        <HouseBadge>
+          <img src={equippedHouse.badge} alt={equippedHouse.name} />
+        </HouseBadge>
       )}
     </Card>
   );
@@ -405,10 +407,10 @@ const Sprite = styled.div<{ $x: number; $y: number }>`
 // 스타일 추가
 const HouseBadge = styled.div`
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 36px;
-  height: 36px;
+  top: 4px;
+  right: 20px;
+  width: 50px;
+  height: 80px;
   z-index: 5;
 
   svg,
