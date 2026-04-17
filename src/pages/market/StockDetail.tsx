@@ -322,13 +322,6 @@ const SubText = styled.div`
    💡 설명 카드
    ========================= */
 
-const HintText = styled.div`
-  margin-top: 8px;
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.muted};
-  text-align: center;
-`;
-
 const InvestmentNotice = styled.div`
   margin-top: 8px;
   font-size: 15px;
