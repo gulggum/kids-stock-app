@@ -11,6 +11,8 @@ import { getStorage, setStorage } from "../utils/storage";
 import { useRankingQuery } from "../hooks/useRankingQuery";
 import type { PublicUser } from "../types/UserType";
 import CommunityRankingSkeleton from "../components/community/CommunityRankingSkeleton";
+import { useHouse } from "../hooks/useHouse";
+import VillagePage from "./VillagePage";
 
 /**
  * 커뮤니티 메인 화면
@@ -21,6 +23,9 @@ const Community = () => {
   const { achieved } = useAchievement();
   const { user, updateStatus } = useUser();
   const { data: rankingUsers, isLoading: rankingLoading } = useRankingQuery();
+  const { equippedHouseId } = useHouse();
+
+  const [activeTab, setActiveTab] = useState<"VILLAGE" | "FEED">("VILLAGE");
 
   // ✅ 변경 - User → RankingUser로 변환 후 넣기
   const myRankingUser: PublicUser = {
@@ -32,6 +37,9 @@ const Community = () => {
     profileImage: user.profileImage,
     profileAvatar: user.profileAvatar,
     selectedSkin: user.selectedSkin ?? "basic",
+    equippedHouseId: equippedHouseId ?? "house_basic",
+    villageX: null, //  일단 null, VillagePage에서 실시간으로 관리
+    villageY: null,
     emoji: "🙂",
     status: user.status,
     lastActive: Date.now(), // — 나는 지금 온라인이니까 현재 시간
@@ -71,40 +79,68 @@ const Community = () => {
       <Title>📢 오늘의 투자 광장</Title>
       <Description>다른 친구들은 이렇게 활동하고 있어요 😊</Description>
 
-      {/* ⭐ 내 카드 섹션 */}
-      <MyStatusSection myStatus={user.status} onStatusChange={updateStatus} />
+      {/* 탭 */}
+      <TabRow>
+        <TabButton
+          $active={activeTab === "FEED"}
+          onClick={() => setActiveTab("FEED")}
+        >
+          📢 피드
+        </TabButton>
+        <TabButton
+          $active={activeTab === "VILLAGE"}
+          onClick={() => setActiveTab("VILLAGE")}
+        >
+          🏘 마을
+        </TabButton>
+      </TabRow>
 
-      {/* 🏆 랭킹 섹션 */}
-      {rankingLoading ? (
-        <CommunityRankingSkeleton />
-      ) : (
-        <CommunityRanking
-          allUsers={allUsers}
-          myUserId={user.id}
-          myScore={user.score}
-          myAchievedCount={achieved.length}
-        />
+      {/* 마을 탭 */}
+      {activeTab === "VILLAGE" && (
+        <VillagePage users={allUsers} myUserId={user.id} />
       )}
+      {/* 피드 탭 - 기존 내용 */}
+      {activeTab === "FEED" && (
+        <>
+          {/* ⭐ 내 카드 섹션 */}
+          <MyStatusSection
+            myStatus={user.status}
+            onStatusChange={updateStatus}
+          />
 
-      {/* 👥 내친구 섹션 */}
-      <MyFriendsSection
-        users={otherUsers}
-        friends={friends}
-        onToggleFriend={handleToggleFriend}
-      />
-      {/* 👥 친구추천 섹션 */}
-      <SuggestionSection
-        users={otherUsers}
-        friends={friends}
-        onToggleFriend={handleToggleFriend}
-      />
+          {/* 🏆 랭킹 섹션 */}
+          {rankingLoading ? (
+            <CommunityRankingSkeleton />
+          ) : (
+            <CommunityRanking
+              allUsers={allUsers}
+              myUserId={user.id}
+              myScore={user.score}
+              myAchievedCount={achieved.length}
+            />
+          )}
 
-      {/* 👥 친구 피드 섹션 */}
-      <CommunityFeed
-        users={otherUsers}
-        friends={friends}
-        onToggleFriend={handleToggleFriend}
-      />
+          {/* 👥 내친구 섹션 */}
+          <MyFriendsSection
+            users={otherUsers}
+            friends={friends}
+            onToggleFriend={handleToggleFriend}
+          />
+          {/* 👥 친구추천 섹션 */}
+          <SuggestionSection
+            users={otherUsers}
+            friends={friends}
+            onToggleFriend={handleToggleFriend}
+          />
+
+          {/* 👥 친구 피드 섹션 */}
+          <CommunityFeed
+            users={otherUsers}
+            friends={friends}
+            onToggleFriend={handleToggleFriend}
+          />
+        </>
+      )}
     </Wrapper>
   );
 };
@@ -130,4 +166,23 @@ const Description = styled.p`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.muted};
   margin-top: -6px;
+`;
+// 스타일 추가
+const TabRow = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const TabButton = styled.button<{ $active: boolean }>`
+  flex: 1;
+  padding: 10px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.primary : theme.colors.card};
+  color: ${({ $active }) => ($active ? "#fff" : "inherit")};
+  transition: 0.2s;
 `;

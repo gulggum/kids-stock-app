@@ -18,7 +18,7 @@ const fetchRanking = async (): Promise<PublicUser[]> => {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, nickname, level, score, achievements, last_active, avatar, selected_skin,status",
+      `id, nickname, level, score, achievements, last_active, avatar, selected_skin,status, village_x, village_y,user_house_frames!left (frame_id, is_equipped)`,
     )
     .order("score", { ascending: false }); // score 높은 순
 
@@ -40,6 +40,12 @@ const fetchRanking = async (): Promise<PublicUser[]> => {
     lastActive: user.last_active // ← 추가
       ? new Date(user.last_active).getTime()
       : 0,
+    // 👈 추가
+    equippedHouseId:
+      (user.user_house_frames as any[])?.find((f) => f.is_equipped)?.frame_id ??
+      "house_basic",
+    villageX: user.village_x ?? null,
+    villageY: user.village_y ?? null,
   }));
 };
 

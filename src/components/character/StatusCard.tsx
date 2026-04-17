@@ -40,7 +40,7 @@ const StatusCard = ({ achievements }: Props) => {
         {achievements.length === 0 ? (
           <Empty>아직 업적이 없어요 🐣</Empty>
         ) : (
-          achievements.map((a, idx) => (
+          achievements.slice(0, 5).map((a, idx) => (
             <Badge key={idx}>
               <span>{a.badge.emoji}</span>
               <small>{a.badge.title}</small>

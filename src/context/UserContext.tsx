@@ -52,6 +52,7 @@ export type User = {
   hasBankrupt: boolean;
 
   totalKnowledge: number; //오늘의 지식
+  equippedHouseId: string;
 };
 
 type ExpInfo = {
@@ -149,6 +150,7 @@ const defaultUser: User = {
   profileAvatar: null,
   hasBankrupt: false,
   totalKnowledge: 0,
+  equippedHouseId: "house_basic",
 };
 
 // ─────────────────────────────────────────
@@ -232,6 +234,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         { data: wallet, error: walletError },
         { data: newsLogs, error: newsLogError },
         { count: totalKnowledge },
+        { data: houseData },
       ] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
         supabase
@@ -248,6 +251,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           .from("user_knowledge_log")
           .select("*", { count: "exact", head: true })
           .eq("user_id", userId),
+        supabase
+          .from("user_house_frames")
+          .select("frame_id")
+          .eq("user_id", userId)
+          .eq("is_equipped", true)
+          .maybeSingle(),
       ]);
 
       // last_active는 fire-and-forget (로딩 안 막음)
@@ -284,6 +293,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         streak: profile?.streak ?? 0,
         quizProgress: solvedQuizIds,
         achievements: profile?.achievements ?? [],
+        equippedHouseId: houseData?.frame_id ?? "house_basic",
       });
 
       setIsLoggedIn(true);

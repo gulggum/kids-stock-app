@@ -9,6 +9,8 @@ import legendCard from "../../assets/cardSkins/legendSkinGold.png";
 import { getLevelTier } from "../../utils/getLevelTier";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
 import type { PublicUser } from "../../types/UserType";
+import { HOUSES } from "../../data/static/house";
+import { useHouse } from "../../hooks/useHouse";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -25,6 +27,7 @@ const CommunityCard = ({
 }) => {
   const { openModal } = useModal();
   const { title, tier } = getLevelTier(user.level);
+  const { equippedHouseId } = useHouse();
 
   const skin =
     cardSkins.find((s) => s.id === user.selectedSkin) ??
@@ -34,6 +37,11 @@ const CommunityCard = ({
   const currentSkin = skin;
 
   const textColor = getTextColorFromSkin(currentSkin);
+
+  //착용 중인 집 뱃지 찾기
+  const equippedHouse = HOUSES.find(
+    (h) => h.id === (user.equippedHouseId ?? "house_basic"),
+  );
 
   const openBadgeModal = () => {
     openModal({
@@ -101,6 +109,10 @@ const CommunityCard = ({
       </BadgeRow>
 
       <Status>{user.status}</Status>
+      {/* 🏠 집 뱃지 */}
+      {equippedHouse && (
+        <HouseBadge dangerouslySetInnerHTML={{ __html: equippedHouse.badge }} />
+      )}
     </Card>
   );
 };
@@ -390,4 +402,20 @@ const Sprite = styled.div<{ $x: number; $y: number }>`
   background-size: 500% 300%;
   background-position: ${({ $x, $y }) =>
     `${($x / 3.8999) * 100}% ${($y / 2) * 100}%`};
+`;
+
+// 스타일 추가
+const HouseBadge = styled.div`
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 36px;
+  height: 36px;
+  z-index: 5;
+
+  svg,
+  img {
+    width: 100%;
+    height: 100%;
+  }
 `;

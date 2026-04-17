@@ -18,6 +18,9 @@ export type PublicUser = {
   status: string;
   lastActive: number;
   selectedSkin: string;
+  equippedHouseId: string | null; //집
+  villageX: number | null;
+  villageY: number | null;
 };
 
 //문의사항 타입

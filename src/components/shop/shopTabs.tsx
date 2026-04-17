@@ -14,7 +14,7 @@ export const ShopTabs = ({ activeTab, setActiveTab }: Props) => {
         $active={activeTab === "HOUSE"}
         onClick={() => setActiveTab("HOUSE")}
       >
-        집 구경가기
+        집
       </TabButton>
       <TabButton
         $active={activeTab === "ALL"}
