@@ -25,7 +25,7 @@ const Community = () => {
   const { data: rankingUsers, isLoading: rankingLoading } = useRankingQuery();
   const { equippedHouseId } = useHouse();
 
-  const [activeTab, setActiveTab] = useState<"VILLAGE" | "FEED">("VILLAGE");
+  const [activeTab, setActiveTab] = useState<"VILLAGE" | "FEED">("FEED");
 
   // ✅ 변경 - User → RankingUser로 변환 후 넣기
   const myRankingUser: PublicUser = {
@@ -38,8 +38,8 @@ const Community = () => {
     profileAvatar: user.profileAvatar,
     selectedSkin: user.selectedSkin ?? "basic",
     equippedHouseId: equippedHouseId ?? "house_basic",
-    villageX: null, //  일단 null, VillagePage에서 실시간으로 관리
-    villageY: null,
+    villageX: user.villageX ?? null, //  일단 null, VillagePage에서 실시간으로 관리
+    villageY: user.villageY ?? null,
     emoji: "🙂",
     status: user.status,
     lastActive: Date.now(), // — 나는 지금 온라인이니까 현재 시간

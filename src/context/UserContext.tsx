@@ -53,6 +53,8 @@ export type User = {
 
   totalKnowledge: number; //오늘의 지식
   equippedHouseId: string;
+  villageX?: number | null;
+  villageY?: number | null;
 };
 
 type ExpInfo = {
