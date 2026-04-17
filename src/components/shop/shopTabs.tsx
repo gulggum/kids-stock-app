@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export type TabType = "ALL" | "NEW" | "COMMON" | "SPECIAL" | "LEGEND";
+export type TabType = "HOUSE" | "ALL" | "NEW" | "COMMON" | "SPECIAL" | "LEGEND";
 
 type Props = {
   activeTab: TabType;
@@ -10,6 +10,12 @@ type Props = {
 export const ShopTabs = ({ activeTab, setActiveTab }: Props) => {
   return (
     <TabRow>
+      <TabButton
+        $active={activeTab === "HOUSE"}
+        onClick={() => setActiveTab("HOUSE")}
+      >
+        집 구경가기
+      </TabButton>
       <TabButton
         $active={activeTab === "ALL"}
         onClick={() => setActiveTab("ALL")}

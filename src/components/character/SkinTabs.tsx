@@ -8,7 +8,7 @@ type Props = {
   onChange: (tab: string) => void;
 };
 
-const tabs = ["ALL", "COMMON", "SPECIAL", "LEGEND"];
+const tabs = ["HOUSE", "COMMON", "SPECIAL", "LEGEND"];
 
 const SkinTabs = ({ activeTab, onChange }: Props) => {
   return (
@@ -19,8 +19,8 @@ const SkinTabs = ({ activeTab, onChange }: Props) => {
           $active={activeTab === tab}
           onClick={() => onChange(tab)}
         >
-          {tab === "ALL"
-            ? "전체"
+          {tab === "HOUSE"
+            ? "나의 집"
             : tab === "COMMON"
               ? "기본"
               : tab === "SPECIAL"
