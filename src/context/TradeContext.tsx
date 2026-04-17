@@ -95,7 +95,6 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     country?: "KR" | "US";
     reason?: string;
   }) => {
-    if (hasBoughtToday) return false; //1회제한
     const newTrade: Trade = {
       id: crypto.randomUUID(),
       stockId: stock.id,

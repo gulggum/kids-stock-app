@@ -145,14 +145,6 @@ const StockDetail = () => {
           </MyStockContent>
         </ContentSection>
 
-        {/* ⛔ 구매 제한 */}
-        {hasBoughtToday && (
-          <HintText>
-            하루에 한 번만 구매 할 수 있어요 🙂
-            <br />
-            내일 다시 도전해보세요!
-          </HintText>
-        )}
         <InvestmentNotice>
           💡 주식은 가격이 오르기도 내려가기도 해요
         </InvestmentNotice>
