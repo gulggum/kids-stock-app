@@ -48,6 +48,7 @@ const fetchRanking = async (): Promise<PublicUser[]> => {
   return (profilesData ?? []).map((user) => {
     const equippedHouseId =
       houseData?.find(
+        //현재 유저 id랑 같은 집 데이터 찾아 가져오기
         (house) => house.user_id === user.id && house.is_equipped === true,
       )?.frame_id ?? "house_basic";
 
