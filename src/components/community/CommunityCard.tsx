@@ -10,7 +10,6 @@ import { getLevelTier } from "../../utils/getLevelTier";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
 import type { PublicUser } from "../../types/UserType";
 import { HOUSES } from "../../data/static/house";
-import { useHouse } from "../../hooks/useHouse";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -27,7 +26,6 @@ const CommunityCard = ({
 }) => {
   const { openModal } = useModal();
   const { title, tier } = getLevelTier(user.level);
-  const { equippedHouseId } = useHouse();
 
   const skin =
     cardSkins.find((s) => s.id === user.selectedSkin) ??
