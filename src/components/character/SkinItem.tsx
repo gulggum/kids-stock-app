@@ -69,7 +69,7 @@ const Wrapper = styled.div<{ $selected?: boolean; $locked?: boolean }>`
 `;
 
 const Preview = styled.div<{ $skin: any }>`
-  height: 80px;
+  height: 90px;
   border-radius: 10px;
 
   background: ${({ $skin }) =>
