@@ -23,12 +23,7 @@ const Shop = () => {
   // -----------------------------
   const { createToast } = useToast(); // 토스트 메시지
   const { buySkin, isOwned, selectedSkin } = useSkinItem(); // 스킨 관련
-  const {
-    isOwned: isHouseOwned,
-    equippedHouseId,
-    buyHouse,
-    equipHouse,
-  } = useHouse();
+  const { isOwned: isHouseOwned, buyHouse } = useHouse();
   const { openModal } = useModal(); // 확인 모달
   const { giveReward } = useReward();
   const { user } = useUser();
@@ -189,7 +184,6 @@ const Shop = () => {
         {activeTab === "HOUSE" &&
           HOUSES.map((house) => {
             const owned = isHouseOwned(house.id);
-            const equipped = equippedHouseId === house.id;
             const locked = user.level < house.requiredLevel;
             const tier = getHouseTier(house.requiredLevel);
 

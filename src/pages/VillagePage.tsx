@@ -6,6 +6,7 @@ import { supabase } from "../utils/supabase";
 import { useUser } from "../context/UserContext";
 import type { PublicUser } from "../types/UserType";
 import avatarSprite from "../assets/avatars/avatarSprite.png";
+import { useHouse } from "../hooks/useHouse";
 
 // ─────────────────────────────────────────
 // 📌 맵 실제 크기 (뷰포트보다 크게 - 드래그로 탐험)
@@ -22,6 +23,8 @@ const VillagePage = ({ users, myUserId }: Props) => {
   const { user } = useUser();
   const [selectedUser, setSelectedUser] = useState<PublicUser | null>(null);
   const [isMoving, setIsMoving] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
+  const { isOwned } = useHouse();
 
   // ─────────────────────────────────────────
   // 🗺 드래그 스크롤 (마우스 + 터치)
@@ -140,6 +143,7 @@ const VillagePage = ({ users, myUserId }: Props) => {
               ? "🚚 이사하기"
               : "🏠 마을에 입주하기"}
         </MoveButton>
+        <GuideButton onClick={() => setShowGuide(true)}>🏡 집 안내</GuideButton>
         <HintText>
           {isMoving
             ? "원하는 위치를 클릭하세요!"
@@ -149,6 +153,44 @@ const VillagePage = ({ users, myUserId }: Props) => {
         </HintText>
       </TopBar>
 
+      {showGuide && (
+        <Overlay onClick={() => setShowGuide(false)}>
+          <GuideCard onClick={(e) => e.stopPropagation()}>
+            <CloseBtn onClick={() => setShowGuide(false)}>✕</CloseBtn>
+            <GuideTitle>🏡 집 업그레이드 안내</GuideTitle>
+
+            {HOUSES.map((house) => {
+              const unlocked = user.level >= house.requiredLevel;
+              const owned = isOwned(house.id);
+
+              return (
+                <GuideRow key={house.id} $unlocked={unlocked}>
+                  <GuideBadge>
+                    <img src={house.badge} alt={house.name} />
+                  </GuideBadge>
+                  <GuideInfo>
+                    <GuideName $unlocked={unlocked}>{house.name}</GuideName>
+                    <GuideDesc>{house.description}</GuideDesc>
+                    <GuideMeta>
+                      Lv.{house.requiredLevel} 이상 ·{" "}
+                      {house.price === 0 ? "무료" : `${house.price} 코인`}
+                    </GuideMeta>
+                  </GuideInfo>
+
+                  {/* 3단계로 구분 */}
+                  {owned ? (
+                    <UnlockTag>🏠 보유중</UnlockTag>
+                  ) : unlocked ? (
+                    <UnlockTag>✅ 구매 가능!</UnlockTag>
+                  ) : (
+                    <LockTag>🔒 Lv.{house.requiredLevel}</LockTag>
+                  )}
+                </GuideRow>
+              );
+            })}
+          </GuideCard>
+        </Overlay>
+      )}
       {/* 드래그 스크롤 컨테이너 */}
       <MapContainer
         ref={containerRef}
@@ -762,4 +804,100 @@ const StatusBubble = styled.div`
     height: 10px;
     background: ${({ theme }) => theme.colors.background};
   }
+`;
+
+//안내팝업문구
+const GuideButton = styled.button`
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: ${({ theme }) => theme.colors.card};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  white-space: nowrap;
+  &:hover {
+    transform: scale(1.03);
+  }
+`;
+
+const GuideCard = styled.div`
+  position: relative;
+  background: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 20px 16px;
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+`;
+
+const GuideTitle = styled.div`
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+`;
+
+const GuideRow = styled.div<{ $unlocked: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.background};
+  opacity: ${({ $unlocked }) => ($unlocked ? 1 : 0.5)};
+`;
+
+const GuideBadge = styled.div`
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+`;
+
+const GuideInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const GuideName = styled.div<{ $unlocked: boolean }>`
+  font-size: 13px;
+  font-weight: 800;
+  color: ${({ $unlocked, theme }) =>
+    $unlocked ? theme.colors.text : theme.colors.muted};
+`;
+
+const GuideDesc = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+
+const GuideMeta = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin-top: 2px;
+`;
+
+const UnlockTag = styled.div`
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+  white-space: nowrap;
+`;
+
+const LockTag = styled.div`
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.muted};
+  white-space: nowrap;
 `;

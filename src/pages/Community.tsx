@@ -80,8 +80,11 @@ const Community = () => {
   return (
     <Wrapper>
       <Title>📢 오늘의 투자 광장</Title>
-      <Description>다른 친구들은 이렇게 활동하고 있어요 😊</Description>
-
+      <Description>
+        {activeTab === "VILLAGE"
+          ? "친구들의 마을을 구경하고 함께 성장해봐요 😊"
+          : "다른 친구들은 이렇게 활동하고 있어요 😊"}
+      </Description>
       {/* 탭 */}
       <TabRow>
         <TabButton

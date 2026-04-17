@@ -18,20 +18,22 @@ const BadgeListModal = ({ badges }: BadgeListModalProps) => {
 
   return (
     <ScrollContainer>
-      {badges.map((badgeId) => {
-        const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
-        if (!achievement) return null;
+      <Scroller>
+        {badges.map((badgeId) => {
+          const achievement = ACHIEVEMENTS.find((a) => a.id === badgeId);
+          if (!achievement) return null;
 
-        return (
-          <BadgeItem key={badgeId}>
-            <EmojiBox>{achievement.badge.emoji}</EmojiBox>
-            <TextBox>
-              <Title>{achievement.badge.title}</Title>
-              <Description>{achievement.badge.description}</Description>
-            </TextBox>
-          </BadgeItem>
-        );
-      })}
+          return (
+            <BadgeItem key={badgeId}>
+              <EmojiBox>{achievement.badge.emoji}</EmojiBox>
+              <TextBox>
+                <Title>{achievement.badge.title}</Title>
+                <Description>{achievement.badge.description}</Description>
+              </TextBox>
+            </BadgeItem>
+          );
+        })}
+      </Scroller>
     </ScrollContainer>
   );
 };
@@ -43,9 +45,10 @@ const ScrollContainer = styled.div`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+
   padding: 4px 4px 4px 0;
 `;
+const Scroller = styled.div``;
 
 const BadgeItem = styled.div`
   display: flex;
@@ -56,6 +59,7 @@ const BadgeItem = styled.div`
   padding: 10px 12px;
   position: relative;
   overflow: hidden;
+  margin-bottom: 5px;
 `;
 
 const EmojiBox = styled.div`
