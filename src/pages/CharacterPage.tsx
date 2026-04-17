@@ -15,6 +15,7 @@ import { useNavigate } from "react-router";
 import { useUser } from "../context/UserContext";
 import ExpBarCard from "../components/character/ExpBarCard";
 import { Settings } from "lucide-react";
+import { useHouse } from "../hooks/useHouse";
 
 const CharacterPage = () => {
   const { profileAvatar, profileImage, nickname, setProfileAvatar } =
@@ -26,6 +27,7 @@ const CharacterPage = () => {
   const { achieved } = useAchievement(); //업적
   const navigate = useNavigate();
   const { user, expInfo } = useUser();
+  const { equippedHouseId } = useHouse();
 
   const filteredSkins = [...new Set(ownedSkins)]
     .map((id) => cardSkins.find((s) => s.id === id))
@@ -149,6 +151,7 @@ const CharacterPage = () => {
           currentSkin={currentSkin}
           level={user.level}
           onClick={openProfileModal}
+          equippedHouseId={equippedHouseId}
         />
 
         {/* 레벨상태 */}

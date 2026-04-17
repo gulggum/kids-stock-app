@@ -4,7 +4,6 @@ import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
 import { useUser } from "../../context/UserContext";
 import { getLevelTier } from "../../utils/getLevelTier";
-import { useHouse } from "../../hooks/useHouse";
 import { HOUSES } from "../../data/static/house";
 
 /**
@@ -19,6 +18,7 @@ type Props = {
   level: number;
   currentSkin: any;
   onClick: () => void;
+  equippedHouseId: string;
 };
 
 const ProfileCard = ({
@@ -28,12 +28,13 @@ const ProfileCard = ({
   onClick,
   level,
   currentSkin,
+  equippedHouseId,
 }: Props) => {
   //배경밝기 계산해서 색 바꾸기
   const textColor = getTextColorFromSkin(currentSkin);
   const { user } = useUser();
   const { title } = getLevelTier(user.level);
-  const { equippedHouseId } = useHouse();
+
   const equippedHouse = HOUSES.find((h) => h.id === equippedHouseId);
 
   return (

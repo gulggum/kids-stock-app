@@ -104,6 +104,14 @@ export const useHouse = () => {
   const equipHouse = async (houseId: string) => {
     if (!isOwned(houseId)) return;
 
+    // 먼저 UI부터 바로 변경
+    setOwnedHouses((prev) =>
+      prev.map((h) => ({
+        ...h,
+        isEquipped: h.houseId === houseId,
+      })),
+    );
+
     // 내 모든 집 착용 해제
     await supabase
       .from("user_house_frames")
