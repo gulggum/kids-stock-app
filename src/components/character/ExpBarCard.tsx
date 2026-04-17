@@ -30,14 +30,6 @@ const ExpBarCard = ({
   const [displayProgress, setDisplayProgress] = useState(progress);
 
   useEffect(() => {
-    console.log(
-      "progress:",
-      progress,
-      "displayProgress:",
-      displayProgress,
-      "expInfo.progress:",
-      expInfo.progress,
-    );
     if (expInfo.progress < 20 && displayProgress > 50) {
       setDisplayProgress(100);
 

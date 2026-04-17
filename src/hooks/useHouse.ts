@@ -24,6 +24,14 @@ export const useHouse = () => {
     if (!user.id) return;
 
     const fetchOwnedHouses = async () => {
+      if (!user.id) {
+        setOwnedHouses([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
       const { data, error } = await supabase
         .from("user_house_frames")
         .select("frame_id, is_equipped")
@@ -77,7 +85,10 @@ export const useHouse = () => {
       .from("user_house_frames")
       .insert({ user_id: user.id, frame_id: houseId, is_equipped: false });
 
-    if (error) return "ERROR";
+    if (error) {
+      console.error("집 구매 실패", error);
+      return "ERROR";
+    }
 
     // 로컬 상태 즉시 반영 (DB 재fetch 없이 UI 바로 업데이트)
     setOwnedHouses((prev) => [...prev, { houseId, isEquipped: false }]);

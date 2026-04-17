@@ -15,38 +15,60 @@ import type { PublicUser } from "../types/UserType";
  */
 
 const fetchRanking = async (): Promise<PublicUser[]> => {
-  const { data, error } = await supabase
+  // 1. 프로필 조회
+  const { data: profilesData, error: profilesError } = await supabase
     .from("profiles")
     .select(
-      `id, nickname, level, score, achievements, last_active, avatar, selected_skin,status, village_x, village_y,user_house_frames!left (frame_id, is_equipped)`,
+      `
+      id,
+      nickname,
+      level,
+      score,
+      achievements,
+      last_active,
+      avatar,
+      selected_skin,
+      status,
+      village_x,
+      village_y
+    `,
     )
-    .order("score", { ascending: false }); // score 높은 순
+    .order("score", { ascending: false });
 
-  if (error) throw new Error(error.message);
+  if (profilesError) throw new Error(profilesError.message);
 
-  // Supabase 데이터 → RankingUser 타입으로 변환
-  return (data ?? []).map((user) => ({
-    id: user.id,
-    nickname: user.nickname ?? "유저",
-    level: user.level ?? 1,
-    levelTitle: "",
-    score: user.score ?? 0,
-    badges: user.achievements ?? [], // achievements → badges로 매핑
-    profileImage: null, // 사진은 본인만 보임
-    profileAvatar: user.avatar ?? null,
-    selectedSkin: user.selected_skin ?? "basic",
-    status: user.status ?? "😄 오늘도 열심히!",
-    emoji: "🙂", // 나중에 profileAvatar로 교체 예정
-    lastActive: user.last_active // ← 추가
-      ? new Date(user.last_active).getTime()
-      : 0,
-    // 👈 추가
-    equippedHouseId:
-      (user.user_house_frames as any[])?.find((f) => f.is_equipped)?.frame_id ??
-      "house_basic",
-    villageX: user.village_x ?? null,
-    villageY: user.village_y ?? null,
-  }));
+  // 2. 유저 집 정보 조회
+  const { data: houseData, error: houseError } = await supabase
+    .from("user_house_frames")
+    .select("user_id, frame_id, is_equipped");
+
+  if (houseError) throw new Error(houseError.message);
+
+  // 3. profiles + house 데이터 합치기
+  return (profilesData ?? []).map((user) => {
+    const equippedHouseId =
+      houseData?.find(
+        (house) => house.user_id === user.id && house.is_equipped === true,
+      )?.frame_id ?? "house_basic";
+
+    return {
+      id: user.id,
+      nickname: user.nickname ?? "유저",
+      level: user.level ?? 1,
+      levelTitle: "",
+      score: user.score ?? 0,
+      badges: user.achievements ?? [],
+      profileImage: null,
+      profileAvatar: user.avatar ?? null,
+      selectedSkin: user.selected_skin ?? "basic",
+      status: user.status ?? "😄 오늘도 열심히!",
+      emoji: "🙂",
+      lastActive: user.last_active ? new Date(user.last_active).getTime() : 0,
+      equippedHouseId,
+      villageX: user.village_x ?? null,
+      villageY: user.village_y ?? null,
+    };
+  });
 };
 
 export const useRankingQuery = () => {
