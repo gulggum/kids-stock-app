@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { HOUSES } from "../data/static/house";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
@@ -27,6 +27,14 @@ const VillagePage = ({ users, myUserId }: Props) => {
       ? { x: myUser.villageX!, y: myUser.villageY! }
       : null,
   );
+  useEffect(() => {
+    if (myUser?.villageX != null && myUser?.villageY != null) {
+      setMyPos({
+        x: myUser.villageX,
+        y: myUser.villageY,
+      });
+    }
+  }, [myUser?.villageX, myUser?.villageY]);
 
   // ─────────────────────────────────────────
   // 🏘 마을에 입주한 다른 유저만
