@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { HOUSES } from "../data/static/house";
 import { ACHIEVEMENTS } from "../data/rules/achievementRules";
@@ -8,8 +8,11 @@ import type { PublicUser } from "../types/UserType";
 import avatarSprite from "../assets/avatars/avatarSprite.png";
 
 // ─────────────────────────────────────────
-// 📌 Props
+// 📌 맵 실제 크기 (뷰포트보다 크게 - 드래그로 탐험)
 // ─────────────────────────────────────────
+const MAP_WIDTH = 1400;
+const MAP_HEIGHT = 1000;
+
 type Props = {
   users: PublicUser[];
   myUserId: string;
@@ -20,56 +23,106 @@ const VillagePage = ({ users, myUserId }: Props) => {
   const [selectedUser, setSelectedUser] = useState<PublicUser | null>(null);
   const [isMoving, setIsMoving] = useState(false);
 
-  // 내 현재 위치 (로컬 상태 - DB랑 동기화)
+  // ─────────────────────────────────────────
+  // 🗺 드래그 스크롤 (마우스 + 터치)
+  // ─────────────────────────────────────────
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (isMoving) return;
+    isDragging.current = true;
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: containerRef.current?.scrollLeft ?? 0,
+      scrollTop: containerRef.current?.scrollTop ?? 0,
+    };
+  };
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging.current || !containerRef.current) return;
+    e.preventDefault();
+    containerRef.current.scrollLeft =
+      dragStart.current.scrollLeft - (e.clientX - dragStart.current.x);
+    containerRef.current.scrollTop =
+      dragStart.current.scrollTop - (e.clientY - dragStart.current.y);
+  }, []);
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const touchStart = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isMoving) return;
+    touchStart.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      scrollLeft: containerRef.current?.scrollLeft ?? 0,
+      scrollTop: containerRef.current?.scrollTop ?? 0,
+    };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!containerRef.current || isMoving) return;
+    containerRef.current.scrollLeft =
+      touchStart.current.scrollLeft -
+      (e.touches[0].clientX - touchStart.current.x);
+    containerRef.current.scrollTop =
+      touchStart.current.scrollTop -
+      (e.touches[0].clientY - touchStart.current.y);
+  };
+
+  // ─────────────────────────────────────────
+  // 📌 내 집 위치 (DB에서 불러온 값으로 초기화)
+  // ─────────────────────────────────────────
   const myUser = users.find((u) => u.id === myUserId);
   const [myPos, setMyPos] = useState<{ x: number; y: number } | null>(
     myUser?.villageX != null
       ? { x: myUser.villageX!, y: myUser.villageY! }
       : null,
   );
+
   useEffect(() => {
     if (myUser?.villageX != null && myUser?.villageY != null) {
-      setMyPos({
-        x: myUser.villageX,
-        y: myUser.villageY,
-      });
+      setMyPos({ x: myUser.villageX, y: myUser.villageY });
     }
   }, [myUser?.villageX, myUser?.villageY]);
 
-  // ─────────────────────────────────────────
-  // 🏘 마을에 입주한 다른 유저만
-  // ─────────────────────────────────────────
+  // 입주한 다른 유저만
   const villageUsers = users.filter(
     (u) => u.id !== myUserId && u.villageX != null && u.villageY != null,
   );
 
   // ─────────────────────────────────────────
-  // 🗺 마을 클릭 → 내 집 위치 저장
+  // 🗺 맵 클릭 → 내 집 위치 저장 (px 절대좌표)
   // ─────────────────────────────────────────
   const handleMapClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isMoving) return;
+    if (isDragging.current) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const scrollLeft = containerRef.current?.scrollLeft ?? 0;
+    const scrollTop = containerRef.current?.scrollTop ?? 0;
 
-    // 범위 제한 (땅 밖으로 못 나가게)
-    const clampedX = Math.min(Math.max(x, 5), 90);
-    const clampedY = Math.min(Math.max(y, 10), 78);
+    const x = e.clientX - rect.left + scrollLeft;
+    const y = e.clientY - rect.top + scrollTop;
+
+    const clampedX = Math.min(Math.max(x, 40), MAP_WIDTH - 40);
+    const clampedY = Math.min(Math.max(y, 40), MAP_HEIGHT - 40);
 
     setMyPos({ x: clampedX, y: clampedY });
     setIsMoving(false);
 
-    // Supabase 저장
     await supabase
       .from("profiles")
       .update({ village_x: clampedX, village_y: clampedY })
       .eq("id", myUserId);
   };
 
-  // ─────────────────────────────────────────
-  // 🏠 내 집 뱃지
-  // ─────────────────────────────────────────
   const myHouse =
     HOUSES.find((h) => h.id === (user.equippedHouseId ?? "house_basic")) ??
     HOUSES[0];
@@ -96,107 +149,189 @@ const VillagePage = ({ users, myUserId }: Props) => {
         </HintText>
       </TopBar>
 
-      {/* 마을 맵 */}
-      <Village $isMoving={isMoving} onClick={handleMapClick}>
-        {/* 구름 */}
-        <Cloud
-          style={{ width: "80px", height: "28px", top: "8%", left: "10%" }}
-        />
-        <Cloud
-          style={{ width: "50px", height: "18px", top: "5%", left: "17%" }}
-        />
-        <Cloud
-          style={{ width: "100px", height: "32px", top: "12%", right: "15%" }}
-        />
-        <Cloud
-          style={{ width: "60px", height: "20px", top: "9%", right: "24%" }}
-        />
-        <Cloud
-          style={{ width: "70px", height: "24px", top: "20%", left: "44%" }}
-        />
+      {/* 드래그 스크롤 컨테이너 */}
+      <MapContainer
+        ref={containerRef}
+        $isMoving={isMoving}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+      >
+        <MapInner $isMoving={isMoving} onClick={handleMapClick}>
+          {/* 잔디 배경 */}
+          <GrassBase />
 
-        {/* 땅 */}
-        <Ground />
-        <Road />
-        <RoadLine />
-
-        {/* 나무 */}
-        <Tree style={{ bottom: "11%", left: "2%" }}>
-          <TreeTop />
-          <TreeTrunk />
-        </Tree>
-        <Tree style={{ bottom: "11%", left: "4.5%" }}>
-          <TreeTop $small />
-          <TreeTrunk $small />
-        </Tree>
-        <Tree style={{ bottom: "11%", right: "2%" }}>
-          <TreeTop />
-          <TreeTrunk />
-        </Tree>
-        <Tree style={{ bottom: "11%", right: "5%" }}>
-          <TreeTop $small />
-          <TreeTrunk $small />
-        </Tree>
-        <Tree style={{ bottom: "28%", left: "48%" }}>
-          <TreeTop $dark />
-          <TreeTrunk />
-        </Tree>
-        <Tree style={{ bottom: "50%", right: "8%" }}>
-          <TreeTop $small $dark />
-          <TreeTrunk $small />
-        </Tree>
-        <Tree style={{ bottom: "48%", left: "8%" }}>
-          <TreeTop $dark />
-          <TreeTrunk />
-        </Tree>
-
-        {/* 다른 유저 집들 */}
-        {villageUsers.map((u, idx) => {
-          const house =
-            HOUSES.find((h) => h.id === (u.equippedHouseId ?? "house_basic")) ??
-            HOUSES[0];
-          return (
-            <HousePin
-              key={u.id}
-              style={{ left: `${u.villageX}%`, top: `${u.villageY}%` }}
-              $delay={`${(idx * 0.3) % 1.5}s`}
-              $isMe={false}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!isMoving) setSelectedUser(u);
-              }}
-            >
-              <HouseBadge dangerouslySetInnerHTML={{ __html: house.badge }} />
-              <PinName>{u.nickname}</PinName>
-            </HousePin>
-          );
-        })}
-
-        {/* 내 집 */}
-        {myPos && (
-          <HousePin
-            style={{ left: `${myPos.x}%`, top: `${myPos.y}%` }}
-            $delay="0s"
-            $isMe={true}
-            onClick={(e) => e.stopPropagation()}
+          {/* 꾸불꾸불 길 */}
+          <svg
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              pointerEvents: "none",
+            }}
+            viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+            preserveAspectRatio="none"
           >
-            <HouseBadge dangerouslySetInnerHTML={{ __html: myHouse.badge }} />
-            <MeTag>나</MeTag>
-            <PinName>{user.nickname}</PinName>
-          </HousePin>
-        )}
+            {/* 메인 가로 길 */}
+            <path
+              d={`M 0 ${MAP_HEIGHT * 0.55} Q ${MAP_WIDTH * 0.15} ${MAP_HEIGHT * 0.52} ${MAP_WIDTH * 0.3} ${MAP_HEIGHT * 0.58} Q ${MAP_WIDTH * 0.45} ${MAP_HEIGHT * 0.64} ${MAP_WIDTH * 0.6} ${MAP_HEIGHT * 0.56} Q ${MAP_WIDTH * 0.75} ${MAP_HEIGHT * 0.48} ${MAP_WIDTH} ${MAP_HEIGHT * 0.52}`}
+              fill="none"
+              stroke="#c8a96a"
+              strokeWidth="52"
+              opacity="0.9"
+            />
+            {/* 길 중앙 점선 */}
+            <path
+              d={`M 0 ${MAP_HEIGHT * 0.55} Q ${MAP_WIDTH * 0.15} ${MAP_HEIGHT * 0.52} ${MAP_WIDTH * 0.3} ${MAP_HEIGHT * 0.58} Q ${MAP_WIDTH * 0.45} ${MAP_HEIGHT * 0.64} ${MAP_WIDTH * 0.6} ${MAP_HEIGHT * 0.56} Q ${MAP_WIDTH * 0.75} ${MAP_HEIGHT * 0.48} ${MAP_WIDTH} ${MAP_HEIGHT * 0.52}`}
+              fill="none"
+              stroke="#b89558"
+              strokeWidth="2"
+              strokeDasharray="20,14"
+              opacity="0.5"
+            />
+            {/* 위로 갈림길 */}
+            <path
+              d={`M ${MAP_WIDTH * 0.35} ${MAP_HEIGHT * 0.57} Q ${MAP_WIDTH * 0.38} ${MAP_HEIGHT * 0.35} ${MAP_WIDTH * 0.42} ${MAP_HEIGHT * 0.1}`}
+              fill="none"
+              stroke="#c8a96a"
+              strokeWidth="38"
+              opacity="0.85"
+            />
+            {/* 아래 갈림길 */}
+            <path
+              d={`M ${MAP_WIDTH * 0.72} ${MAP_HEIGHT * 0.52} Q ${MAP_WIDTH * 0.78} ${MAP_HEIGHT * 0.72} ${MAP_WIDTH * 0.85} ${MAP_HEIGHT * 0.92}`}
+              fill="none"
+              stroke="#c8a96a"
+              strokeWidth="36"
+              opacity="0.8"
+            />
+          </svg>
 
-        {/* 이사하기 모드 힌트 오버레이 */}
-        {isMoving && <MovingOverlay />}
+          {/* 연못 */}
+          <Pond
+            style={{ left: "66%", top: "16%", width: "120px", height: "80px" }}
+          />
+          <Pond
+            style={{ left: "8%", top: "70%", width: "90px", height: "60px" }}
+          />
 
-        {/* 완전 비어있을 때 */}
-        {residentCount === 0 && !isMoving && (
-          <EmptyHint>
-            아직 아무도 없어요 🏜️
-            <br />첫 번째 주민이 되어보세요!
-          </EmptyHint>
-        )}
-      </Village>
+          {/* 꽃밭 */}
+          <FlowerPatch
+            style={{ left: "24%", top: "14%", width: "60px", height: "40px" }}
+            $color="#FFB3C6"
+          />
+          <FlowerPatch
+            style={{ left: "58%", top: "36%", width: "50px", height: "35px" }}
+            $color="#B3D9FF"
+          />
+          <FlowerPatch
+            style={{ left: "80%", top: "54%", width: "55px", height: "38px" }}
+            $color="#FFE5B3"
+          />
+          <FlowerPatch
+            style={{ left: "10%", top: "84%", width: "45px", height: "30px" }}
+            $color="#C8FFB3"
+          />
+
+          {/* 구름 */}
+          <Cloud
+            style={{ left: "8%", top: "4%", width: "90px", height: "30px" }}
+          />
+          <Cloud
+            style={{ left: "14%", top: "2%", width: "55px", height: "20px" }}
+          />
+          <Cloud
+            style={{ left: "35%", top: "3%", width: "75px", height: "26px" }}
+          />
+          <Cloud
+            style={{ left: "58%", top: "1%", width: "100px", height: "34px" }}
+          />
+          <Cloud
+            style={{ left: "80%", top: "2%", width: "80px", height: "28px" }}
+          />
+
+          {/* 나무 */}
+          {[
+            { l: "5%", t: "10%" },
+            { l: "8%", t: "16%" },
+            { l: "18%", t: "7%" },
+            { l: "22%", t: "28%" },
+            { l: "50%", t: "8%" },
+            { l: "55%", t: "22%" },
+            { l: "78%", t: "7%" },
+            { l: "82%", t: "13%" },
+            { l: "90%", t: "28%" },
+            { l: "88%", t: "63%" },
+            { l: "5%", t: "43%" },
+            { l: "14%", t: "58%" },
+            { l: "30%", t: "76%" },
+            { l: "45%", t: "80%" },
+            { l: "60%", t: "73%" },
+            { l: "72%", t: "83%" },
+            { l: "92%", t: "76%" },
+            { l: "95%", t: "86%" },
+          ].map((pos, i) => (
+            <Tree key={i} style={{ left: pos.l, top: pos.t }}>
+              <TreeTop $dark={i % 3 === 0} $small={i % 4 === 0} />
+              <TreeTrunk $small={i % 4 === 0} />
+            </Tree>
+          ))}
+
+          {/* 다른 유저 집들 */}
+          {villageUsers.map((u, idx) => {
+            const house =
+              HOUSES.find(
+                (h) => h.id === (u.equippedHouseId ?? "house_basic"),
+              ) ?? HOUSES[0];
+            return (
+              <HousePin
+                key={u.id}
+                style={{ left: `${u.villageX}px`, top: `${u.villageY}px` }}
+                $delay={`${(idx * 0.3) % 1.5}s`}
+                $isMe={false}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isMoving) setSelectedUser(u);
+                }}
+              >
+                <HouseBadge>
+                  <img src={house.badge} alt={house.name} />
+                </HouseBadge>
+                <PinName>{u.nickname}</PinName>
+              </HousePin>
+            );
+          })}
+
+          {/* 내 집 */}
+          {myPos && (
+            <HousePin
+              style={{ left: `${myPos.x}px`, top: `${myPos.y}px` }}
+              $delay="0s"
+              $isMe={true}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <HouseBadge>
+                <img src={myHouse.badge} alt={myHouse.name} />
+              </HouseBadge>
+              <MeTag>나</MeTag>
+              <PinName>{user.nickname}</PinName>
+            </HousePin>
+          )}
+
+          {isMoving && <MovingOverlay />}
+
+          {residentCount === 0 && !isMoving && (
+            <EmptyHint>
+              아직 아무도 없어요 🏜️
+              <br />첫 번째 주민이 되어보세요!
+            </EmptyHint>
+          )}
+        </MapInner>
+      </MapContainer>
 
       {/* 유저 카드 모달 */}
       {selectedUser && (
@@ -204,18 +339,24 @@ const VillagePage = ({ users, myUserId }: Props) => {
           <UserCard onClick={(e) => e.stopPropagation()}>
             <CloseBtn onClick={() => setSelectedUser(null)}>✕</CloseBtn>
 
-            {/* 집 뱃지 */}
-            <CardHouseBadge
-              dangerouslySetInnerHTML={{
-                __html:
+            <CardHouseBadge>
+              <img
+                src={
                   HOUSES.find(
                     (h) =>
                       h.id === (selectedUser.equippedHouseId ?? "house_basic"),
-                  )?.badge ?? HOUSES[0].badge,
-              }}
-            />
+                  )?.badge ?? HOUSES[0].badge
+                }
+                alt="house badge"
+              />
+            </CardHouseBadge>
+            <CardHouseName>
+              {HOUSES.find(
+                (h) => h.id === (selectedUser.equippedHouseId ?? "house_basic"),
+              )?.name ?? "기본 지붕집"}{" "}
+              거주중
+            </CardHouseName>
 
-            {/* 아바타 */}
             <AvatarWrap>
               {selectedUser.profileAvatar ? (
                 <AvatarSprite
@@ -229,13 +370,6 @@ const VillagePage = ({ users, myUserId }: Props) => {
 
             <CardName>{selectedUser.nickname}</CardName>
             <CardLevel>Lv. {selectedUser.level}</CardLevel>
-
-            <CardHouseName>
-              {HOUSES.find(
-                (h) => h.id === (selectedUser.equippedHouseId ?? "house_basic"),
-              )?.name ?? "기본 지붕집"}{" "}
-              거주중
-            </CardHouseName>
 
             {selectedUser.badges.length > 0 && (
               <BadgeRow>
@@ -323,55 +457,59 @@ const HintText = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-const Village = styled.div<{ $isMoving: boolean }>`
-  position: relative;
+/* 뷰포트 - 고정 크기, overflow hidden */
+const MapContainer = styled.div<{ $isMoving: boolean }>`
   width: 100%;
   height: 460px;
-  background: linear-gradient(180deg, #b8e8f8 0%, #d4f0e8 50%, #c8e8a0 100%);
-  border-radius: ${({ theme }) => theme.radius.lg};
   overflow: hidden;
-  cursor: ${({ $isMoving }) => ($isMoving ? "crosshair" : "default")};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  cursor: ${({ $isMoving }) => ($isMoving ? "crosshair" : "grab")};
+  &:active {
+    cursor: ${({ $isMoving }) => ($isMoving ? "crosshair" : "grabbing")};
+  }
+  user-select: none;
+  position: relative;
+`;
+
+/* 실제 맵 - 뷰포트보다 큼 */
+const MapInner = styled.div<{ $isMoving: boolean }>`
+  position: relative;
+  width: ${MAP_WIDTH}px;
+  height: ${MAP_HEIGHT}px;
+  cursor: ${({ $isMoving }) => ($isMoving ? "crosshair" : "inherit")};
+`;
+
+const GrassBase = styled.div`
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, #8bc34a 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, #7cb342 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 80%, #9ccc65 0%, transparent 40%),
+    linear-gradient(160deg, #aed581 0%, #8bc34a 40%, #7cb342 100%);
 `;
 
 const Cloud = styled.div`
   position: absolute;
   background: white;
   border-radius: 50px;
-  opacity: 0.9;
+  opacity: 0.85;
 `;
 
-const Ground = styled.div`
+const Pond = styled.div`
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: #7cb342;
-  border-radius: 60% 60% 0 0 / 30px 30px 0 0;
+  background: radial-gradient(ellipse, #64b5f6 0%, #42a5f5 60%, #1e88e5 100%);
+  border-radius: 50%;
+  opacity: 0.65;
+  border: 2px solid rgba(255, 255, 255, 0.4);
 `;
 
-const Road = styled.div`
+const FlowerPatch = styled.div<{ $color: string }>`
   position: absolute;
-  bottom: 68px;
-  left: 0;
-  right: 0;
-  height: 22px;
-  background: #c8b89a;
-`;
-
-const RoadLine = styled.div`
-  position: absolute;
-  bottom: 77px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.6) 0px,
-    rgba(255, 255, 255, 0.6) 20px,
-    transparent 20px,
-    transparent 40px
-  );
+  background: ${({ $color }) => $color};
+  border-radius: 50%;
+  opacity: 0.45;
+  filter: blur(4px);
 `;
 
 const Tree = styled.div`
@@ -412,10 +550,9 @@ const HousePin = styled.div<{ $delay: string; $isMe: boolean }>`
       z-index: 5;
     `}
 
-  &:not([style*="cursor: default"]):hover {
+  &:hover {
     z-index: 10;
   }
-
   &:hover > div:last-child {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -423,13 +560,13 @@ const HousePin = styled.div<{ $delay: string; $isMe: boolean }>`
 `;
 
 const HouseBadge = styled.div`
-  width: 56px;
-  height: 56px;
+  width: 80px;
+  height: 120px;
 
-  svg,
   img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
   }
 `;
 
@@ -470,12 +607,11 @@ const PinName = styled.div`
 const MovingOverlay = styled.div`
   position: absolute;
   inset: 0;
-  background: rgba(80, 120, 255, 0.15);
+  background: rgba(80, 120, 255, 0.1);
   animation: ${pulse} 1.2s ease-in-out infinite;
   pointer-events: none;
   z-index: 20;
-  border: 2px dashed rgba(80, 120, 255, 0.4);
-  border-radius: inherit;
+  border: 3px dashed rgba(80, 120, 255, 0.4);
 `;
 
 const EmptyHint = styled.div`
@@ -528,14 +664,14 @@ const CloseBtn = styled.button`
 `;
 
 const CardHouseBadge = styled.div`
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 120px;
   margin-bottom: 4px;
 
-  svg,
   img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
   }
 `;
 
@@ -577,6 +713,7 @@ const CardLevel = styled.div`
 `;
 
 const CardHouseName = styled.div`
+  margin-top: -20px;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
