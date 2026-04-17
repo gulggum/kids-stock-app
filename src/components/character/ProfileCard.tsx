@@ -4,6 +4,8 @@ import avatarSprite from "../../assets/avatars/avatarSprite.png";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
 import { useUser } from "../../context/UserContext";
 import { getLevelTier } from "../../utils/getLevelTier";
+import { useHouse } from "../../hooks/useHouse";
+import { HOUSES } from "../../data/static/house";
 
 /**
  * 👤 프로필 카드
@@ -31,6 +33,8 @@ const ProfileCard = ({
   const textColor = getTextColorFromSkin(currentSkin);
   const { user } = useUser();
   const { title } = getLevelTier(user.level);
+  const { equippedHouseId } = useHouse();
+  const equippedHouse = HOUSES.find((h) => h.id === equippedHouseId);
 
   return (
     <Wrapper $skin={currentSkin} $text={textColor}>
@@ -60,6 +64,10 @@ const ProfileCard = ({
         {" "}
         <Status>{user.status}</Status>
       </Bottom>
+      {/* 🏠 집 뱃지 */}
+      {equippedHouse && (
+        <HouseBadge dangerouslySetInnerHTML={{ __html: equippedHouse.badge }} />
+      )}
     </Wrapper>
   );
 };
@@ -73,6 +81,7 @@ const borderPulse = keyframes`
 `;
 
 const Wrapper = styled.div<{ $skin: any; $text: string }>`
+  position: relative;
   border-radius: ${({ theme }) => theme.radius.md};
   padding: 20px;
   background: ${({ $skin }) =>
@@ -254,5 +263,20 @@ const LevelTitle = styled.div<{ $text: string }>`
     );
     opacity: 0.6;
     pointer-events: none;
+  }
+`;
+// 스타일 추가
+const HouseBadge = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  z-index: 5;
+
+  svg,
+  img {
+    width: 100%;
+    height: 100%;
   }
 `;

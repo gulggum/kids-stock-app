@@ -14,6 +14,8 @@ import { isCardUnlocked } from "../utils/getLevelTier";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../utils/supabase";
 import { ShopTabs, type TabType } from "../components/shop/shopTabs";
+import { useHouse } from "../hooks/useHouse";
+import { getHouseTier, HOUSES, type House } from "../data/static/house";
 
 const Shop = () => {
   // -----------------------------
@@ -21,6 +23,12 @@ const Shop = () => {
   // -----------------------------
   const { createToast } = useToast(); // 토스트 메시지
   const { buySkin, isOwned, selectedSkin } = useSkinItem(); // 스킨 관련
+  const {
+    isOwned: isHouseOwned,
+    equippedHouseId,
+    buyHouse,
+    equipHouse,
+  } = useHouse();
   const { openModal } = useModal(); // 확인 모달
   const { giveReward } = useReward();
   const { user } = useUser();
@@ -28,7 +36,7 @@ const Shop = () => {
   // -----------------------------
   // 📌 UI 상태
   // -----------------------------
-  const [activeTab, setActiveTab] = useState<TabType>("ALL");
+  const [activeTab, setActiveTab] = useState<TabType>("HOUSE");
   const [sparkleId, setSparkleId] = useState<string | null>(null); // 구매 애니메이션용
   const [profiles, setProfiles] = useState<{ selected_skin: string | null }[]>(
     [],
@@ -73,7 +81,29 @@ const Shop = () => {
       setTimeout(() => setSparkleId(null), 600);
     }
   };
+  // handleBuy 아래에 추가
+  // -----------------------------
+  // 🏠 집 구매 처리
+  // -----------------------------
+  const handleBuyHouse = async (house: House) => {
+    const result = await buyHouse(house.id, house.price);
 
+    if (result === "ALREADY_OWNED") {
+      createToast("이미 보유한 집이에요 😊");
+      return;
+    }
+    if (result === "NOT_ENOUGH_COIN") {
+      createToast("코인이 부족해요 🥲");
+      return;
+    }
+    if (result === "SUCCESS") {
+      playCoinSound();
+      createToast("새 집을 장만했어요! 🏠🎉");
+      giveReward("ITEM_PURCHASE");
+      setSparkleId(house.id);
+      setTimeout(() => setSparkleId(null), 600);
+    }
+  };
   // -----------------------------
   // 📌 필터링된 카드 목록
   // -----------------------------
@@ -135,7 +165,7 @@ const Shop = () => {
       {/* ----------------------------- */}
       {/* 🛍 상점 타이틀 */}
       {/* ----------------------------- */}
-      <Title>카드스킨 상점 💳</Title>
+      <Title>{activeTab === "HOUSE" ? "집 상점 🏠" : "카드스킨 상점 💳"}</Title>
 
       {/* ----------------------------- */}
       {/* 🪙 보유 코인 표시 */}
@@ -155,84 +185,157 @@ const Shop = () => {
       <Grid>
         {/* 🎁 랜덤 박스 */}
         {activeTab === "ALL" && <MysteryBox />}
-        {filteredSkins.map((item) => {
-          const owned = isOwned(item.id); // 보유 여부
-          const selected = selectedSkin === item.id; // 현재 적용 여부
-          //캐릭터레벨별 상점잠금
-          const unlocked = isCardUnlocked(user.level, item.unlockLevel);
-          const locked = !unlocked;
-          const isNew = isNewItem(item.releasedAt);
-          const isHot = hotSkinIds.includes(item.id);
-          return (
-            <Card
-              key={item.id}
-              $owned={owned}
-              $rarity={item.rarity}
-              $sparkle={sparkleId === item.id}
-              onClick={() => {
-                if (locked) {
-                  createToast(`Lv.${item.unlockLevel} 이상 필요해요 🔒`);
-                  return;
-                }
+        {/* HOUSE 탬 렌더링 */}
+        {activeTab === "HOUSE" &&
+          HOUSES.map((house) => {
+            const owned = isHouseOwned(house.id);
+            const equipped = equippedHouseId === house.id;
+            const locked = user.level < house.requiredLevel;
+            const tier = getHouseTier(house.requiredLevel);
 
-                // 👉 이미 가지고 있으면 안내
-                if (owned) {
-                  createToast("이미 보유한 카드예요 😊");
-                  return;
-                }
+            return (
+              <Card
+                key={house.id}
+                $owned={owned}
+                $rarity="COMMON"
+                $sparkle={sparkleId === house.id}
+                onClick={() => {
+                  if (locked) {
+                    createToast(`Lv.${house.requiredLevel} 이상 필요해요 🔒`);
+                    return;
+                  }
+                  if (owned) {
+                    equipHouse(house.id);
+                    createToast(
+                      equipped ? "착용 해제했어요" : "착용했어요! 🏠",
+                    );
+                    return;
+                  }
+                  openModal({
+                    type: "CONFIRM",
+                    title: `${house.name} 구매`,
+                    message: `${house.price} 코인으로 구매할까요?`,
+                    confirmText: "구매",
+                    cancelText: "취소",
+                    customContent: (
+                      <PreviewCard>
+                        {/* 뱃지 미리보기 */}
+                        <PreviewBadge
+                          dangerouslySetInnerHTML={{ __html: house.badge }}
+                        />
+                        <PreviewName>{house.name}</PreviewName>
+                      </PreviewCard>
+                    ),
+                    onConfirm: () => handleBuyHouse(house),
+                  });
+                }}
+              >
+                {/* 집 뱃지 이미지 */}
+                <HouseBadgePreview
+                  dangerouslySetInnerHTML={{ __html: house.badge }}
+                />
 
-                // 👉 구매 확인 모달
-                openModal({
-                  type: "CONFIRM",
+                {/* 레벨 배지 */}
+                <HouseLevelBadge $color={tier.color}>
+                  {tier.label}
+                </HouseLevelBadge>
 
-                  title: `${item.name} 구매`,
+                <Name>
+                  <NameText>{house.name}</NameText>
+                  {locked && <LockText>🔒 Lv.{house.requiredLevel}</LockText>}
+                </Name>
 
-                  message: `${item.price} 코인으로 구매할까요?`,
-                  confirmText: "구매",
-                  cancelText: "취소",
-                  customContent: (
-                    <PreviewCard>
-                      <PreviewImage $skin={item} />
-                      <PreviewName>{item.name}</PreviewName>
-                    </PreviewCard>
-                  ),
-                  onConfirm: () => handleBuy(item),
-                });
-              }}
-            >
-              {/* 카드 이미지 */}
-              <CardImage $skin={item} />
-              {/* New, Hot 카드 배지 */}
-              {isHot && <HotBadge>HOT</HotBadge>}
-              {isNew && <NewBadge>NEW</NewBadge>}
-              {/* 카드 이름 */}
-              <Name>
-                <NameText> {item.name} </NameText>
+                {!owned && <Price>{house.price} 코인</Price>}
 
-                {locked && <LockText>🔒 Lv.{item.unlockLevel}</LockText>}
-              </Name>
+                <Status>
+                  {locked && "🔒 잠김"}
+                  {!locked && !owned && "🔒 구매하기"}
+                  {owned && !equipped && "🎒 보유중"}
+                  {equipped && "⭐ 착용중"}
+                </Status>
+              </Card>
+            );
+          })}
 
-              {/* 가격 (미보유만 표시) */}
-              {!owned && <Price>{item.price} 코인</Price>}
+        {activeTab !== "HOUSE" &&
+          filteredSkins.map((item) => {
+            const owned = isOwned(item.id); // 보유 여부
+            const selected = selectedSkin === item.id; // 현재 적용 여부
+            //캐릭터레벨별 상점잠금
+            const unlocked = isCardUnlocked(user.level, item.unlockLevel);
+            const locked = !unlocked;
+            const isNew = isNewItem(item.releasedAt);
+            const isHot = hotSkinIds.includes(item.id);
+            return (
+              <Card
+                key={item.id}
+                $owned={owned}
+                $rarity={item.rarity}
+                $sparkle={sparkleId === item.id}
+                onClick={() => {
+                  if (locked) {
+                    createToast(`Lv.${item.unlockLevel} 이상 필요해요 🔒`);
+                    return;
+                  }
 
-              {/* 상태 표시 */}
-              <Status>
-                {!owned && "🔒 구매하기"}
-                {owned && !selected && "🎒 보유중"}
-                {selected && "⭐ 사용중"}
-              </Status>
+                  // 👉 이미 가지고 있으면 안내
+                  if (owned) {
+                    createToast("이미 보유한 카드예요 😊");
+                    return;
+                  }
 
-              {/* 등급 뱃지 */}
-              <Badge $rarity={item.rarity}>
-                {item.rarity === "LEGEND"
-                  ? "👑"
-                  : item.rarity === "SPECIAL"
-                    ? "⭐"
-                    : ""}
-              </Badge>
-            </Card>
-          );
-        })}
+                  // 👉 구매 확인 모달
+                  openModal({
+                    type: "CONFIRM",
+
+                    title: `${item.name} 구매`,
+
+                    message: `${item.price} 코인으로 구매할까요?`,
+                    confirmText: "구매",
+                    cancelText: "취소",
+                    customContent: (
+                      <PreviewCard>
+                        <PreviewImage $skin={item} />
+                        <PreviewName>{item.name}</PreviewName>
+                      </PreviewCard>
+                    ),
+                    onConfirm: () => handleBuy(item),
+                  });
+                }}
+              >
+                {/* 카드 이미지 */}
+                <CardImage $skin={item} />
+                {/* New, Hot 카드 배지 */}
+                {isHot && <HotBadge>HOT</HotBadge>}
+                {isNew && <NewBadge>NEW</NewBadge>}
+                {/* 카드 이름 */}
+                <Name>
+                  <NameText> {item.name} </NameText>
+
+                  {locked && <LockText>🔒 Lv.{item.unlockLevel}</LockText>}
+                </Name>
+
+                {/* 가격 (미보유만 표시) */}
+                {!owned && <Price>{item.price} 코인</Price>}
+
+                {/* 상태 표시 */}
+                <Status>
+                  {!owned && "🔒 구매하기"}
+                  {owned && !selected && "🎒 보유중"}
+                  {selected && "⭐ 사용중"}
+                </Status>
+
+                {/* 등급 뱃지 */}
+                <Badge $rarity={item.rarity}>
+                  {item.rarity === "LEGEND"
+                    ? "👑"
+                    : item.rarity === "SPECIAL"
+                      ? "⭐"
+                      : ""}
+                </Badge>
+              </Card>
+            );
+          })}
       </Grid>
     </Wrapper>
   );
@@ -443,4 +546,47 @@ const HotBadge = styled.div`
   font-weight: 800;
 
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.35);
+`;
+const HouseBadgePreview = styled.div`
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+
+  svg,
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const PreviewBadge = styled.div`
+  width: 80px;
+  height: 80px;
+
+  svg,
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const COLOR_MAP: Record<string, string> = {
+  purple: "#534AB7",
+  orange: "#c8900a",
+  green: "#3a8a4a",
+  blue: "#378ADD",
+  gray: "#888780",
+};
+
+const HouseLevelBadge = styled.div<{ $color: string }>`
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  z-index: 2;
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  color: white;
+  background: ${({ $color }) => COLOR_MAP[$color] ?? "#888780"};
 `;
