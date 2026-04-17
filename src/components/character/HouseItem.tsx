@@ -13,7 +13,9 @@ const HouseItem = ({ house, isEquipped, locked, onClick }: Props) => {
   return (
     <Wrapper $selected={isEquipped} $locked={locked} onClick={onClick}>
       {/* 🏷 뱃지 이미지 */}
-      <BadgeWrap dangerouslySetInnerHTML={{ __html: house.badge }} />
+      <BadgeWrap>
+        <img src={house.badge} alt={house.name} />
+      </BadgeWrap>
 
       <Name>{house.name}</Name>
 
@@ -69,7 +71,7 @@ const Wrapper = styled.div<{ $selected?: boolean; $locked?: boolean }>`
 
 const BadgeWrap = styled.div`
   width: 52px;
-  height: 52px;
+  height: 90px;
 
   svg {
     width: 100%;

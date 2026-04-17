@@ -12,7 +12,7 @@ export type OwnedHouse = {
 };
 
 export const useHouse = () => {
-  const { user, spendCoin } = useUser();
+  const { user, spendCoin, setUser } = useUser();
   const [ownedHouses, setOwnedHouses] = useState<OwnedHouse[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -66,9 +66,7 @@ export const useHouse = () => {
   // 👒 현재 착용 중인 집 id
   // 착용한 게 없으면 기본집으로 fallback
   // ─────────────────────────────────────────
-  const equippedHouseId =
-    ownedHouses.find((h) => h.isEquipped)?.houseId ?? "house_basic";
-
+  const equippedHouseId = user.equippedHouseId ?? "house_basic";
   // ─────────────────────────────────────────
   // 💰 집 구매
   // 1. 이미 보유 여부 확인
@@ -131,6 +129,7 @@ export const useHouse = () => {
     setOwnedHouses((prev) =>
       prev.map((h) => ({ ...h, isEquipped: h.houseId === houseId })),
     );
+    setUser((prev) => ({ ...prev, equippedHouseId: houseId }));
   };
 
   return {
