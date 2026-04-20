@@ -87,7 +87,7 @@ export const AchievementProvider = ({ children }: { children: ReactNode }) => {
           trades.filter((t) => t.type === "BUY").map((t) => t.stockId),
         ),
       ].length,
-      totalNewsRead: 0, // TODO: 🔜 API 연동 때 NewsContext 연동시 - NEWS_FIRST, NEWS_10 업적은 API 연동 때 같이 처리
+      totalNewsRead: 0,
     };
 
     // 🔍 전체 업적을 순회하며 달성 조건 체크

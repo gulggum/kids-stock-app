@@ -28,6 +28,7 @@ type TradeContextType = {
     price: number;
     country?: "KR" | "US";
     reason?: string;
+    quantity?: number;
   }) => boolean;
   sellStock: (stock: {
     id: number;
@@ -94,13 +95,14 @@ export const TradeProvider = ({ children }: { children: React.ReactNode }) => {
     price: number;
     country?: "KR" | "US";
     reason?: string;
+    quantity?: number;
   }) => {
     const newTrade: Trade = {
       id: crypto.randomUUID(),
       stockId: stock.id,
       stockName: stock.name,
       price: stock.price,
-      quantity: 1,
+      quantity: stock.quantity ?? 1,
       type: "BUY",
       createdAt: new Date().toISOString(),
       country: stock.country ?? "KR",
