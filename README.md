@@ -2,7 +2,7 @@
 
 > 어린이를 위한 주식 체험 금융 교육 앱
 
-📅 개발 기간: 2026.01.17 ~ 진행 중  
+📅 개발 기간: 2026.01.17 ~ 진행 중
 🔗 배포 링크: [kids-stock-app.vercel.app](https://kids-stock-app.vercel.app)
 
 ---
@@ -99,6 +99,18 @@ Context
 └── UIContext          → 모달 / 토스트 등 UI 상태
 ```
 
+### Custom Hooks
+
+```
+
+페이지 컴포넌트는 UI만 담당하고 비즈니스 로직은 훅으로 분리했습니다.
+
+- `useStockDetail` → 주식 상세 페이지 로직 전담 (구매/판매/가이드)
+- `useHouse` → 집 구매/착용, spendCoin 재사용으로 중복 제거
+- `useRankingQuery` / `useStocksQuery` / `useNewsQuery` → TanStack Query 캐싱 전략
+- `useExchangeRate` → 실시간 환율 조회
+```
+
 ### Supabase 테이블 구조
 
 ```
@@ -152,9 +164,9 @@ api/update-stocks.ts → Yahoo Finance 주가 업데이트 (Cron)
 
 ---
 
-## 트러블슈팅
+## 개발 기록
 
-주요 트러블슈팅은 [Velog 개발일지](https://velog.io/@gulggum/series/StockKids%EA%B0%9C%EB%B0%9C)에서 확인할 수 있습니다.
+개발기록은 [Velog 키즈스톡 개발일지](https://velog.io/@gulggum/series/StockKids%EA%B0%9C%EB%B0%9C)에서 확인할 수 있습니다.
 
 ---
 
@@ -168,8 +180,12 @@ api/update-stocks.ts → Yahoo Finance 주가 업데이트 (Cron)
 
 ## 미리보기
 
-![메인화면](./docs/screenshots/main.png)
-![마켓페이지](./docs/screenshots/market.png)
-![업적팝업](./docs/screenshots/achievement.png)
+![메인화면](./src/assets/images/screenshots/home.jpg)
+![마켓페이지](./src/assets/images/screenshots/market.png)
+![커뮤니티](./src/assets/images/screenshots/community.png)
+![마을](./src/assets/images/screenshots/village.png)
+![자산](./src/assets/images/screenshots/portfolio.png)
+![캐릭터](./src/assets/images/screenshots/character.png)
+![상점](./src/assets/images/screenshots/shop.png)
 
 ---
