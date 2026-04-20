@@ -29,6 +29,10 @@ const VillagePage = ({ users, myUserId }: Props) => {
   // 줌 상태 추가
   const [scale, setScale] = useState(1);
   const [minScale, setMinScale] = useState(0.3);
+  // 첫 방문 여부 상태
+  const [showIntro, setShowIntro] = useState(() => {
+    return !localStorage.getItem("village_intro_seen");
+  });
 
   const MAX_SCALE = 2;
 
@@ -270,10 +274,6 @@ const VillagePage = ({ users, myUserId }: Props) => {
         onTouchStart={handleTouchStartZoom}
         onTouchMove={handleTouchMoveZoom}
       >
-        <MapHint>
-          <span>🖐 드래그</span>
-          <span>🔍 핀치/휠 줌</span>
-        </MapHint>
         <MapInner $isMoving={isMoving} $scale={scale} onClick={handleMapClick}>
           {/* 잔디 배경 */}
           <GrassBase />
@@ -332,6 +332,23 @@ const VillagePage = ({ users, myUserId }: Props) => {
               아직 아무도 없어요 🏜️
               <br />첫 번째 주민이 되어보세요!
             </EmptyHint>
+          )}
+          {showIntro && (
+            <IntroOverlay
+              onClick={() => {
+                setShowIntro(false);
+                localStorage.setItem("village_intro_seen", "true");
+              }}
+            >
+              <IntroBox>
+                <IntroEmoji>🏘️</IntroEmoji>
+                <IntroTitle>마을에 오신 걸 환영해요!</IntroTitle>
+                <IntroRow>🖐 드래그로 마을 탐험</IntroRow>
+                <IntroRow>🔍 핀치/휠로 확대·축소</IntroRow>
+                <IntroRow>🚚 이사하기로 내 집 놓기</IntroRow>
+                <IntroTap>화면을 탭해서 시작하기</IntroTap>
+              </IntroBox>
+            </IntroOverlay>
           )}
         </MapInner>
       </MapContainer>
@@ -462,6 +479,7 @@ const HintText = styled.div`
 
 /* 뷰포트 - 고정 크기, overflow hidden */
 const MapContainer = styled.div<{ $isMoving: boolean }>`
+  position: relative;
   width: 100%;
   height: calc(100dvh - 290px); // 네비+탭+버튼 높이 빼기
   @media (min-width: 769px) {
@@ -591,6 +609,7 @@ const EmptyHint = styled.div`
 const Overlay = styled.div`
   position: absolute;
   inset: 0;
+
   background: rgba(0, 0, 0, 0.35);
   z-index: 100;
   display: flex;
@@ -820,22 +839,48 @@ const LockTag = styled.div`
   color: ${({ theme }) => theme.colors.muted};
   white-space: nowrap;
 `;
-const MapHint = styled.div`
+
+const IntroOverlay = styled.div`
   position: absolute;
-  top: 20%;
-  right: 10px;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
   z-index: 50;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  pointer-events: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
 
-  span {
-    font-size: 11px;
-    font-weight: 700;
-    background: rgba(0, 0, 0, 0.45);
-    color: white;
-    padding: 3px 8px;
-    border-radius: 999px;
-  }
+const IntroBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-align: center;
+`;
+
+const IntroEmoji = styled.div`
+  font-size: 40px;
+`;
+
+const IntroTitle = styled.div`
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 4px;
+`;
+
+const IntroRow = styled.div`
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 16px;
+  border-radius: 999px;
+  width: 100%;
+`;
+
+const IntroTap = styled.div`
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.7;
 `;
