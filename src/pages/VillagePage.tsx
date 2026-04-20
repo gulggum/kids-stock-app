@@ -143,11 +143,20 @@ const VillagePage = ({ users, myUserId }: Props) => {
   // ─────────────────────────────────────────
   // 마우스 휠 줌(zoom)
   // ─────────────────────────────────────────
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setScale((prev) => Math.min(Math.max(prev + delta, minScale), MAX_SCALE));
-  };
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault(); // passive: false라서 가능
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setScale((prev) => Math.min(Math.max(prev + delta, minScale), MAX_SCALE));
+    };
+
+    // passive: false 로 등록
+    container.addEventListener("wheel", onWheel, { passive: false });
+    return () => container.removeEventListener("wheel", onWheel);
+  }, [minScale]);
 
   // 핀치 줌 (모바일)
   const lastPinchDistance = useRef<number | null>(null);
@@ -266,7 +275,6 @@ const VillagePage = ({ users, myUserId }: Props) => {
       <MapContainer
         ref={containerRef}
         $isMoving={isMoving}
-        onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
