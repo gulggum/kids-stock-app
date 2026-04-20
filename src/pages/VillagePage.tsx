@@ -7,6 +7,7 @@ import { useUser } from "../context/UserContext";
 import type { PublicUser } from "../types/UserType";
 import avatarSprite from "../assets/avatars/avatarSprite.png";
 import { useHouse } from "../hooks/useHouse";
+import villageBg from "../assets/images/houses/village_bg.png";
 
 // ─────────────────────────────────────────
 // 📌 맵 실제 크기 (뷰포트보다 크게 - 드래그로 탐험)
@@ -108,11 +109,9 @@ const VillagePage = ({ users, myUserId }: Props) => {
     if (isDragging.current) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
-    const scrollLeft = containerRef.current?.scrollLeft ?? 0;
-    const scrollTop = containerRef.current?.scrollTop ?? 0;
 
-    const x = e.clientX - rect.left + scrollLeft;
-    const y = e.clientY - rect.top + scrollTop;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
     const clampedX = Math.min(Math.max(x, 40), MAP_WIDTH - 40);
     const clampedY = Math.min(Math.max(y, 40), MAP_HEIGHT - 40);
@@ -205,123 +204,6 @@ const VillagePage = ({ users, myUserId }: Props) => {
         <MapInner $isMoving={isMoving} onClick={handleMapClick}>
           {/* 잔디 배경 */}
           <GrassBase />
-
-          {/* 꾸불꾸불 길 */}
-          <svg
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              pointerEvents: "none",
-            }}
-            viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-            preserveAspectRatio="none"
-          >
-            {/* 메인 가로 길 */}
-            <path
-              d={`M 0 ${MAP_HEIGHT * 0.55} Q ${MAP_WIDTH * 0.15} ${MAP_HEIGHT * 0.52} ${MAP_WIDTH * 0.3} ${MAP_HEIGHT * 0.58} Q ${MAP_WIDTH * 0.45} ${MAP_HEIGHT * 0.64} ${MAP_WIDTH * 0.6} ${MAP_HEIGHT * 0.56} Q ${MAP_WIDTH * 0.75} ${MAP_HEIGHT * 0.48} ${MAP_WIDTH} ${MAP_HEIGHT * 0.52}`}
-              fill="none"
-              stroke="#c8a96a"
-              strokeWidth="52"
-              opacity="0.9"
-            />
-            {/* 길 중앙 점선 */}
-            <path
-              d={`M 0 ${MAP_HEIGHT * 0.55} Q ${MAP_WIDTH * 0.15} ${MAP_HEIGHT * 0.52} ${MAP_WIDTH * 0.3} ${MAP_HEIGHT * 0.58} Q ${MAP_WIDTH * 0.45} ${MAP_HEIGHT * 0.64} ${MAP_WIDTH * 0.6} ${MAP_HEIGHT * 0.56} Q ${MAP_WIDTH * 0.75} ${MAP_HEIGHT * 0.48} ${MAP_WIDTH} ${MAP_HEIGHT * 0.52}`}
-              fill="none"
-              stroke="#b89558"
-              strokeWidth="2"
-              strokeDasharray="20,14"
-              opacity="0.5"
-            />
-            {/* 위로 갈림길 */}
-            <path
-              d={`M ${MAP_WIDTH * 0.35} ${MAP_HEIGHT * 0.57} Q ${MAP_WIDTH * 0.38} ${MAP_HEIGHT * 0.35} ${MAP_WIDTH * 0.42} ${MAP_HEIGHT * 0.1}`}
-              fill="none"
-              stroke="#c8a96a"
-              strokeWidth="38"
-              opacity="0.85"
-            />
-            {/* 아래 갈림길 */}
-            <path
-              d={`M ${MAP_WIDTH * 0.72} ${MAP_HEIGHT * 0.52} Q ${MAP_WIDTH * 0.78} ${MAP_HEIGHT * 0.72} ${MAP_WIDTH * 0.85} ${MAP_HEIGHT * 0.92}`}
-              fill="none"
-              stroke="#c8a96a"
-              strokeWidth="36"
-              opacity="0.8"
-            />
-          </svg>
-
-          {/* 연못 */}
-          <Pond
-            style={{ left: "66%", top: "16%", width: "120px", height: "80px" }}
-          />
-          <Pond
-            style={{ left: "8%", top: "70%", width: "90px", height: "60px" }}
-          />
-
-          {/* 꽃밭 */}
-          <FlowerPatch
-            style={{ left: "24%", top: "14%", width: "60px", height: "40px" }}
-            $color="#FFB3C6"
-          />
-          <FlowerPatch
-            style={{ left: "58%", top: "36%", width: "50px", height: "35px" }}
-            $color="#B3D9FF"
-          />
-          <FlowerPatch
-            style={{ left: "80%", top: "54%", width: "55px", height: "38px" }}
-            $color="#FFE5B3"
-          />
-          <FlowerPatch
-            style={{ left: "10%", top: "84%", width: "45px", height: "30px" }}
-            $color="#C8FFB3"
-          />
-
-          {/* 구름 */}
-          <Cloud
-            style={{ left: "8%", top: "4%", width: "90px", height: "30px" }}
-          />
-          <Cloud
-            style={{ left: "14%", top: "2%", width: "55px", height: "20px" }}
-          />
-          <Cloud
-            style={{ left: "35%", top: "3%", width: "75px", height: "26px" }}
-          />
-          <Cloud
-            style={{ left: "58%", top: "1%", width: "100px", height: "34px" }}
-          />
-          <Cloud
-            style={{ left: "80%", top: "2%", width: "80px", height: "28px" }}
-          />
-
-          {/* 나무 */}
-          {[
-            { l: "5%", t: "10%" },
-            { l: "8%", t: "16%" },
-            { l: "18%", t: "7%" },
-            { l: "22%", t: "28%" },
-            { l: "50%", t: "8%" },
-            { l: "55%", t: "22%" },
-            { l: "78%", t: "7%" },
-            { l: "82%", t: "13%" },
-            { l: "90%", t: "28%" },
-            { l: "88%", t: "63%" },
-            { l: "5%", t: "43%" },
-            { l: "14%", t: "58%" },
-            { l: "30%", t: "76%" },
-            { l: "45%", t: "80%" },
-            { l: "60%", t: "73%" },
-            { l: "72%", t: "83%" },
-            { l: "92%", t: "76%" },
-            { l: "95%", t: "86%" },
-          ].map((pos, i) => (
-            <Tree key={i} style={{ left: pos.l, top: pos.t }}>
-              <TreeTop $dark={i % 3 === 0} $small={i % 4 === 0} />
-              <TreeTrunk $small={i % 4 === 0} />
-            </Tree>
-          ))}
 
           {/* 다른 유저 집들 */}
           {villageUsers.map((u, idx) => {
@@ -524,54 +406,7 @@ const MapInner = styled.div<{ $isMoving: boolean }>`
 const GrassBase = styled.div`
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 20% 30%, #8bc34a 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 60%, #7cb342 0%, transparent 45%),
-    radial-gradient(ellipse at 50% 80%, #9ccc65 0%, transparent 40%),
-    linear-gradient(160deg, #aed581 0%, #8bc34a 40%, #7cb342 100%);
-`;
-
-const Cloud = styled.div`
-  position: absolute;
-  background: white;
-  border-radius: 50px;
-  opacity: 0.85;
-`;
-
-const Pond = styled.div`
-  position: absolute;
-  background: radial-gradient(ellipse, #64b5f6 0%, #42a5f5 60%, #1e88e5 100%);
-  border-radius: 50%;
-  opacity: 0.65;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-`;
-
-const FlowerPatch = styled.div<{ $color: string }>`
-  position: absolute;
-  background: ${({ $color }) => $color};
-  border-radius: 50%;
-  opacity: 0.45;
-  filter: blur(4px);
-`;
-
-const Tree = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const TreeTop = styled.div<{ $small?: boolean; $dark?: boolean }>`
-  width: ${({ $small }) => ($small ? "22px" : "28px")};
-  height: ${({ $small }) => ($small ? "22px" : "28px")};
-  background: ${({ $dark }) => ($dark ? "#388E3C" : "#4CAF50")};
-  border-radius: 50% 50% 40% 40%;
-`;
-
-const TreeTrunk = styled.div<{ $small?: boolean }>`
-  width: ${({ $small }) => ($small ? "6px" : "8px")};
-  height: ${({ $small }) => ($small ? "10px" : "12px")};
-  background: #795548;
+  background: url(${villageBg}) center/cover no-repeat;
 `;
 
 const HousePin = styled.div<{ $delay: string; $isMe: boolean }>`
@@ -602,8 +437,8 @@ const HousePin = styled.div<{ $delay: string; $isMe: boolean }>`
 `;
 
 const HouseBadge = styled.div`
-  width: 80px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
 
   img {
     width: 100%;
@@ -706,8 +541,8 @@ const CloseBtn = styled.button`
 `;
 
 const CardHouseBadge = styled.div`
-  width: 80px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   margin-bottom: 4px;
 
   img {

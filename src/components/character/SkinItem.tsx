@@ -69,7 +69,7 @@ const Wrapper = styled.div<{ $selected?: boolean; $locked?: boolean }>`
 `;
 
 const Preview = styled.div<{ $skin: any }>`
-  height: 90px;
+  height: 70px;
   border-radius: 10px;
 
   background: ${({ $skin }) =>
@@ -79,6 +79,7 @@ const Preview = styled.div<{ $skin: any }>`
 const Name = styled.div`
   font-size: 13px;
   font-weight: 700;
+  margin: 5px 0px;
 `;
 
 const Status = styled.div`

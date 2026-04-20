@@ -539,8 +539,7 @@ const HotBadge = styled.div`
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.35);
 `;
 const HouseBadgePreview = styled.div`
-  width: 80px;
-  height: 120px;
+  width: 100px;
   margin: 0 auto;
 
   svg,
@@ -551,8 +550,8 @@ const HouseBadgePreview = styled.div`
 `;
 
 const PreviewBadge = styled.div`
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
 
   svg,
   img {

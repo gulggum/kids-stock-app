@@ -274,7 +274,7 @@ const HouseBadge = styled.div`
   top: 4px;
   right: 20px;
   width: 80px;
-  height: 120px;
+  height: 80px;
   z-index: 5;
 
   svg,
