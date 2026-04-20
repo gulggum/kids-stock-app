@@ -77,6 +77,18 @@ const Community = () => {
     );
   };
 
+  // 마을 탭일 때 body 스크롤 막기
+  useEffect(() => {
+    if (activeTab === "VILLAGE") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [activeTab]);
+
   return (
     <Wrapper>
       <Title>📢 오늘의 투자 광장</Title>
@@ -103,7 +115,9 @@ const Community = () => {
 
       {/* 마을 탭 */}
       {activeTab === "VILLAGE" && (
-        <VillagePage users={allUsers} myUserId={user.id} />
+        <VillageWrapper>
+          <VillagePage users={allUsers} myUserId={user.id} />
+        </VillageWrapper>
       )}
       {/* 피드 탭 - 기존 내용 */}
       {activeTab === "FEED" && (
@@ -191,4 +205,14 @@ const TabButton = styled.button<{ $active: boolean }>`
     $active ? theme.colors.primary : theme.colors.card};
   color: ${({ $active }) => ($active ? "#fff" : "inherit")};
   transition: 0.2s;
+`;
+
+const VillageWrapper = styled.div`
+  margin: 0 -16px; //  AppLayout Main padding 16px 상쇄
+  margin-bottom: -90px; //  padding-bottom 90px 상쇄
+
+  @media (min-width: 769px) {
+    margin: 20px -20px; // 👈 PC 패딩 맞게
+    margin-bottom: -16px;
+  }
 `;

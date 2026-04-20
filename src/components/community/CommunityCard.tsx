@@ -409,7 +409,7 @@ const HouseBadge = styled.div`
   position: absolute;
   top: 4px;
   right: 20px;
-  width: 50px;
+  width: 80px;
   height: 80px;
   z-index: 5;
 

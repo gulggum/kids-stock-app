@@ -7,13 +7,13 @@ import { useUser } from "../context/UserContext";
 import type { PublicUser } from "../types/UserType";
 import avatarSprite from "../assets/avatars/avatarSprite.png";
 import { useHouse } from "../hooks/useHouse";
-import villageBg from "../assets/images/houses/village_bg.png";
+import villageBg from "../assets/images/houses/village_bg.jpg";
 
 // ─────────────────────────────────────────
 // 📌 맵 실제 크기 (뷰포트보다 크게 - 드래그로 탐험)
 // ─────────────────────────────────────────
-const MAP_WIDTH = 1400;
-const MAP_HEIGHT = 1000;
+const MAP_WIDTH = 1019;
+const MAP_HEIGHT = 1365;
 
 type Props = {
   users: PublicUser[];
@@ -28,7 +28,8 @@ const VillagePage = ({ users, myUserId }: Props) => {
   const [showGuide, setShowGuide] = useState(false);
   // 줌 상태 추가
   const [scale, setScale] = useState(1);
-  const MIN_SCALE = 0.5;
+  const [minScale, setMinScale] = useState(0.3);
+
   const MAX_SCALE = 2;
 
   // ─────────────────────────────────────────
@@ -93,7 +94,7 @@ const VillagePage = ({ users, myUserId }: Props) => {
       ? { x: myUser.villageX!, y: myUser.villageY! }
       : null,
   );
-
+  //데이터 동기화목적
   useEffect(() => {
     if (myUser?.villageX != null && myUser?.villageY != null) {
       setMyPos({ x: myUser.villageX, y: myUser.villageY });
@@ -114,8 +115,8 @@ const VillagePage = ({ users, myUserId }: Props) => {
 
     const rect = e.currentTarget.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = (e.clientX - rect.left) / scale; // 👈 scale로 나누기
+    const y = (e.clientY - rect.top) / scale;
 
     const clampedX = Math.min(Math.max(x, 40), MAP_WIDTH - 40);
     const clampedY = Math.min(Math.max(y, 40), MAP_HEIGHT - 40);
@@ -141,7 +142,7 @@ const VillagePage = ({ users, myUserId }: Props) => {
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setScale((prev) => Math.min(Math.max(prev + delta, MIN_SCALE), MAX_SCALE));
+    setScale((prev) => Math.min(Math.max(prev + delta, minScale), MAX_SCALE));
   };
 
   // 핀치 줌 (모바일)
@@ -163,15 +164,41 @@ const VillagePage = ({ users, myUserId }: Props) => {
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const distance = Math.sqrt(dx * dx + dy * dy);
       const delta = (distance - lastPinchDistance.current) * 0.005;
-      setScale((prev) =>
-        Math.min(Math.max(prev + delta, MIN_SCALE), MAX_SCALE),
-      );
+      setScale((prev) => Math.min(Math.max(prev + delta, minScale), MAX_SCALE));
       lastPinchDistance.current = distance;
     } else {
       handleTouchMove(e); // 기존 드래그
     }
   };
+  // 마운트 시 맵 중앙으로 스크롤
+  useEffect(() => {
+    const initMap = () => {
+      if (!containerRef.current) return;
+      const container = containerRef.current;
 
+      const fitScaleX = container.clientWidth / MAP_WIDTH;
+      const fitScaleY = container.clientHeight / MAP_HEIGHT;
+      const fitScale = Math.max(fitScaleX, fitScaleY);
+
+      setScale(fitScale);
+      setMinScale(fitScale);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const centerX = (MAP_WIDTH * fitScale - container.clientWidth) / 2;
+          const centerY = (MAP_HEIGHT * fitScale - container.clientHeight) / 2;
+          container.scrollLeft = Math.max(centerX, 0);
+          container.scrollTop = Math.max(centerY, 0);
+        });
+      });
+    };
+
+    initMap(); // 마운트 시 실행
+
+    //  화면 크기 바뀔 때도 실행
+    window.addEventListener("resize", initMap);
+    return () => window.removeEventListener("resize", initMap);
+  }, []);
   return (
     <Wrapper>
       {/* 상단 버튼 + 힌트 */}
@@ -243,6 +270,10 @@ const VillagePage = ({ users, myUserId }: Props) => {
         onTouchStart={handleTouchStartZoom}
         onTouchMove={handleTouchMoveZoom}
       >
+        <MapHint>
+          <span>🖐 드래그</span>
+          <span>🔍 핀치/휠 줌</span>
+        </MapHint>
         <MapInner $isMoving={isMoving} $scale={scale} onClick={handleMapClick}>
           {/* 잔디 배경 */}
           <GrassBase />
@@ -256,7 +287,10 @@ const VillagePage = ({ users, myUserId }: Props) => {
             return (
               <HousePin
                 key={u.id}
-                style={{ left: `${u.villageX}px`, top: `${u.villageY}px` }}
+                style={{
+                  left: `${(u.villageX ?? 0) * scale}px`,
+                  top: `${(u.villageY ?? 0) * scale}px`,
+                }}
                 $delay={`${(idx * 0.3) % 1.5}s`}
                 $isMe={false}
                 onClick={(e) => {
@@ -264,7 +298,7 @@ const VillagePage = ({ users, myUserId }: Props) => {
                   if (!isMoving) setSelectedUser(u);
                 }}
               >
-                <HouseBadge>
+                <HouseBadge $scale={scale}>
                   <img src={house.badge} alt={house.name} />
                 </HouseBadge>
                 <PinName>{u.nickname}</PinName>
@@ -275,12 +309,15 @@ const VillagePage = ({ users, myUserId }: Props) => {
           {/* 내 집 */}
           {myPos && (
             <HousePin
-              style={{ left: `${myPos.x}px`, top: `${myPos.y}px` }}
+              style={{
+                left: `${myPos.x * scale}px`,
+                top: `${myPos.y * scale}px`,
+              }}
               $delay="0s"
               $isMe={true}
               onClick={(e) => e.stopPropagation()}
             >
-              <HouseBadge>
+              <HouseBadge $scale={scale}>
                 <img src={myHouse.badge} alt={myHouse.name} />
               </HouseBadge>
               <MeTag>나</MeTag>
@@ -426,7 +463,12 @@ const HintText = styled.div`
 /* 뷰포트 - 고정 크기, overflow hidden */
 const MapContainer = styled.div<{ $isMoving: boolean }>`
   width: 100%;
-  height: 460px;
+  height: calc(100dvh - 290px); // 네비+탭+버튼 높이 빼기
+  @media (min-width: 769px) {
+    height: calc(100dvh - 130px); // PC는 하단 네비 없음
+  }
+  overflow: hidden; // 👈이미 있어서 가장자리 집 잘림
+  border-radius: 0;
   overflow: hidden;
   border-radius: ${({ theme }) => theme.radius.lg};
   cursor: ${({ $isMoving }) => ($isMoving ? "crosshair" : "grab")};
@@ -440,10 +482,9 @@ const MapContainer = styled.div<{ $isMoving: boolean }>`
 /* 실제 맵 - 뷰포트보다 큼 */
 const MapInner = styled.div<{ $isMoving: boolean; $scale: number }>`
   position: relative;
-  width: ${MAP_WIDTH}px;
-  height: ${MAP_HEIGHT}px;
+  width: ${({ $scale }) => MAP_WIDTH * $scale}px; // 👈 실제 크기 변경
+  height: ${({ $scale }) => MAP_HEIGHT * $scale}px; // 👈 실제 크기 변경
   cursor: ${({ $isMoving }) => ($isMoving ? "crosshair" : "inherit")};
-  transform: scale(${({ $scale }) => $scale});
 `;
 
 const GrassBase = styled.div`
@@ -479,9 +520,9 @@ const HousePin = styled.div<{ $delay: string; $isMe: boolean }>`
   }
 `;
 
-const HouseBadge = styled.div`
-  width: 150px;
-  height: 150px;
+const HouseBadge = styled.div<{ $scale: number }>`
+  width: ${({ $scale }) => Math.max(60, 150 * $scale)}px; // 최소 60px
+  height: ${({ $scale }) => Math.max(60, 150 * $scale)}px;
 
   img {
     width: 100%;
@@ -778,4 +819,23 @@ const LockTag = styled.div`
   font-weight: 700;
   color: ${({ theme }) => theme.colors.muted};
   white-space: nowrap;
+`;
+const MapHint = styled.div`
+  position: absolute;
+  top: 20%;
+  right: 10px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+
+  span {
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.45);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
 `;
