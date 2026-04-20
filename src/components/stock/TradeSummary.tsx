@@ -24,6 +24,7 @@ type Props = {
   buyPrice?: number; //평균 매수가
   country?: "KR" | "US";
   onReasonChange?: (reason: string) => void;
+  onQuantityChange?: (qty: number) => void;
 };
 
 const TradeSummary = ({
@@ -34,17 +35,19 @@ const TradeSummary = ({
   buyPrice,
   country,
   onReasonChange,
+  onQuantityChange,
 }: Props) => {
   const [selectedReason, setSelectedReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [showCustom, setShowCustom] = useState(false);
+  const [quantity, setQuantity] = useState(1); //구매수량
 
   const isUS = country === "US";
   const fmt = (n: number) =>
     isUS ? `$${n.toLocaleString()}` : `${Math.round(n).toLocaleString()}원`;
 
-  const afterMoney = type === "BUY" ? money - price : money + price;
-
+  const totalPrice = price * quantity;
+  const afterMoney = type === "BUY" ? money - totalPrice : money + totalPrice;
   // 수익 계산
   const profit = buyPrice !== undefined ? price - buyPrice : 0;
 
@@ -63,16 +66,38 @@ const TradeSummary = ({
     setCustomReason(value);
     onReasonChange?.(value);
   };
+
+  // 수량 변경 핸들러
+  const handleQuantity = (v: number) => {
+    const maxQty = Math.floor(money / price); // 살 수 있는 최대 수량
+    const next = Math.min(Math.max(v, 1), maxQty);
+    setQuantity(next);
+    onQuantityChange?.(next);
+  };
   return (
     <Wrapper>
       <Header>
         <Section>
           <CompanyName>{name}</CompanyName>
+          {/* 수량 선택 */}
+          {type === "BUY" && (
+            <QuantityRow>
+              <QuantityBtn onClick={() => handleQuantity(quantity - 1)}>
+                -
+              </QuantityBtn>
+              <QuantityNum>{quantity}주</QuantityNum>
+              <QuantityBtn onClick={() => handleQuantity(quantity + 1)}>
+                +
+              </QuantityBtn>
+            </QuantityRow>
+          )}
+
+          {/* 구매금액 아래로 분리 */}
           <AmountInfo>
             <Label>{type === "BUY" ? "구매 금액" : "판매 금액"}</Label>
             <Amount $type={type}>
               {type === "BUY" ? "-" : "+"}
-              {fmt(price)} {type === "SELL" ? "💰" : ""}
+              {fmt(totalPrice)}
             </Amount>
           </AmountInfo>
         </Section>
@@ -167,7 +192,7 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  gap: 12px;
   padding: 10px 0;
   border-radius: ${({ theme }) => theme.radius.md};
 
@@ -315,4 +340,35 @@ const CustomInput = styled.textarea`
   &::placeholder {
     color: ${({ theme }) => theme.colors.muted};
   }
+`;
+// 스타일 추가
+const QuantityRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 4px 0;
+`;
+
+const QuantityBtn = styled.button`
+  width: 32px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const QuantityNum = styled.div`
+  font-size: 20px;
+  font-weight: 800;
+  min-width: 40px;
+  text-align: center;
 `;

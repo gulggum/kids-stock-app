@@ -35,7 +35,6 @@ const StockDetail = () => {
     toggleCheck,
     isAllChecked,
     money,
-    hasBoughtToday,
     isHoldingStock,
     handleBuyClick,
     handleBuyConfirm,
@@ -156,7 +155,6 @@ const StockDetail = () => {
           checks={checks}
           toggleCheck={toggleCheck}
           isAllChecked={isAllChecked}
-          hasBoughtToday={hasBoughtToday}
           handleBuyClick={handleBuyClick}
           handleBuyConfirm={handleBuyConfirm}
           handleSellClick={handleSellClick}

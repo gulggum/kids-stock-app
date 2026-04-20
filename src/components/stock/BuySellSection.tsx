@@ -21,7 +21,6 @@ type Props = {
   checks: GuideChecks; /** 체크 상태 */
   toggleCheck: (key: keyof GuideChecks) => void; /** 체크 토글 함수 */
   isAllChecked: boolean; /** 전체 체크 완료 여부 */
-  hasBoughtToday: boolean; /** 오늘 구매 여부 */
   handleBuyClick: () => void; /** 구매 버튼 클릭 */
   handleBuyConfirm: () => void; /** 실제 구매 실행 */
   handleSellClick: () => void; /** 판매 버튼 클릭 */
@@ -40,7 +39,6 @@ const BuySellSection = ({
   checks,
   toggleCheck,
   isAllChecked,
-  hasBoughtToday,
   handleBuyClick,
   handleBuyConfirm,
   handleSellClick,
@@ -84,9 +82,7 @@ const BuySellSection = ({
       />
 
       {/* 🛒 구매 버튼 */}
-      <BuyButton disabled={hasBoughtToday} onClick={handleBuyClick}>
-        {hasBoughtToday ? "오늘 구매 완료 🌙" : "이 주식 구매하기 🛒"}
-      </BuyButton>
+      <BuyButton onClick={handleBuyClick}>이 주식 구매하기 🛒</BuyButton>
 
       {/* 💸 판매 버튼 */}
       <SellButton onClick={handleSellClick}>보유 주식 판매 💸</SellButton>

@@ -17,9 +17,6 @@ import SellSummary from "../components/stock/SellSummary";
  * 역할: StockDetail 페이지의 상태 + 비즈니스 로직 전담
  * - UI와 로직을 분리해서 페이지는 "보여주는 역할"만 하게 만들기 위함
  *
- * TODO: Supabase 연동 시
- * - hasCompletedFirstBuy → user 테이블 컬럼으로 이전
- * - lastGuideDate → user 테이블 컬럼으로 이전
  */
 
 // ─────────────────────────────────────────
@@ -100,6 +97,8 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
 
   const reasonRef = useRef("");
 
+  const buyQuantityRef = useRef(1);
+
   const isAllChecked = Object.values(checks).every(Boolean);
 
   // Context
@@ -139,23 +138,29 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   // ─── 구매 로직 ────────────────────────────
   const handleBuyConfirm = () => {
     playMoneySound();
+
+    const qty = buyQuantityRef.current;
+    const totalPrice = company.price * qty;
+
     // ✅ 미국 주식이면 달러로, 한국 주식이면 원화로 차감
     if (isUS) {
-      spendDollars(company.price); // 달러 차감
+      spendDollars(totalPrice); // 달러 차감
     } else {
-      spendMoney(company.price); // 원화 차감
+      spendMoney(totalPrice); // 원화 차감
     }
 
     setShowMoneyEffect(true);
     setTimeout(() => setShowMoneyEffect(false), 500);
 
     // ✅ country 넘겨서 포트폴리오에서 구분 가능하게
+    // 수량만큼 반복 구매
     buyStock({
       id: company.id,
       name: company.name,
       price: company.price,
       country: company.country,
       reason: reasonRef.current,
+      quantity: qty,
     });
 
     setStorage("hasCompletedFirstBuy", true);
@@ -231,6 +236,9 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
           country={company.country}
           onReasonChange={(reason) => {
             reasonRef.current = reason;
+          }}
+          onQuantityChange={(qty) => {
+            buyQuantityRef.current = qty;
           }}
         />
       ),
