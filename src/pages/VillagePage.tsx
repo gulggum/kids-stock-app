@@ -22,10 +22,14 @@ type Props = {
 
 const VillagePage = ({ users, myUserId }: Props) => {
   const { user } = useUser();
+  const { isOwned } = useHouse();
   const [selectedUser, setSelectedUser] = useState<PublicUser | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
-  const { isOwned } = useHouse();
+  // 줌 상태 추가
+  const [scale, setScale] = useState(1);
+  const MIN_SCALE = 0.5;
+  const MAX_SCALE = 2;
 
   // ─────────────────────────────────────────
   // 🗺 드래그 스크롤 (마우스 + 터치)
@@ -131,6 +135,43 @@ const VillagePage = ({ users, myUserId }: Props) => {
 
   const residentCount = villageUsers.length + (myPos ? 1 : 0);
 
+  // ─────────────────────────────────────────
+  // 마우스 휠 줌(zoom)
+  // ─────────────────────────────────────────
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setScale((prev) => Math.min(Math.max(prev + delta, MIN_SCALE), MAX_SCALE));
+  };
+
+  // 핀치 줌 (모바일)
+  const lastPinchDistance = useRef<number | null>(null);
+
+  const handleTouchStartZoom = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastPinchDistance.current = Math.sqrt(dx * dx + dy * dy);
+    } else {
+      handleTouchStart(e); // 기존 드래그
+    }
+  };
+
+  const handleTouchMoveZoom = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastPinchDistance.current) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const delta = (distance - lastPinchDistance.current) * 0.005;
+      setScale((prev) =>
+        Math.min(Math.max(prev + delta, MIN_SCALE), MAX_SCALE),
+      );
+      lastPinchDistance.current = distance;
+    } else {
+      handleTouchMove(e); // 기존 드래그
+    }
+  };
+
   return (
     <Wrapper>
       {/* 상단 버튼 + 힌트 */}
@@ -194,14 +235,15 @@ const VillagePage = ({ users, myUserId }: Props) => {
       <MapContainer
         ref={containerRef}
         $isMoving={isMoving}
+        onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
+        onTouchStart={handleTouchStartZoom}
+        onTouchMove={handleTouchMoveZoom}
       >
-        <MapInner $isMoving={isMoving} onClick={handleMapClick}>
+        <MapInner $isMoving={isMoving} $scale={scale} onClick={handleMapClick}>
           {/* 잔디 배경 */}
           <GrassBase />
 
@@ -396,11 +438,12 @@ const MapContainer = styled.div<{ $isMoving: boolean }>`
 `;
 
 /* 실제 맵 - 뷰포트보다 큼 */
-const MapInner = styled.div<{ $isMoving: boolean }>`
+const MapInner = styled.div<{ $isMoving: boolean; $scale: number }>`
   position: relative;
   width: ${MAP_WIDTH}px;
   height: ${MAP_HEIGHT}px;
   cursor: ${({ $isMoving }) => ($isMoving ? "crosshair" : "inherit")};
+  transform: scale(${({ $scale }) => $scale});
 `;
 
 const GrassBase = styled.div`
