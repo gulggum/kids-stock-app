@@ -23,8 +23,8 @@ const fadeIn = keyframes`
 `;
 
 const Container = styled.div`
-  width: 100vw;
-  height: 100dvh;
+  position: fixed;
+  inset: 0;
   background: ${({ theme }) => theme.colors.background};
   display: flex;
   justify-content: center;

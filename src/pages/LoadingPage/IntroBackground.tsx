@@ -34,9 +34,8 @@ const fadeInUp = keyframes`
 
 // 2️⃣ 배경 컨테이너
 const Container = styled.div`
-  position: relative;
-  width: 100vw;
-  height: 100dvh;
+  position: fixed;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
