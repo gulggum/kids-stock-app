@@ -1,6 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import logo from "../../assets/images/logo.png";
-import video from "../../assets/videos/loading1.mp4";
+import video from "../../assets/videos/introVideo.mp4";
 
 const LoadingScreen = () => {
   return (
@@ -74,7 +74,6 @@ const BlurVideo = styled.video`
 `;
 
 const MainVideo = styled.video`
-  position: fixed; // 🔥 중요
   top: 0;
   left: 0;
   position: absolute;

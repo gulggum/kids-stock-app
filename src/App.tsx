@@ -3,7 +3,6 @@ import { Providers } from "./providers";
 import { AppRouter } from "./router/router";
 import IntroBackground from "./pages/LoadingPage/IntroBackground";
 import { createGlobalStyle } from "styled-components";
-import { playIntroSound } from "./utils/sounds";
 
 const BaseGlobalStyle = createGlobalStyle`
   * {
@@ -23,9 +22,6 @@ function App() {
 
   useEffect(() => {
     if (step !== "video") return;
-
-    // ✅ 여기에 추가 - 비디오 시작할 때 사운드 같이 재생
-    playIntroSound();
 
     const videoTimer = setTimeout(() => {
       setStep("logo");

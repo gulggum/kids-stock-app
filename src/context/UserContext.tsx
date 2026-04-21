@@ -169,6 +169,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User>(defaultUser);
 
   const currentUserIdRef = useRef("");
+  const isLoadingRef = useRef(false);
 
   // ─────────────────────────────────────────
   // ✅ 앱 시작 시 Supabase 세션 확인
@@ -176,6 +177,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ─────────────────────────────────────────
   useEffect(() => {
     const initAuth = async () => {
+      const timeout = setTimeout(() => {
+        if (isLoadingRef.current) {
+          console.warn("로딩 타임아웃 — 강제 해제");
+          isLoadingRef.current = false; // ← ref도 같이 초기화!
+          setIsLoading(false);
+        }
+      }, 5000);
       try {
         const {
           data: { session },
@@ -191,6 +199,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (err) {
         console.error("initAuth 에러:", err);
         setIsLoading(false);
+      } finally {
+        clearTimeout(timeout);
       }
     };
 
@@ -228,7 +238,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const loadUserFromDB = async (userId: string) => {
     try {
       setIsLoading(true);
-      currentUserIdRef.current = userId;
+      isLoadingRef.current = true; //타임아웃 감지용 — 로딩 시작 신호
+      currentUserIdRef.current = userId; // stale closure 방지 — 항상 최신 userId 추적
 
       // ✅ 병렬 fetch — 4개 쿼리 동시 실행 (순차 대비 ~3배 빠름)
       const [
@@ -305,6 +316,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       setIsLoggedIn(false);
     } finally {
       setIsLoading(false);
+      isLoadingRef.current = false;
     }
   };
 
