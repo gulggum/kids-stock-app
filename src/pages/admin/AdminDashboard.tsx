@@ -30,16 +30,18 @@ const AdminDashboard = () => {
     {
       icon: <Users size={20} />,
       label: "총 유저",
-      value: loading ? "..." : `${stats.totalUsers}명`,
+      value: loading ? "..." : `${stats.todayUsers} / ${stats.totalUsers}명`,
       color: "#9B59B6",
-      desc: "가입한 전체 유저",
+      desc: "오늘 접속 / 전체 유저",
     },
     {
       icon: <TrendingUp size={20} />,
       label: "오늘 거래",
-      value: loading ? "..." : `${stats.todayTrades}건`,
+      value: loading
+        ? "..."
+        : `${stats.todayTrades}건 / ${stats.todayTradeUsers}명`,
       color: "#6BCB3D",
-      desc: "오늘 발생한 주식 거래",
+      desc: "오늘 거래 건수 / 오늘 참여 유저",
     },
     {
       icon: <BookOpen size={20} />,

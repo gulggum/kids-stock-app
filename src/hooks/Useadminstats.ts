@@ -6,8 +6,10 @@ import { supabase } from "../utils/supabase";
 
 export type AdminStats = {
   totalUsers: number; // 총 유저 수
+  todayUsers: number; //오늘 들어온 유저수
   todayNews: number; // 오늘 등록된 뉴스
   todayTrades: number; // 오늘 거래 수
+  todayTradeUsers: number; //거래활동한 유저 수
   todayQuizzes: number; // 오늘 퀴즈 푼 수
   totalInquiries: number; //문의 건수
   // 통계용
@@ -18,8 +20,10 @@ export type AdminStats = {
 export function useAdminStats() {
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
+    todayUsers: 0,
     todayNews: 0,
     todayTrades: 0,
+    todayTradeUsers: 0,
     todayQuizzes: 0,
     totalInquiries: 0,
     reasonStats: [],
@@ -49,6 +53,15 @@ export function useAdminStats() {
         .select("*", { count: "exact", head: true })
         .gte("created_at", `${today}T00:00:00`)
         .lte("created_at", `${today}T23:59:59`);
+      //거래활동한 유저 수(유저기준)
+      const { data: todayTradeUserData } = await supabase
+        .from("trades")
+        .select("user_id")
+        .gte("created_at", `${today}T00:00:00`)
+        .lte("created_at", `${today}T23:59:59`);
+
+      const todayTradeUsers = new Set(todayTradeUserData?.map((t) => t.user_id))
+        .size;
 
       // 오늘 퀴즈 푼 수
       const { count: todayQuizzes } = await supabase
@@ -56,8 +69,15 @@ export function useAdminStats() {
         .select("*", { count: "exact", head: true })
         .eq("date", today)
         .eq("quiz_done", true);
-      // 문의 건수
 
+      // 오늘 접속한 유저
+      const { count: todayUsers } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .gte("last_active", `${today}T00:00:00`)
+        .lte("last_active", `${today}T23:59:59`);
+
+      // 문의 건수
       const { count: totalInquiries } = await supabase
         .from("inquiries")
         .select("*", { count: "exact", head: true });
@@ -95,8 +115,10 @@ export function useAdminStats() {
 
       setStats({
         totalUsers: totalUsers ?? 0,
+        todayUsers: todayUsers ?? 0,
         todayNews: todayNews ?? 0,
         todayTrades: todayTrades ?? 0,
+        todayTradeUsers: todayTradeUsers ?? 0,
         todayQuizzes: todayQuizzes ?? 0,
         totalInquiries: totalInquiries ?? 0,
         reasonStats,
