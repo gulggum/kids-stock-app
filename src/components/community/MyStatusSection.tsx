@@ -157,6 +157,21 @@ const SelectButton = styled.button`
   &:active {
     transform: scale(0.97);
   }
+
+  border: 2px solid transparent;
+  animation: borderPulse 2s infinite;
+
+  @keyframes borderPulse {
+    0% {
+      box-shadow: 0 0 0px ${({ theme }) => theme.colors.primary}60;
+    }
+    50% {
+      box-shadow: 0 0 12px ${({ theme }) => theme.colors.primary};
+    }
+    100% {
+      box-shadow: 0 0 0px ${({ theme }) => theme.colors.primary}60;
+    }
+  }
 `;
 
 const StickyMyStatus = styled.div`
