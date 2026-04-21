@@ -10,7 +10,6 @@ import { getLevelTier } from "../../utils/getLevelTier";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
 import type { PublicUser } from "../../types/UserType";
 import { HOUSES } from "../../data/static/house";
-import { useEffect, useRef, useState } from "react";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
