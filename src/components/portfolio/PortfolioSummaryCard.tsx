@@ -40,7 +40,7 @@ const PortfolioSummaryCard = () => {
 
   return (
     <Card>
-      {!hasBoughtToday && <Badge>오늘의 한 번 🎖️</Badge>}
+      {hasBoughtToday && <Badge>오늘의 한 번 🎖️</Badge>}
 
       {/* 총 자산 */}
       <AssetSection>

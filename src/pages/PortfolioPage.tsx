@@ -3,10 +3,11 @@ import { usePortfolio } from "../context/PortfolioContext";
 import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 import { useNavigate } from "react-router";
 import { usePortfolioStocks } from "../hooks/Useportfoliostocks";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import InfoModal from "../components/InfoModal";
 import InfoIcon from "../components/InfoIcon";
 import { useExchangeRate } from "../hooks/useExchangeRate";
+import { BUFFETT_QUOTES } from "../data/static/buffettQuotes";
 
 const PortfolioPage = () => {
   const { portfolio } = usePortfolio();
@@ -14,6 +15,12 @@ const PortfolioPage = () => {
   const [openInfo, setOpenInfo] = useState<string | null>(null);
   const { getCurrentPrice } = usePortfolioStocks(portfolio);
   const exchangeRate = useExchangeRate();
+
+  // 버핏 명언 랜덤 노출
+  const quote = useMemo(
+    () => BUFFETT_QUOTES[Math.floor(Math.random() * BUFFETT_QUOTES.length)],
+    [],
+  );
 
   const toggleInfo = (key: string) => {
     setOpenInfo((prev) => (prev === key ? null : key));
@@ -39,6 +46,13 @@ const PortfolioPage = () => {
         <PageTitle>내 포트폴리오 💼</PageTitle>
         <PortfolioSummaryCard />
       </TopSection>
+      <QuoteBox>
+        <QuoteTitle>💬 오늘의 명언!</QuoteTitle>
+        <KidsQuote>{quote.kids}</KidsQuote>
+        <OriginalQuote>
+          "{quote.original}" — {quote.author}
+        </OriginalQuote>
+      </QuoteBox>
 
       <ListSection>
         {portfolio.length === 0 ? (
@@ -161,15 +175,15 @@ const PortfolioPage = () => {
                     <TipHint>
                       {isUp ? (
                         <>
-                          💡 가격이 오르고 있어요! <br />
-                          지금 팔면 이익을 챙길 수 있어요. 더 오를 것 같으면
-                          기다려봐요! 😊
+                          💡 가격이 올랐어요! 어떻게 할까요? <br />
+                          ① 지금 팔고 이익 챙기기 💰 <br />② 더 오를 것 같으면
+                          기다리기 ⏳
                         </>
                       ) : (
                         <>
-                          💡 가격이 내려가고 있어요! <br />
-                          지금 팔면 손해일 수 있어요. 다시 오를 때까지
-                          기다려볼까요? 😊
+                          💡 가격이 내려갔어요! 어떻게 할까요? <br />
+                          ① 지금 팔고 손해 줄이기 🛑 <br />② 다시 오를 때까지
+                          기다리기 ⏳
                         </>
                       )}
                     </TipHint>
@@ -180,10 +194,6 @@ const PortfolioPage = () => {
           })
         )}
       </ListSection>
-      <strong style={{ textAlign: "center" }}>
-        선택에 따라 결과가 달라지고,
-        <br /> 기다림도 중요한 경험이에요! 😊
-      </strong>
 
       <InfoModal
         open={openInfo === "buyPrice"}
@@ -404,4 +414,42 @@ const TipHint = styled.div`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.muted};
   margin-top: 4px;
+`;
+
+// Quote(명언)
+const QuoteBox = styled.div`
+  background: ${({ theme }) => theme.colors.card};
+
+  padding: 16px;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+
+  /* 네온 테두리 */
+  border: 1px solid ${({ theme }) => theme.colors.primary}60;
+  box-shadow:
+    0 0 8px ${({ theme }) => theme.colors.primary}40,
+    0 0 20px ${({ theme }) => theme.colors.primary}20;
+`;
+
+const QuoteTitle = styled.p`
+  font-size: 12px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+  margin: 0;
+`;
+const KidsQuote = styled.p`
+  font-size: 14px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+`;
+
+const OriginalQuote = styled.p`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 0;
+  line-height: 1.5;
 `;
