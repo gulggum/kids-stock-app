@@ -10,6 +10,7 @@ import { getLevelTier } from "../../utils/getLevelTier";
 import { getTextColorFromSkin } from "../../utils/getTextColor";
 import type { PublicUser } from "../../types/UserType";
 import { HOUSES } from "../../data/static/house";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * 커뮤니티에 보여지는 유저 카드
@@ -68,7 +69,10 @@ const CommunityCard = ({
         </AvatarWrapper>
         <Info>
           <NameRow>
-            <Name>{user.nickname}</Name>
+            <NameWrapper>
+              <Name>{user.nickname}</Name>
+              <Tooltip>{user.nickname}</Tooltip>
+            </NameWrapper>
 
             {onToggleFriend && (
               <FollowButton
@@ -196,6 +200,7 @@ const Top = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
+  padding-right: 75px;
 `;
 
 const Emoji = styled.div`
@@ -233,6 +238,8 @@ const ActiveDot = styled.div`
 const Info = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1; /* ← 추가: 남은 공간 차지 */
+  min-width: 0;
 `;
 
 const NameRow = styled.div`
@@ -243,12 +250,14 @@ const NameRow = styled.div`
 `;
 
 const FollowButton = styled.button<{ $active: boolean }>`
+  flex-shrink: 0;
   padding: 4px 8px;
   border-radius: 999px;
   border: none;
   font-size: 11px;
   font-weight: 800;
   cursor: pointer;
+  z-index: 6;
 
   background: ${({ $active, theme }) =>
     $active ? theme.colors.accentGreen : theme.colors.primary};
@@ -266,6 +275,33 @@ const FollowButton = styled.button<{ $active: boolean }>`
 const Name = styled.div`
   font-size: 14px;
   font-weight: 800;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+`;
+const NameWrapper = styled.div`
+  position: relative;
+  min-width: 0;
+
+  &:hover > div {
+    display: block;
+  }
+`;
+
+const Tooltip = styled.div`
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100000;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 `;
 
 const Level = styled.div`

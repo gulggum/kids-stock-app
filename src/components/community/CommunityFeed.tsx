@@ -56,7 +56,7 @@ const CommunityFeed = ({
   };
   return (
     <SectionBlock>
-      <SectionTitle>친구들은 이렇게 하고 있어요</SectionTitle>
+      <SectionTitle>다른 친구들을 만나보세요 !</SectionTitle>
 
       <List>
         {currentUsers.length === 0 ? (

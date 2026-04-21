@@ -7,7 +7,11 @@ import { VitePWA } from "vite-plugin-pwa";
 // PWABuilder가 PWA를 apk로 감싸주는 역할
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: ["babel-plugin-styled-components"], // ← 추가
+      },
+    }),
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
