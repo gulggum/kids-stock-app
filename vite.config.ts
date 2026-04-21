@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import df from "./public/screenshots/market.jpg";
 
 // PWA((Progressive Web App) :웹사이트를 앱처럼 동작하게 만드는 기술
 // → 홈화면에 설치, 오프라인 지원 등
@@ -28,6 +29,21 @@ export default defineConfig({
         start_url: "/",
         lang: "ko",
         id: "/",
+        orientation: "portrait",
+        screenshots: [
+          {
+            src: "/screenshots/home.jpg",
+            sizes: "390x844",
+            type: "image/jpg",
+            form_factor: "narrow",
+          },
+          {
+            src: "/screenshots/market.jpg",
+            sizes: "390x844",
+            type: "image/jpg",
+            form_factor: "narrow",
+          },
+        ],
         icons: [
           {
             src: "/icon-192.png",
@@ -45,6 +61,7 @@ export default defineConfig({
       },
     }),
   ],
+
   server: {
     proxy: {
       "/api": {
