@@ -11,12 +11,24 @@ import { useStockByIdQuery } from "../../hooks/useStocksQuery";
 import { useChart } from "../../hooks/useChart";
 import { useUser } from "../../context/UserContext";
 import StockReasonChart from "../../components/stock/StockReasonChart";
+import { useMemo, useState } from "react";
+import { BUFFETT_INFO, BUFFETT_QUOTES } from "../../data/static/buffettQuotes";
+import InfoModal from "../../components/InfoModal";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
   const { user } = useUser();
+
+  // state 추가
+  const [showBuffett, setShowBuffett] = useState(false);
+
+  // 버핏 명언 랜덤 노출
+  const quote = useMemo(
+    () => BUFFETT_QUOTES[Math.floor(Math.random() * BUFFETT_QUOTES.length)],
+    [],
+  );
 
   // ✅ 변경: marketMockData.find → useStockByIdQuery
   const { stock: company, loading } = useStockByIdQuery(id ? Number(id) : null);
@@ -144,9 +156,37 @@ const StockDetail = () => {
           </MyStockContent>
         </ContentSection>
 
-        <InvestmentNotice>
-          💡 주식은 가격이 오르기도 내려가기도 해요
-        </InvestmentNotice>
+        <QuoteBox>
+          <QuoteTitle>💬 오늘의 명언!</QuoteTitle>
+          <KidsQuote>{quote.kids}</KidsQuote>
+          <OriginalQuote>
+            "{quote.original}" <br />—
+            <AuthorButton onClick={() => setShowBuffett(true)}>
+              {" "}
+              {quote.author}
+            </AuthorButton>
+          </OriginalQuote>
+        </QuoteBox>
+        {/* 명언 버핏 팝업창 */}
+        <InfoModal
+          open={showBuffett}
+          onClose={() => setShowBuffett(false)}
+          title={`${BUFFETT_INFO.emoji} ${BUFFETT_INFO.name}`}
+          buttonText="닫기"
+        >
+          <PopupTitle>{BUFFETT_INFO.title}</PopupTitle>
+          <PopupImage src={BUFFETT_INFO.image} alt={BUFFETT_INFO.name} />
+          <PopupDesc>
+            {" "}
+            {BUFFETT_INFO.desc.split("\n").map((line, i) => (
+              <span key={i}>
+                {line}
+                <br />
+              </span>
+            ))}
+          </PopupDesc>
+        </InfoModal>
+        {/* 구매이유 통계 */}
         <StockReasonChart stockId={company.id} />
         {/* 🛒 구매/판매 */}
         <BuySellSection
@@ -320,24 +360,92 @@ const SubText = styled.div`
    💡 설명 카드
    ========================= */
 
-const InvestmentNotice = styled.div`
-  margin-top: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  text-align: center;
-
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-`;
-
 const LoadingText = styled.div`
   text-align: center;
   margin-top: 60px;
   font-size: 16px;
+`;
+
+// Quote(명언)
+const QuoteBox = styled.div`
+  background: ${({ theme }) => theme.colors.card};
+
+  padding: 16px;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+
+  /* 네온 테두리 */
+  border: 1px solid ${({ theme }) => theme.colors.primary}60;
+  box-shadow:
+    0 0 8px ${({ theme }) => theme.colors.primary}40,
+    0 0 20px ${({ theme }) => theme.colors.primary}20;
+`;
+
+const QuoteTitle = styled.p`
+  font-size: 12px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+  margin: 0;
+`;
+const KidsQuote = styled.p`
+  font-size: 14px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+`;
+
+const OriginalQuote = styled.p`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 0;
+  line-height: 1.5;
+`;
+const AuthorButton = styled.span`
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+  cursor: pointer;
+  margin-top: auto;
+  &:hover {
+    color: ${({ theme }) => theme.colors.secondary};
+  }
+`;
+
+//버핏정보 팝업
+
+const PopupImage = styled.img`
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 4px;
+  display: block;
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  border: 3px solid ${({ theme }) => theme.colors.primary}30;
+`;
+
+const PopupTitle = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.primary}20;
+  color: ${({ theme }) => theme.colors.primary};
+  display: inline-block;
+  margin: 0 auto;
+`;
+
+const PopupDesc = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.text};
+  line-height: 1.8;
+  text-align: left;
+  word-break: keep-all; /* 단어 중간에 줄바꿈 방지 */
+  padding: 0 4px;
 `;
 
 export default StockDetail;

@@ -1,3 +1,13 @@
+import buffettImage from "../../assets/images/buffett.png";
+
+export const BUFFETT_INFO = {
+  name: "Warren Buffett(워런 버핏)",
+  emoji: "",
+  title: "투자의 귀재",
+  image: buffettImage,
+  desc: "미국의 유명한 투자자예요.\n어릴 때부터 주식에 관심이 많았고, 좋은 회사를 오래 기다리며 투자해서 세계에서 손꼽히는 부자가 됐어요.\n'오마하의 현인'이라는 별명도 있어요!",
+};
+
 //버핏 명언리스트(어린이 버전 해석포함)
 
 export const BUFFETT_QUOTES = [

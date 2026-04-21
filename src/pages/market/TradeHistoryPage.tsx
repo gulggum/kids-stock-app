@@ -57,13 +57,13 @@ const TradeHistoryPage = () => {
       <TabBar>
         <Tab
           $active={tab === "KR"}
-          onClick={() => setSearchParams({ tab: "KR" })}
+          onClick={() => setSearchParams({ tab: "KR" }, { replace: true })}
         >
           🇰🇷 원화 거래
         </Tab>
         <Tab
           $active={tab === "US"}
-          onClick={() => setSearchParams({ tab: "US" })}
+          onClick={() => setSearchParams({ tab: "US" }, { replace: true })}
         >
           🇺🇸 달러 거래
         </Tab>

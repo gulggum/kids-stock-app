@@ -3,11 +3,10 @@ import { usePortfolio } from "../context/PortfolioContext";
 import PortfolioSummaryCard from "../components/portfolio/PortfolioSummaryCard";
 import { useNavigate } from "react-router";
 import { usePortfolioStocks } from "../hooks/Useportfoliostocks";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import InfoModal from "../components/InfoModal";
 import InfoIcon from "../components/InfoIcon";
 import { useExchangeRate } from "../hooks/useExchangeRate";
-import { BUFFETT_QUOTES } from "../data/static/buffettQuotes";
 
 const PortfolioPage = () => {
   const { portfolio } = usePortfolio();
@@ -15,12 +14,6 @@ const PortfolioPage = () => {
   const [openInfo, setOpenInfo] = useState<string | null>(null);
   const { getCurrentPrice } = usePortfolioStocks(portfolio);
   const exchangeRate = useExchangeRate();
-
-  // 버핏 명언 랜덤 노출
-  const quote = useMemo(
-    () => BUFFETT_QUOTES[Math.floor(Math.random() * BUFFETT_QUOTES.length)],
-    [],
-  );
 
   const toggleInfo = (key: string) => {
     setOpenInfo((prev) => (prev === key ? null : key));
@@ -46,13 +39,6 @@ const PortfolioPage = () => {
         <PageTitle>내 포트폴리오 💼</PageTitle>
         <PortfolioSummaryCard />
       </TopSection>
-      <QuoteBox>
-        <QuoteTitle>💬 오늘의 명언!</QuoteTitle>
-        <KidsQuote>{quote.kids}</KidsQuote>
-        <OriginalQuote>
-          "{quote.original}" — {quote.author}
-        </OriginalQuote>
-      </QuoteBox>
 
       <ListSection>
         {portfolio.length === 0 ? (
@@ -415,42 +401,4 @@ const TipHint = styled.div`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.muted};
   margin-top: 4px;
-`;
-
-// Quote(명언)
-const QuoteBox = styled.div`
-  background: ${({ theme }) => theme.colors.card};
-
-  padding: 16px;
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: center;
-
-  /* 네온 테두리 */
-  border: 1px solid ${({ theme }) => theme.colors.primary}60;
-  box-shadow:
-    0 0 8px ${({ theme }) => theme.colors.primary}40,
-    0 0 20px ${({ theme }) => theme.colors.primary}20;
-`;
-
-const QuoteTitle = styled.p`
-  font-size: 12px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.primary};
-  margin: 0;
-`;
-const KidsQuote = styled.p`
-  font-size: 14px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.text};
-  margin: 0;
-`;
-
-const OriginalQuote = styled.p`
-  font-size: 11px;
-  color: ${({ theme }) => theme.colors.muted};
-  margin: 0;
-  line-height: 1.5;
 `;
