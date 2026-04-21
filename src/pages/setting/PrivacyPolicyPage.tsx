@@ -54,6 +54,13 @@ export default function PrivacyPolicyPage() {
             개인정보 관련 문의는 앱 내 문의하기 기능을 통해 요청할 수 있습니다.
           </Text>
         </SectionBlock>
+        <SectionBlock>
+          <SectionTitle>6. 아동 개인정보 보호</SectionTitle>
+          <Text>
+            본 앱은 전체 연령이 이용 가능합니다. 만 14세 미만 아동의 경우
+            법정대리인(부모)의 동의 하에 이용하는 것을 권장합니다.
+          </Text>
+        </SectionBlock>
 
         <UpdateText>최종 수정일: 2026.04.15</UpdateText>
       </ContentCard>
