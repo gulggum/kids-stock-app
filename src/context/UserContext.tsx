@@ -186,13 +186,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const initAuth = async () => {
       isLoadingRef.current = true;
-      //문제시에만 발동
+
       const timeout = setTimeout(async () => {
         if (isLoadingRef.current) {
           console.warn("로딩 타임아웃 — 강제 해제");
           isLoadingRef.current = false;
-
-          // 세션 있으면 그대로 유지, 없으면 로그인 페이지
           const {
             data: { session },
           } = await supabase.auth.getSession();
@@ -209,7 +207,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         const {
           data: { session },
         } = await supabase.auth.getSession();
-
         if (session?.user) {
           await loadUserFromDB(session.user.id);
         } else {
@@ -227,20 +224,42 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     initAuth();
 
-    // 로그인/로그아웃 상태 변화 감지
-    // 다른 탭에서 로그아웃해도 자동 반영됨
+    // 앱 복귀 시 빠른 세션 체크 (백그라운드 → 포그라운드)
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible" && !isLoadingRef.current) {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          if (currentUserIdRef.current !== session.user.id) {
+            await loadUserFromDB(session.user.id);
+          } else if (!isLoggedIn) {
+            // 같은 유저인데 로그인 상태가 false면 다시 로드
+            await loadUserFromDB(session.user.id);
+          }
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // TOKEN_REFRESHED 무시 — 탭 전환 시 불필요한 재호출 방지
-      if (event === "TOKEN_REFRESHED") return;
+      if (event === "TOKEN_REFRESHED" && session?.user) {
+        // 토큰 갱신 시 로딩 중이면 재시도
+        if (isLoadingRef.current) {
+          await loadUserFromDB(session.user.id);
+        }
+        return;
+      }
 
       if (event === "SIGNED_IN" && session?.user) {
-        // stale closure 방지 — user.id 대신 ref 사용
-        if (currentUserIdRef.current !== session.user.id) {
+        if (currentUserIdRef.current !== session.user.id || !isLoggedIn) {
           await loadUserFromDB(session.user.id);
         }
       }
+
       if (event === "SIGNED_OUT") {
         currentUserIdRef.current = "";
         setUser(defaultUser);
@@ -248,8 +267,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
-    // 컴포넌트 언마운트 시 구독 해제 (메모리 누수 방지)
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   // ─────────────────────────────────────────
