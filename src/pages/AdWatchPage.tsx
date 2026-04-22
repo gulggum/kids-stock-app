@@ -4,18 +4,56 @@ import styled from "styled-components";
 import { useReward } from "../context/RewardContext";
 import { useToast } from "../context/UIContext/ToastContext";
 
-const ADS = [
-  { id: 1, emoji: "🎮", title: "게임 광고", desc: "신나는 게임을 만나보세요!" },
-  { id: 2, emoji: "📚", title: "교육 광고", desc: "재미있는 학습 앱이에요!" },
-  { id: 3, emoji: "🍕", title: "음식 광고", desc: "맛있는 음식을 주문해요!" },
-];
+type Ad = {
+  id: number;
+  emoji: string;
+  title: string;
+  desc: string;
+  duration: number;
+  reward: number;
+};
+
+const ADS: Ad[] = [
+  {
+    id: 1,
+    emoji: "🎮",
+    title: "게임 광고",
+    desc: "신나는 게임을 만나보세요!",
+    duration: 15,
+    reward: 30,
+  },
+  {
+    id: 2,
+    emoji: "📚",
+    title: "교육 광고",
+    desc: "재미있는 학습 앱이에요!",
+    duration: 15,
+    reward: 30,
+  },
+  {
+    id: 3,
+    emoji: "🍕",
+    title: "음식 광고",
+    desc: "맛있는 음식을 주문해요!",
+    duration: 15,
+    reward: 30,
+  },
+  {
+    id: 4,
+    emoji: "⭐",
+    title: "프리미엄 광고",
+    desc: "30초 시청하고 더 많은 코인!",
+    duration: 30,
+    reward: 50,
+  },
+] as const;
 
 const AD_REWARD = 30;
 const MAX_AD = 3;
 
 const AdWatchPage = () => {
   const navigate = useNavigate();
-  const { giveReward } = useReward();
+  const { giveCustomReward } = useReward();
   const { createToast } = useToast();
 
   const [selected, setSelected] = useState<number | null>(null);
@@ -30,13 +68,13 @@ const AdWatchPage = () => {
     return saved ? parseInt(saved) : 0;
   });
 
-  const handleSelect = (id: number) => {
+  const handleSelect = (ad: Ad) => {
     if (adCount >= MAX_AD) {
       createToast("오늘 광고는 모두 봤어요! 내일 다시 도전해요 😊");
       return;
     }
-    setSelected(id);
-    setTimer(5);
+    setSelected(ad.id);
+    setTimer(ad.duration);
 
     const interval = setInterval(() => {
       setTimer((prev) => {
@@ -48,7 +86,7 @@ const AdWatchPage = () => {
           setAdCount(newCount);
           localStorage.setItem("adCount", String(newCount));
           localStorage.setItem("adDate", new Date().toISOString().slice(0, 10));
-          giveReward("AD_WATCH");
+          giveCustomReward({ coin: ad.reward, exp: 0 }); // ← 광고별 보상
           return null;
         }
         return prev - 1;
@@ -64,9 +102,9 @@ const AdWatchPage = () => {
       </Header>
 
       <InfoBox>
-        <InfoText>광고를 선택하고 시청하면 코인을 받아요!</InfoText>
+        <InfoText>광고를 선택하고 시청하면 코인을 받을수 있어요!</InfoText>
         <CountText>
-          {adCount}/{MAX_AD} 완료 · 1회당 {AD_REWARD} 🪙
+          {adCount}/{MAX_AD} 완료 · 15초 30🪙 / 30초 50🪙
         </CountText>
       </InfoBox>
 
@@ -91,14 +129,14 @@ const AdWatchPage = () => {
           <AdEmoji>{ADS.find((a) => a.id === selected)?.emoji}</AdEmoji>
           <WatchingText>광고 시청 중...</WatchingText>
           <TimerText>{timer}초</TimerText>
-          <TimerBar $ratio={(5 - (timer ?? 0)) / 5} />
+          <TimerBar $ratio={(15 - (timer ?? 0)) / 15} />
         </WatchingBox>
       ) : (
         <AdList>
           {ADS.map((ad) => (
             <AdCard
               key={ad.id}
-              onClick={() => handleSelect(ad.id)}
+              onClick={() => handleSelect(ad)}
               $disabled={adCount >= MAX_AD}
             >
               <AdEmoji>{ad.emoji}</AdEmoji>
