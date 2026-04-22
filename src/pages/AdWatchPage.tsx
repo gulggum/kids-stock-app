@@ -48,7 +48,6 @@ const ADS: Ad[] = [
   },
 ] as const;
 
-const AD_REWARD = 30;
 const MAX_AD = 3;
 
 const AdWatchPage = () => {
@@ -67,6 +66,9 @@ const AdWatchPage = () => {
     if (savedDate !== today) return 0;
     return saved ? parseInt(saved) : 0;
   });
+
+  //현재 광고 찾기
+  const currentAd = ADS.find((a) => a.id === selected);
 
   const handleSelect = (ad: Ad) => {
     if (adCount >= MAX_AD) {
@@ -104,14 +106,14 @@ const AdWatchPage = () => {
       <InfoBox>
         <InfoText>광고를 선택하고 시청하면 코인을 받을수 있어요!</InfoText>
         <CountText>
-          {adCount}/{MAX_AD} 완료 · 15초 30🪙 / 30초 50🪙
+          {adCount}/{MAX_AD} 완료
         </CountText>
       </InfoBox>
 
       {done ? (
         <ResultBox>
           <ResultEmoji>🎉</ResultEmoji>
-          <ResultText>+{AD_REWARD} 코인 획득!</ResultText>
+          <ResultText>+{currentAd?.reward} 코인 획득!</ResultText>
           <ResultButton
             onClick={() => {
               setDone(false);
@@ -144,7 +146,10 @@ const AdWatchPage = () => {
                 <AdTitle>{ad.title}</AdTitle>
                 <AdDesc>{ad.desc}</AdDesc>
               </AdInfo>
-              <AdReward>+{AD_REWARD} 🪙</AdReward>
+              <AdRewardWrapper>
+                <AdReward>🪙 +{ad.reward} </AdReward>
+                <AdDuration>{ad.duration}초</AdDuration>
+              </AdRewardWrapper>
             </AdCard>
           ))}
         </AdList>
@@ -200,6 +205,8 @@ const InfoText = styled.div`
 `;
 
 const CountText = styled.div`
+  display: flex;
+  justify-content: flex-end;
   font-size: 12px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.primary};
@@ -249,10 +256,27 @@ const AdDesc = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
+const AdRewardWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+`;
+
 const AdReward = styled.div`
   font-size: 14px;
   font-weight: 800;
   color: ${({ theme }) => theme.colors.primary};
+`;
+
+const AdDuration = styled.div`
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+  background: ${({ theme }) => theme.colors.primary}20;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: 4px;
 `;
 
 const WatchingBox = styled.div`

@@ -148,12 +148,24 @@ export const ACHIEVEMENTS: Achievement[] = [
   // ===============================
 
   {
+    id: "FIRST_PROFIT",
+    tier: "COMMON",
+    badge: {
+      title: "첫 수익 달성",
+      description: "처음으로 수익을 냈어요! 투자의 맛을 알았군요 😊",
+      emoji: " 🤑",
+    },
+    reward: { coin: 30, exp: 30 },
+    condition: (state) => state.totalAsset > 1000000,
+  },
+
+  {
     id: "ASSET_110",
     tier: "COMMON",
     badge: {
       title: "110만원 달성",
       description: "자산이 110만원을 넘었어요!",
-      emoji: "🪙",
+      emoji: "💵 ",
     },
     reward: { coin: 40, exp: 50 },
     condition: (state) => state.totalAsset >= 1100000,
