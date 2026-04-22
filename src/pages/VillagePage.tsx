@@ -303,6 +303,7 @@ const VillagePage = ({ users, myUserId }: Props) => {
                 }}
                 $delay={`${(idx * 0.3) % 1.5}s`}
                 $isMe={false}
+                $isMoving={false}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!isMoving) setSelectedUser(u);
@@ -325,6 +326,7 @@ const VillagePage = ({ users, myUserId }: Props) => {
               }}
               $delay="0s"
               $isMe={true}
+              $isMoving={isMoving}
               onClick={(e) => e.stopPropagation()}
             >
               <HouseBadge $scale={scale}>
@@ -536,15 +538,18 @@ const GrassBase = styled.div`
   background: url(${villageBg}) center/cover no-repeat;
 `;
 
-const HousePin = styled.div<{ $delay: string; $isMe: boolean }>`
+const HousePin = styled.div<{
+  $delay: string;
+  $isMe: boolean;
+  $isMoving: boolean;
+}>`
   position: absolute;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: ${({ $isMe }) => ($isMe ? "default" : "pointer")};
-  animation: ${float} 3s ease-in-out infinite;
-  animation-delay: ${({ $delay }) => $delay};
+
   z-index: 2;
 
   ${({ $isMe }) =>
@@ -554,8 +559,18 @@ const HousePin = styled.div<{ $delay: string; $isMe: boolean }>`
       z-index: 5;
     `}
 
+  animation: ${({ $isMoving }) =>
+    $isMoving
+      ? css`
+          ${float} 2s ease-in-out infinite
+        `
+      : "none"};
+  animation-delay: ${({ $delay }) => $delay};
+
   &:hover {
     z-index: 10;
+    animation: ${float} 2s ease-in-out infinite;
+    animation-delay: ${({ $delay }) => $delay};
   }
   &:hover > div:last-child {
     opacity: 1;

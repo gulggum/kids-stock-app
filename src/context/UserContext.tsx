@@ -185,6 +185,26 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ─────────────────────────────────────────
   useEffect(() => {
     const initAuth = async () => {
+      isLoadingRef.current = true;
+      //문제시에만 발동
+      const timeout = setTimeout(async () => {
+        if (isLoadingRef.current) {
+          console.warn("로딩 타임아웃 — 강제 해제");
+          isLoadingRef.current = false;
+
+          // 세션 있으면 그대로 유지, 없으면 로그인 페이지
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+          if (session?.user) {
+            await loadUserFromDB(session.user.id);
+          } else {
+            setIsLoading(false);
+            setIsLoggedIn(false);
+          }
+        }
+      }, 10000);
+
       try {
         const {
           data: { session },
@@ -200,6 +220,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (err) {
         console.error("initAuth 에러:", err);
         setIsLoading(false);
+      } finally {
+        clearTimeout(timeout);
       }
     };
 
