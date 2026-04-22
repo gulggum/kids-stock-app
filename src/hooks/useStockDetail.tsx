@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router";
 import { usePortfolio } from "../context/PortfolioContext";
 import SellSummary from "../components/stock/SellSummary";
+import { useToast } from "../context/UIContext/ToastContext";
 
 /**
  * 📌 useStockDetail
@@ -108,6 +109,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   const { giveReward } = useReward();
   const navigate = useNavigate();
   const { portfolio } = usePortfolio();
+  const { createToast } = useToast();
 
   //수량만큼 판매
   const sellQuantityRef = useRef(1);
@@ -255,6 +257,7 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
           country={company.country}
           onReasonChange={(reason) => {
             reasonRef.current = reason;
+            console.log("reason 업데이트:", reason); // ← 확인용
           }}
           onQuantityChange={(qty) => {
             buyQuantityRef.current = qty;

@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { useState } from "react";
 
 const COLORS = ["#2E8EDB", "#6BCB3D", "#F39C12", "#9B59B6", "#e53935"];
 
@@ -25,6 +26,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 const AdminStats = () => {
   const { stats, loading } = useAdminStats();
+  const [etcOpen, setEtcOpen] = useState(false);
   const maxStock = Math.max(...stats.topStocks.map((s) => s.count), 1);
 
   return (
@@ -74,19 +76,33 @@ const AdminStats = () => {
               <EmptyText>아직 데이터가 없어요</EmptyText>
             ) : (
               stats.reasonStats.map((r) => (
-                <BarRow key={r.reason}>
-                  <BarLabel>{r.reason}</BarLabel>
-                  <BarTrack>
-                    <BarFill
-                      $ratio={
-                        r.count /
-                        Math.max(...stats.reasonStats.map((x) => x.count), 1)
-                      }
-                      $color="#2E8EDB"
-                    />
-                  </BarTrack>
-                  <BarCount>{r.count}건</BarCount>
-                </BarRow>
+                <div key={r.reason}>
+                  <BarRow>
+                    <BarLabel>{r.reason}</BarLabel>
+                    <BarTrack>
+                      <BarFill
+                        $ratio={
+                          r.count /
+                          Math.max(...stats.reasonStats.map((x) => x.count), 1)
+                        }
+                        $color="#2E8EDB"
+                      />
+                    </BarTrack>
+                    <BarCount>{r.count}건</BarCount>
+                    {r.reason === "기타" && (
+                      <EtcToggle onClick={() => setEtcOpen((v) => !v)}>
+                        {etcOpen ? "▲" : "▼"}
+                      </EtcToggle>
+                    )}
+                  </BarRow>
+                  {r.reason === "기타" && etcOpen && (
+                    <EtcList>
+                      {stats.etcDetails.map((d, i) => (
+                        <EtcItem key={i}>• {d}</EtcItem>
+                      ))}
+                    </EtcList>
+                  )}
+                </div>
               ))
             )}
           </SectionCard>
@@ -244,4 +260,27 @@ const TooltipValue = styled.div`
   font-size: 14px;
   font-weight: 800;
   color: ${({ theme }) => theme.colors.text};
+`;
+const EtcToggle = styled.button`
+  font-size: 11px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.muted};
+  flex-shrink: 0;
+`;
+
+const EtcList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.radius.md};
+  margin-top: 4px;
+`;
+
+const EtcItem = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
 `;

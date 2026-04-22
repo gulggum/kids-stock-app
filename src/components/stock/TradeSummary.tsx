@@ -9,12 +9,13 @@ import styled from "styled-components";
  * - onReasonChange로 선택한 이유를 부모에 전달
  */
 
-const REASONS = [
+export const REASONS = [
   { emoji: "📰", label: "뉴스에서 봤어요" },
   { emoji: "😍", label: "이 회사 제품을 좋아해요" },
   { emoji: "🔥", label: "친구들이 사서요" },
   { emoji: "🤔", label: "그냥 궁금해서요" },
 ];
+export const PRESET_REASONS = REASONS.map((r) => r.label);
 
 type Props = {
   type: "BUY" | "SELL";

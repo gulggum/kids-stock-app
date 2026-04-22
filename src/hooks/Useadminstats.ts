@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
+import { PRESET_REASONS } from "../components/stock/TradeSummary";
 
 export type AdminStats = {
   totalUsers: number; // 총 유저 수
@@ -15,6 +16,7 @@ export type AdminStats = {
   totalInquiries: number; //문의 건수
   // 통계용
   reasonStats: { reason: string; count: number }[]; // 투자 이유 분포
+  etcDetails: string[];
   topStocks: { stock_name: string; count: number }[]; // 인기 종목 TOP5
 };
 
@@ -29,6 +31,7 @@ export function useAdminStats() {
     todayQuizzes: 0,
     totalInquiries: 0,
     reasonStats: [],
+    etcDetails: [],
     topStocks: [],
   });
   const [loading, setLoading] = useState(true);
@@ -98,9 +101,16 @@ export function useAdminStats() {
         .not("reason", "is", null);
 
       const reasonMap: Record<string, number> = {};
+      const etcDetails: string[] = []; // 기타 상세 목록
+
       (reasonData ?? []).forEach((t) => {
         const r = t.reason ?? "미선택";
-        reasonMap[r] = (reasonMap[r] ?? 0) + 1;
+        if (PRESET_REASONS.includes(r)) {
+          reasonMap[r] = (reasonMap[r] ?? 0) + 1;
+        } else {
+          reasonMap["기타"] = (reasonMap["기타"] ?? 0) + 1;
+          etcDetails.push(r); // 기타 상세 저장
+        }
       });
       const reasonStats = Object.entries(reasonMap)
         .map(([reason, count]) => ({ reason, count }))
@@ -131,6 +141,7 @@ export function useAdminStats() {
         todayQuizzes: todayQuizzes ?? 0,
         totalInquiries: totalInquiries ?? 0,
         reasonStats,
+        etcDetails,
         topStocks,
       });
       setLoading(false);

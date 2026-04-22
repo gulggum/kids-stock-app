@@ -6,14 +6,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { supabase } from "../../utils/supabase";
-
-// 선택지 목록 (이 외는 전부 "기타"로 분류)
-const PRESET_REASONS = [
-  "뉴스에서 봤어요",
-  "이 회사 제품을 좋아해요",
-  "친구들이 사서요",
-  "그냥 궁금해서요",
-];
+import { PRESET_REASONS } from "../stock/TradeSummary";
 
 type ReasonStat = {
   reason: string;

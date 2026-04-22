@@ -270,6 +270,12 @@ const LoginPage = () => {
         {mode === "guest" && (
           <>
             <SubTitle>닉네임을 정해봐요!</SubTitle>
+            <Notice>
+              💡 게스트는 이 앱에서만 데이터가 유지돼요
+              <br />
+              이메일로 가입하면 어느 기기에서도 계속 사용할 수 있어요
+            </Notice>
+
             <NicknameWrapper>
               <NicknameInput
                 type="text"
@@ -303,13 +309,6 @@ const LoginPage = () => {
             <StatusText $type={guestNicknameStatus.type}>
               {guestNicknameStatus.message || " "}
             </StatusText>
-
-            <Notice>
-              💡 게스트 기록은 지금 기기에만 저장돼요
-              <br />
-              이메일로 가입하면 다른 기기에서도 계속 사용할 수 있어요
-            </Notice>
-
             <Button onClick={handleGuestStart}>시작하기!</Button>
             <BackButton onClick={() => setMode("select")}>← 뒤로</BackButton>
           </>
@@ -462,7 +461,7 @@ const Card = styled.div`
 
 const Logo = styled.img`
   width: 400px;
-  margin-bottom: -60px;
+  margin-bottom: -80px;
 `;
 
 const SubTitle = styled.p`
@@ -563,7 +562,6 @@ const NicknameWrapper = styled.div`
   width: 100%;
   display: flex;
   gap: 8px;
-  margin-bottom: 4px;
 `;
 
 const NicknameInput = styled.input<{ $status: "error" | "success" | null }>`
@@ -603,7 +601,7 @@ const StatusText = styled.p<{ $type: "error" | "success" | null }>`
   width: 100%;
   min-height: 18px;
   font-size: 12px;
-  margin-bottom: 10px;
+  margin-left: 5px;
   color: ${({ $type }) => ($type === "error" ? "#e74c3c" : "#2ecc71")};
 `;
 
