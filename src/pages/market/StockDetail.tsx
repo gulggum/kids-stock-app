@@ -14,6 +14,7 @@ import StockReasonChart from "../../components/stock/StockReasonChart";
 import { useMemo, useState } from "react";
 import { BUFFETT_INFO, BUFFETT_QUOTES } from "../../data/static/buffettQuotes";
 import InfoModal from "../../components/InfoModal";
+import Loading from "../../components/Loading";
 
 const StockDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -60,12 +61,12 @@ const StockDetail = () => {
 
   // 로딩
   if (loading) {
-    return <LoadingText>불러오는 중이에요 📈</LoadingText>;
+    return <Loading text="불러오는 중이에요 📈" />;
   }
 
   // 못 찾음
   if (!company) {
-    return <LoadingText>회사를 찾을 수 없어요 🥲</LoadingText>;
+    return <Loading text="회사를 찾을 수 없어요 🥲" />;
   }
 
   const isHolding = isHoldingStock(company.id);
@@ -354,16 +355,6 @@ const SubText = styled.div`
   font-size: 13px;
   color: ${({ theme }) => theme.colors.textSecondary};
   font-weight: 500;
-`;
-
-/* =========================
-   💡 설명 카드
-   ========================= */
-
-const LoadingText = styled.div`
-  text-align: center;
-  margin-top: 60px;
-  font-size: 16px;
 `;
 
 // Quote(명언)

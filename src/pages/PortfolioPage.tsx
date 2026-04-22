@@ -218,6 +218,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-height: 100dvh;
 `;
 
 const TopSection = styled.section`

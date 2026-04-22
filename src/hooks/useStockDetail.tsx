@@ -163,13 +163,32 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
       quantity: qty,
     });
 
+    giveReward("BUY_STOCK");
+    // 기록용 스토리지
     setStorage("hasCompletedFirstBuy", true);
     setHasCompletedFirstBuy(true);
 
+    // 구매완료 팝업창띄우기(나의 자산페이지로 이동하도록  유도)
+    setTimeout(() => {
+      openModal({
+        type: "INFO",
+        title: "구매 완료! 🎉",
+        message: `${company.name} 주식을 샀어요!`,
+        customContent: (
+          <GoPortfolioButton
+            onClick={() => {
+              closeModal();
+              navigate("/portfolio");
+            }}
+          >
+            💼 내 자산 확인하러 가기
+          </GoPortfolioButton>
+        ),
+        confirmText: "계속 보기",
+      });
+    }, 0);
     // 첫 구매일 기록 (7일마다 가이드 재노출용)
     setStorage("lastGuideDate", new Date().toISOString());
-
-    giveReward("BUY_STOCK");
   };
 
   const handleBuyClick = () => {
@@ -268,6 +287,25 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
       sellStock({ ...company, country: company.country });
     }
     giveReward("SELL_STOCK");
+
+    setTimeout(() => {
+      openModal({
+        type: "INFO",
+        title: "판매 완료! 💸",
+        message: `${company.name} 주식을 팔았어요!`,
+        customContent: (
+          <GoPortfolioButton
+            onClick={() => {
+              closeModal();
+              navigate("/portfolio");
+            }}
+          >
+            💼 내 자산 확인하러 가기
+          </GoPortfolioButton>
+        ),
+        confirmText: "계속 보기",
+      });
+    }, 0);
   };
 
   const handleSellClick = () => {
@@ -369,6 +407,23 @@ const GoExchangeButton = styled.button`
   &:hover {
     background: ${({ theme }) => theme.colors.primary}10;
   }
+  &:active {
+    transform: scale(0.97);
+  }
+`;
+
+const GoPortfolioButton = styled.button`
+  width: 100%;
+  padding: 12px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+
   &:active {
     transform: scale(0.97);
   }
