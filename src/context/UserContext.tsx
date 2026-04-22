@@ -58,6 +58,8 @@ export type User = {
 
   adCount: number; // 오늘 광고 시청 횟수
   adDate: string | null; // 마지막 광고 시청 날짜 (YYYY-MM-DD)
+
+  premiumInterest: boolean | null; //설문조사
 };
 
 type ExpInfo = {
@@ -156,8 +158,9 @@ const defaultUser: User = {
   hasBankrupt: false,
   totalKnowledge: 0,
   equippedHouseId: "house_basic",
-  adCount: 0, // 오늘 광고 시청 횟수
-  adDate: null, // 마지막 광고 시청 날짜 (YYYY-MM-DD)
+  adCount: 0,
+  adDate: null,
+  premiumInterest: null,
 };
 
 // ─────────────────────────────────────────
@@ -305,6 +308,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         equippedHouseId: houseData?.frame_id ?? "house_basic",
         adCount: profile?.ad_count ?? 0,
         adDate: profile?.ad_date ?? null,
+        premiumInterest: profile?.premium_interest ?? null,
       });
 
       setIsLoggedIn(true);

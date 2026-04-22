@@ -27,7 +27,7 @@ const Shop = () => {
   const { isOwned: isHouseOwned, buyHouse } = useHouse();
   const { openModal } = useModal(); // 확인 모달
   const { giveReward } = useReward();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
   const today = new Date().toISOString().slice(0, 10);
   // 날짜 다르면 0, 같으면 저장된 횟수
@@ -41,6 +41,7 @@ const Shop = () => {
   const [profiles, setProfiles] = useState<{ selected_skin: string | null }[]>(
     [],
   );
+  const [premiumOpen, setPremiumOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -160,6 +161,27 @@ const Shop = () => {
       return rarityOrder[b.rarity] - rarityOrder[a.rarity];
     });
 
+  const handlePremiumVote = async (interest: boolean) => {
+    if (user.premiumInterest !== null) {
+      createToast("이미 투표했어요 😊");
+      return;
+    }
+
+    await supabase
+      .from("profiles")
+      .update({ premium_interest: interest })
+      .eq("id", user.id)
+      .then(() => {
+        setUser((prev) => ({ ...prev, premiumInterest: interest }));
+        createToast(
+          interest ? "관심 등록됐어요! 💎" : "소중한 의견 감사해요 😊",
+        );
+      });
+  };
+  useEffect(() => {
+    console.log("premiumInterest:", user.premiumInterest);
+  }, []);
+
   return (
     <Wrapper>
       {/* ----------------------------- */}
@@ -172,19 +194,67 @@ const Shop = () => {
       {/* ----------------------------- */}
       <CoinBar>
         🪙 보유 코인 <strong>{user.coin}</strong>
+        {/* ----------------------------- */}
+        {/* 광고 버튼 */}
+        {/* ----------------------------- */}
+        <AdButton onClick={() => navigate("/shop/ad")}>
+          📺 광고 보고 코인 받기 {adCount}/3
+        </AdButton>
       </CoinBar>
-      {/* ----------------------------- */}
-      {/* 광고 버튼 */}
-      {/* ----------------------------- */}
-      <AdBanner onClick={() => navigate("/shop/ad")}>
-        <AdBannerLeft>
-          <AdBannerTitle>📺 광고 보고 코인 받기</AdBannerTitle>
-          <AdBannerDesc>하루 3번 · 1회당 30 🪙</AdBannerDesc>
-        </AdBannerLeft>
-        <AdBannerCount $done={adCount >= 3}>
-          {adCount}/3 {adCount >= 3 ? "✅" : "→"}
-        </AdBannerCount>
-      </AdBanner>
+
+      {/* 프리미엄 투표배너 */}
+      <PremiumBanner onClick={() => setPremiumOpen((v) => !v)}>
+        <PremiumTop>
+          <PremiumTitle>💎 프리미엄 구독 준비 중!</PremiumTitle>
+          <PremiumRight>
+            <PremiumBadge>Coming Soon</PremiumBadge>
+            <PremiumArrow>{premiumOpen ? "▲" : "▼"}</PremiumArrow>
+          </PremiumRight>
+        </PremiumTop>
+
+        {premiumOpen && (
+          <>
+            <PremiumDesc>
+              ✔️ 매일 코인 50개 <br />
+              ✔️ 프리미엄 전용 스킨/집
+              <br />
+              ✔️ 프리미엄 전용 칭호 뱃지
+              <br />
+            </PremiumDesc>
+            {user.premiumInterest === null ? (
+              <VoteRow>
+                <VoteLabel>구독 의향이 있으신가요?</VoteLabel>
+                <VoteButtons>
+                  <VoteButton
+                    $type="yes"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePremiumVote(true);
+                    }}
+                  >
+                    👍 있어요
+                  </VoteButton>
+                  <VoteButton
+                    $type="no"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePremiumVote(false);
+                    }}
+                  >
+                    👎 없어요
+                  </VoteButton>
+                </VoteButtons>
+              </VoteRow>
+            ) : (
+              <VoteDone>
+                {user.premiumInterest
+                  ? "💎 관심 등록 완료!"
+                  : "소중한 의견 감사해요 😊"}
+              </VoteDone>
+            )}
+          </>
+        )}
+      </PremiumBanner>
       {/* ----------------------------- */}
       {/* 📌 탭 (필터 버튼) */}
       {/* ----------------------------- */}
@@ -378,6 +448,9 @@ const CoinBar = styled.div`
   padding: 12px;
   border-radius: 12px;
   background: ${({ theme }) => theme.colors.surface};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const Grid = styled.div`
@@ -596,40 +669,102 @@ const HouseLevelBadge = styled.div<{ $color: string }>`
   color: white;
   background: ${({ $color }) => COLOR_MAP[$color] ?? "#888780"};
 `;
-const AdBanner = styled.div`
+
+//광고 버튼
+const AdButton = styled.button`
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: none;
+  background: ${({ theme }) => theme.colors.primary}20;
+  color: ${({ theme }) => theme.colors.primary};
+  cursor: pointer;
+`;
+
+//프리미엄 투표
+
+const PremiumBanner = styled.div`
   background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.radius.md};
-  padding: 14px 16px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.colors.primary}40;
+`;
+
+const PremiumTop = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  cursor: pointer;
-  border: 1px solid ${({ theme }) => theme.colors.primary}30;
-  transition: transform 0.15s ease;
-  &:active {
-    transform: scale(0.98);
-  }
 `;
 
-const AdBannerLeft = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const AdBannerTitle = styled.div`
+const PremiumTitle = styled.div`
   font-size: 14px;
   font-weight: 800;
 `;
+const PremiumRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
 
-const AdBannerDesc = styled.div`
-  font-size: 12px;
+const PremiumBadge = styled.div`
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.primary}20;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+const PremiumArrow = styled.div`
+  font-size: 10px;
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-const AdBannerCount = styled.div<{ $done: boolean }>`
-  font-size: 14px;
+const PremiumDesc = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
+  line-height: 1.6;
+`;
+
+const VoteRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+`;
+
+const VoteLabel = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const VoteButtons = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const VoteButton = styled.button<{ $type: "yes" | "no" }>`
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
   font-weight: 800;
-  color: ${({ $done, theme }) =>
-    $done ? theme.colors.muted : theme.colors.primary};
+  cursor: pointer;
+  background: ${({ $type, theme }) =>
+    $type === "yes" ? theme.colors.primary : theme.colors.border};
+  color: ${({ $type }) => ($type === "yes" ? "white" : "#666")};
+`;
+
+const VoteDone = styled.div`
+  font-size: 13px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+  text-align: center;
+  padding: 8px;
 `;
