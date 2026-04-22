@@ -109,7 +109,6 @@ export const useStockDetail = (company: Company): UseStockDetailReturn => {
   const { giveReward } = useReward();
   const navigate = useNavigate();
   const { portfolio } = usePortfolio();
-  const { createToast } = useToast();
 
   //수량만큼 판매
   const sellQuantityRef = useRef(1);
