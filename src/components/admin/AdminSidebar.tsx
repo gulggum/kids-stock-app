@@ -34,7 +34,7 @@ const AdminSidebar = ({ open, setOpen }: Props) => {
         </MenuItem>
 
         <MenuItem to="/admin/ranking" onClick={() => setOpen(false)}>
-          랭킹
+          투표 현황
         </MenuItem>
 
         <MenuItem to="/admin/items" onClick={() => setOpen(false)}>

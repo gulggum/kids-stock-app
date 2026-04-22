@@ -14,7 +14,6 @@ import AdminRoute from "./AdminRoute";
 import AdminLayout from "../components/admin/AdminLayout";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminNewsCreate from "../pages/admin/AdminNewsCreate";
-import AdminRanking from "../pages/admin/AdminRanking";
 import AdminItems from "../pages/admin/AdminItems";
 import AdminStats from "../pages/admin/AdminStats";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
@@ -28,6 +27,7 @@ import AdminInquiryListPage from "../pages/admin/AdminInquiryListPage";
 import AdminInquiryDetailPage from "../pages/admin/AdminInquiryDetailPage";
 import PrivacyPolicyPage from "../pages/setting/PrivacyPolicyPage";
 import AdWatchPage from "../pages/AdWatchPage";
+import AdminPremiumVotes from "../pages/admin/AdminPremiumVotes";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
@@ -80,7 +80,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "news", element: <AdminNewsCreate /> },
-      { path: "ranking", element: <AdminRanking /> },
+      { path: "ranking", element: <AdminPremiumVotes /> },
       { path: "items", element: <AdminItems /> },
       { path: "stats", element: <AdminStats /> },
       { path: "inquiries", element: <AdminInquiryListPage /> },
