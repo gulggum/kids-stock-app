@@ -40,8 +40,6 @@ export const router = createBrowserRouter([
     path: "/reset-password",
     element: <ResetPasswordPage />,
   },
-  // ⭐ 로그인 없이 접근 가능
-  { path: "privacy-policy", element: <PrivacyPolicyPage /> },
   // ⭐ 사용자 앱
   {
     path: "/",
@@ -68,6 +66,7 @@ export const router = createBrowserRouter([
       { path: "inquiry", element: <InquiryPage /> },
       { path: "inquiry/history", element: <InquiryHistoryPage /> },
       { path: "inquiry/history/:id", element: <InquiryDetailPage /> },
+      { path: "privacy-policy", element: <PrivacyPolicyPage /> },
     ],
   },
   // ⭐ 관리자 페이지(별도 분리)
