@@ -27,6 +27,7 @@ import InquiryDetailPage from "../pages/setting/InquiryDetailPage";
 import AdminInquiryListPage from "../pages/admin/AdminInquiryListPage";
 import AdminInquiryDetailPage from "../pages/admin/AdminInquiryDetailPage";
 import PrivacyPolicyPage from "../pages/setting/PrivacyPolicyPage";
+import AdWatchPage from "../pages/AdWatchPage";
 
 export const router = createBrowserRouter([
   // ⭐ 로그인
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
       { path: "portfolio", element: <PortfolioPage /> },
       { path: "community", element: <Community /> },
       { path: "shop", element: <Shop /> },
+      { path: "shop/ad", element: <AdWatchPage /> },
       {
         path: "character",
         element: <CharacterPage />,

@@ -39,6 +39,9 @@ export const REWARD_RULES = {
   // 🎒 소비
   ITEM_PURCHASE: { exp: 20 },
 
+  // 광고 보기
+  AD_WATCH: { coin: 30, exp: 0 },
+
   // 🏆 레벨업은 ExpBarCard컴포넌트 에서 코인 차등 지급함
 } satisfies Record<string, RewardRule>;
 

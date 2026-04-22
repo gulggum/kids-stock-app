@@ -16,6 +16,7 @@ import { supabase } from "../utils/supabase";
 import { ShopTabs, type TabType } from "../components/shop/shopTabs";
 import { useHouse } from "../hooks/useHouse";
 import { getHouseTier, HOUSES, type House } from "../data/static/house";
+import { useNavigate } from "react-router";
 
 const Shop = () => {
   // -----------------------------
@@ -27,6 +28,10 @@ const Shop = () => {
   const { openModal } = useModal(); // 확인 모달
   const { giveReward } = useReward();
   const { user } = useUser();
+  const navigate = useNavigate();
+  const today = new Date().toISOString().slice(0, 10);
+  // 날짜 다르면 0, 같으면 저장된 횟수
+  const adCount = user.adDate === today ? (user.adCount ?? 0) : 0;
 
   // -----------------------------
   // 📌 UI 상태
@@ -168,7 +173,18 @@ const Shop = () => {
       <CoinBar>
         🪙 보유 코인 <strong>{user.coin}</strong>
       </CoinBar>
-
+      {/* ----------------------------- */}
+      {/* 광고 버튼 */}
+      {/* ----------------------------- */}
+      <AdBanner onClick={() => navigate("/shop/ad")}>
+        <AdBannerLeft>
+          <AdBannerTitle>📺 광고 보고 코인 받기</AdBannerTitle>
+          <AdBannerDesc>하루 3번 · 1회당 30 🪙</AdBannerDesc>
+        </AdBannerLeft>
+        <AdBannerCount $done={adCount >= 3}>
+          {adCount}/3 {adCount >= 3 ? "✅" : "→"}
+        </AdBannerCount>
+      </AdBanner>
       {/* ----------------------------- */}
       {/* 📌 탭 (필터 버튼) */}
       {/* ----------------------------- */}
@@ -579,4 +595,41 @@ const HouseLevelBadge = styled.div<{ $color: string }>`
   font-weight: 800;
   color: white;
   background: ${({ $color }) => COLOR_MAP[$color] ?? "#888780"};
+`;
+const AdBanner = styled.div`
+  background: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.colors.primary}30;
+  transition: transform 0.15s ease;
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+const AdBannerLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const AdBannerTitle = styled.div`
+  font-size: 14px;
+  font-weight: 800;
+`;
+
+const AdBannerDesc = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
+`;
+
+const AdBannerCount = styled.div<{ $done: boolean }>`
+  font-size: 14px;
+  font-weight: 800;
+  color: ${({ $done, theme }) =>
+    $done ? theme.colors.muted : theme.colors.primary};
 `;
