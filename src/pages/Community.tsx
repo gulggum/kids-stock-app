@@ -109,7 +109,7 @@ const Community = () => {
           $active={activeTab === "VILLAGE"}
           onClick={() => setActiveTab("VILLAGE")}
         >
-          🏘 마을
+          🏘️ 마을
         </TabButton>
       </TabRow>
 
