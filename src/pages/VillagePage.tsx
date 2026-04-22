@@ -493,7 +493,7 @@ const HintText = styled.div`
 const MapContainer = styled.div<{ $isMoving: boolean }>`
   position: relative;
   width: 100%;
-  height: calc(100dvh - 320px); // 네비+탭+버튼 높이 빼기
+  height: calc(100dvh - 370px); // 네비+탭+버튼 높이 빼기
   @media (min-width: 769px) {
     height: calc(100dvh - 130px); // PC는 하단 네비 없음
   }
