@@ -11,6 +11,10 @@ const BaseGlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
+   html, body, #root {
+    overscroll-behavior-y: none;  /* ← 추가 */
+  }
+
 `;
 
 type Step = "video" | "logo" | "app";

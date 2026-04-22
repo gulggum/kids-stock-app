@@ -157,7 +157,7 @@ export const cleanTheme: DefaultTheme = {
 // Global styles (reset + base)
 export const GlobalStyle = createGlobalStyle`
 *, *::before, *::after { box-sizing: border-box; }
-html, body, #root { height: 100%; }
+html, body, #root { height: 100%; overscroll-behavior-y: none;}
 /* ✅ 여기 추가 — 모바일 너비로 제한 */
 #root {
   max-width:1024px;

@@ -177,13 +177,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // ─────────────────────────────────────────
   useEffect(() => {
     const initAuth = async () => {
-      const timeout = setTimeout(() => {
-        if (isLoadingRef.current) {
-          console.warn("로딩 타임아웃 — 강제 해제");
-          isLoadingRef.current = false; // ← ref도 같이 초기화!
-          setIsLoading(false);
-        }
-      }, 5000);
       try {
         const {
           data: { session },
@@ -199,8 +192,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (err) {
         console.error("initAuth 에러:", err);
         setIsLoading(false);
-      } finally {
-        clearTimeout(timeout);
       }
     };
 
