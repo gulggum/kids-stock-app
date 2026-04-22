@@ -10,7 +10,6 @@ import styled from "styled-components";
 import { useNavigate } from "react-router";
 import { usePortfolio } from "../context/PortfolioContext";
 import SellSummary from "../components/stock/SellSummary";
-import { useToast } from "../context/UIContext/ToastContext";
 
 /**
  * 📌 useStockDetail
