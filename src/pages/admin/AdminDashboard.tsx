@@ -30,9 +30,19 @@ const AdminDashboard = () => {
     {
       icon: <Users size={20} />,
       label: "총 유저",
-      value: loading ? "..." : `${stats.todayUsers} / ${stats.totalUsers}명`,
+      value: loading ? "..." : `${stats.totalUsers}명`,
       color: "#9B59B6",
-      desc: "오늘 접속 / 전체 유저",
+      desc: "전체 가입 유저",
+    },
+    {
+      icon: <Users size={20} />,
+      label: "오늘 접속 현황",
+
+      value: loading
+        ? "..."
+        : `${stats.todayUsers}명 가입 / ${stats.todayActiveUsers}명 접속`,
+      color: "#9B59B6",
+      desc: "오늘 가입 / 오늘 접속",
     },
     {
       icon: <TrendingUp size={20} />,

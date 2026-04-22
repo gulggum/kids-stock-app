@@ -7,6 +7,7 @@ import { supabase } from "../utils/supabase";
 export type AdminStats = {
   totalUsers: number; // 총 유저 수
   todayUsers: number; //오늘 들어온 유저수
+  todayActiveUsers: number; // 오늘 접속한 유저
   todayNews: number; // 오늘 등록된 뉴스
   todayTrades: number; // 오늘 거래 수
   todayTradeUsers: number; //거래활동한 유저 수
@@ -21,6 +22,7 @@ export function useAdminStats() {
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     todayUsers: 0,
+    todayActiveUsers: 0,
     todayNews: 0,
     todayTrades: 0,
     todayTradeUsers: 0,
@@ -70,8 +72,14 @@ export function useAdminStats() {
         .eq("date", today)
         .eq("quiz_done", true);
 
-      // 오늘 접속한 유저
+      // 오늘 가입한 유저
       const { count: todayUsers } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .gte("last_active", `${today}T00:00:00`)
+        .lte("last_active", `${today}T23:59:59`);
+      //오늘 접속한 유저
+      const { count: todayActiveUsers } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true })
         .gte("last_active", `${today}T00:00:00`)
@@ -116,6 +124,7 @@ export function useAdminStats() {
       setStats({
         totalUsers: totalUsers ?? 0,
         todayUsers: todayUsers ?? 0,
+        todayActiveUsers: todayActiveUsers ?? 0,
         todayNews: todayNews ?? 0,
         todayTrades: todayTrades ?? 0,
         todayTradeUsers: todayTradeUsers ?? 0,
