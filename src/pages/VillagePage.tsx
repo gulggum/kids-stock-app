@@ -271,7 +271,9 @@ const VillagePage = ({ users, myUserId }: Props) => {
           </GuideCard>
         </Overlay>
       )}
+
       {/* 드래그 스크롤 컨테이너 */}
+      <LandscapeHint>📱 세로로 보면 더 잘 보여요!</LandscapeHint>
       <MapContainer
         ref={containerRef}
         $isMoving={isMoving}
@@ -489,7 +491,7 @@ const HintText = styled.div`
 const MapContainer = styled.div<{ $isMoving: boolean }>`
   position: relative;
   width: 100%;
-  height: calc(100dvh - 290px); // 네비+탭+버튼 높이 빼기
+  height: calc(100dvh - 320px); // 네비+탭+버튼 높이 빼기
   @media (min-width: 769px) {
     height: calc(100dvh - 130px); // PC는 하단 네비 없음
   }
@@ -503,6 +505,21 @@ const MapContainer = styled.div<{ $isMoving: boolean }>`
   }
   user-select: none;
   position: relative;
+`;
+
+const LandscapeHint = styled.div`
+  display: none; /* 기본 숨김 */
+
+  @media (orientation: landscape) and (max-width: 1024px) {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.colors.muted};
+    padding: 8px;
+    background: ${({ theme }) => theme.colors.card};
+    border-radius: ${({ theme }) => theme.radius.md};
+  }
 `;
 
 /* 실제 맵 - 뷰포트보다 큼 */
