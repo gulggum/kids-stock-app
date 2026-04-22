@@ -43,6 +43,8 @@ const Wrapper = styled.div`
 `;
 
 const Tab = styled.button<{ $active: boolean }>`
+  display: flex;
+  align-items: center;
   padding: 8px 14px;
   border-radius: 999px;
   border: none;

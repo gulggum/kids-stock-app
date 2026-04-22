@@ -35,7 +35,7 @@ const SkinSection = ({
 
   return (
     <Wrapper>
-      <Title>내 카드</Title>
+      <Title>보유 중인 아이템</Title>
 
       <SkinTabs activeTab={activeTab} onChange={setActiveTab} />
 

@@ -9,9 +9,16 @@
 
 ## 기획 의도
 
-아이들이 주식을 '돈벌이'가 아닌 **'경험'과 '이해'**의 관점에서 접할 수 있도록 설계한 어린이용 주식 체험 앱입니다.
+어린이들이 뉴스와 퀴즈, 가상 주식 투자 체험을 통해
+경제와 주식의 흐름을 쉽고 재미있게 익힐 수 있는 교육형 앱입니다.
 
-실제 돈이 아닌 가상 사이버머니(100만원)를 사용해 투자 흐름, 가격 변동, 기다림과 선택의 개념을 게임처럼 자연스럽게 경험할 수 있습니다.
+하루 5~10분, 오늘의 뉴스를 읽고 퀴즈를 풀고,
+내 주식이 올랐는지 내렸는지 확인하는 것만으로도
+자연스럽게 경제 감각을 키울 수 있어요.
+
+실제 돈이 아닌 가상 사이버머니로 투자 흐름과
+기다림의 가치를 배우고, 카드스킨 꾸미기·등급별 집 구매·배지 등
+다양한 보상으로 꾸준한 참여를 유도합니다.
 
 ---
 
@@ -180,12 +187,14 @@ api/update-stocks.ts → Yahoo Finance 주가 업데이트 (Cron)
 
 ## 미리보기
 
-![메인화면](./src/assets/images/screenshots/home.jpg)
-![마켓페이지](./src/assets/images/screenshots/market.png)
-![커뮤니티](./src/assets/images/screenshots/community.png)
-![마을](./src/assets/images/screenshots/village.png)
-![자산](./src/assets/images/screenshots/portfolio.png)
-![캐릭터](./src/assets/images/screenshots/character.png)
-![상점](./src/assets/images/screenshots/shop.png)
+<div align="center">
+  <img src="./src/assets/images/screenshots/home.jpg" width="200"/>
+  <img src="./src/assets/images/screenshots/market.jpg" width="200"/>
+  <img src="./src/assets/images/screenshots/community.jpg" width="200"/>
+  <img src="./src/assets/images/screenshots/village.jpg" width="200"/>
+  <img src="./src/assets/images/screenshots/portfolio.jpg" width="200"/>
+  <img src="./src/assets/images/screenshots/character.jpg" width="200"/>
+  <img src="./src/assets/images/screenshots/shop.jpg" width="200"/>
+</div>
 
 ---
