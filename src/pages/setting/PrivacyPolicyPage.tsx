@@ -61,8 +61,18 @@ export default function PrivacyPolicyPage() {
             법정대리인(부모)의 동의 하에 이용하는 것을 권장합니다.
           </Text>
         </SectionBlock>
+        <SectionBlock>
+          <SectionTitle>7. 계정 및 데이터 삭제 요청</SectionTitle>
+          <Text>
+            계정 삭제 또는 개인정보 삭제를 원하시면 앱 내 문의하기 기능을 통해
+            요청해 주세요. <br />
+            요청 후 영업일 기준 7일 이내에 처리됩니다.
+            <br /> 삭제 시 게임 기록, 보유 자산, 닉네임 등 모든 관련 데이터가
+            함께 삭제됩니다.
+          </Text>
+        </SectionBlock>
 
-        <UpdateText>최종 수정일: 2026.04.15</UpdateText>
+        <UpdateText>최종 수정일: 2026.04.23</UpdateText>
       </ContentCard>
     </Container>
   );
