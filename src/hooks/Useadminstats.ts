@@ -79,8 +79,8 @@ export function useAdminStats() {
       const { count: todayUsers } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true })
-        .gte("last_active", `${today}T00:00:00`)
-        .lte("last_active", `${today}T23:59:59`);
+        .gte("created_at", `${today}T00:00:00`)
+        .lte("created_at", `${today}T23:59:59`);
       //오늘 접속한 유저
       const { count: todayActiveUsers } = await supabase
         .from("profiles")
