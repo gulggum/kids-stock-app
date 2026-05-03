@@ -35,8 +35,8 @@ export default function PrivacyPolicyPage() {
         <SectionBlock>
           <SectionTitle>3. 정보 보관 기간</SectionTitle>
           <Text>
-            회원 탈퇴 전까지 정보를 보관하며, 탈퇴 요청 시 관련 데이터는 삭제될
-            수 있습니다.
+            회원 탈퇴 전까지 정보를 보관하며, 탈퇴 요청 시 관련 데이터는 지체
+            없이 삭제됩니다.
           </Text>
         </SectionBlock>
 
@@ -44,35 +44,55 @@ export default function PrivacyPolicyPage() {
           <SectionTitle>4. 제3자 제공</SectionTitle>
           <Text>
             수집된 개인정보는 외부에 판매하거나 제공하지 않습니다. 단, 서비스
-            운영을 위해 Supabase 등 외부 서비스를 사용할 수 있습니다.
+            운영을 위해 Supabase 등 외부 서비스를 이용할 수 있으며, 이 경우 관련
+            법령을 준수합니다.
           </Text>
         </SectionBlock>
 
         <SectionBlock>
-          <SectionTitle>5. 문의</SectionTitle>
+          <SectionTitle>5. 자동 수집 정보</SectionTitle>
           <Text>
-            개인정보 관련 문의는 앱 내 문의하기 기능을 통해 요청할 수 있습니다.
+            서비스 이용 과정에서 오류 확인 및 서비스 개선을 위해 비식별화된 이용
+            정보가 자동으로 수집될 수 있습니다.
           </Text>
         </SectionBlock>
+
         <SectionBlock>
           <SectionTitle>6. 아동 개인정보 보호</SectionTitle>
           <Text>
-            본 앱은 전체 연령이 이용 가능합니다. 만 14세 미만 아동의 경우
-            법정대리인(부모)의 동의 하에 이용하는 것을 권장합니다.
-          </Text>
-        </SectionBlock>
-        <SectionBlock>
-          <SectionTitle>7. 계정 및 데이터 삭제 요청</SectionTitle>
-          <Text>
-            계정 삭제 또는 개인정보 삭제를 원하시면 앱 내 문의하기 기능을 통해
-            요청해 주세요. <br />
-            요청 후 영업일 기준 7일 이내에 처리됩니다.
-            <br /> 삭제 시 게임 기록, 보유 자산, 닉네임 등 모든 관련 데이터가
-            함께 삭제됩니다.
+            본 앱은 아동(만 13세 미만)을 포함한 이용자를 대상으로 제공됩니다.
+            아동의 개인정보는 서비스 제공에 필요한 최소한의 범위에서만 수집되며,
+            민감한 정보는 수집하지 않습니다.
+            <br />
+            관련 법령을 준수하여 안전하게 보호됩니다.
+            <br />
+            보호자는 언제든지 아동의 개인정보에 대해 열람, 수정 또는 삭제를
+            요청할 수 있습니다.
           </Text>
         </SectionBlock>
 
-        <UpdateText>최종 수정일: 2026.04.23</UpdateText>
+        <SectionBlock>
+          <SectionTitle>7. 서비스 특성 안내</SectionTitle>
+          <Text>
+            본 앱은 실제 금전이 오가지 않는 가상의 주식 체험 서비스입니다. 투자
+            권유 또는 금융 거래를 목적으로 하지 않습니다.
+          </Text>
+        </SectionBlock>
+
+        <SectionBlock>
+          <SectionTitle>8. 계정 및 데이터 삭제 요청</SectionTitle>
+          <Text>
+            계정 삭제 또는 개인정보 삭제를 원하시면 앱 내 문의하기 기능 또는
+            아래 이메일로 요청해 주세요. <br />
+            요청 후 영업일 기준 7일 이내에 처리됩니다.
+            <br />
+            삭제 시 게임 기록, 보유 자산, 닉네임 등 모든 관련 데이터가 함께
+            삭제됩니다. <br />
+            👉 이메일: devhy5174@gmail.com
+          </Text>
+        </SectionBlock>
+
+        <UpdateText>최종 수정일: 2026.05.04</UpdateText>
       </ContentCard>
     </Container>
   );
