@@ -311,7 +311,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         id: userId,
         nickname: profile?.nickname ?? "유저",
         role: profile?.role ?? "user",
-        money: wallet?.balance ?? 1000000,
+        money: wallet?.balance ?? 5000000,
         dollars: wallet?.dollars ?? 0,
         profileAvatar: profile?.avatar ?? null,
         profileImage: profile?.profile_image ?? "",
@@ -359,7 +359,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         id: "guest",
         nickname,
         role: "user",
-        money: 1000000,
+        money: 5000000,
         coin: 300,
       }));
       setIsLoggedIn(true); // 게스트도 로그인 상태로 처리
@@ -382,7 +382,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     // ✅ wallets 생성
     await supabase.from("wallets").upsert({
       user_id: anonymousUser.id,
-      balance: 1000000,
+      balance: 5000000,
     });
 
     // ✅ 유저 상태 업데이트
@@ -391,7 +391,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       id: anonymousUser.id,
       nickname,
       role: "user",
-      money: 1000000,
+      money: 5000000,
       coin: 300,
     }));
 

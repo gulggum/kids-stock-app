@@ -7,7 +7,7 @@ import { usePortfolioStocks } from "../../hooks/Useportfoliostocks";
 import { useUser } from "../../context/UserContext";
 import { useExchangeRate } from "../../hooks/useExchangeRate";
 
-const BASE_MONEY = 1000000;
+const BASE_MONEY = 5000000;
 
 const PortfolioSummaryCard = () => {
   const { portfolio } = usePortfolio();

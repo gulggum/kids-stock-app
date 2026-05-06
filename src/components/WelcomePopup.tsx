@@ -26,7 +26,7 @@ const WelcomePopup = ({ onClose }: Props) => {
           </ContentText>
           <ContentText>회사가 잘 되면 내 돈도 같이 늘어나요!📈</ContentText>
           <ContentText>
-            💰 시작 자금 <strong>100만원</strong>으로 시작해요!
+            💰 시작 자금 <strong>500만원</strong>으로 시작해요!
           </ContentText>
           <ContentText>🏠 열심히 활동해서 더 멋진 집도 장만해봐요!</ContentText>
         </ContentBox>
