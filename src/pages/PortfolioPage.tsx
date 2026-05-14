@@ -44,16 +44,16 @@ const PortfolioPage = () => {
         {portfolio.length === 0 ? (
           <Empty role="status">
             아직 구매한 주식이 없어요 🥲
-            <SmallHint>마켓에서 첫 투자를 시작해보세요!</SmallHint>
+            <SmallHint>마켓에서 첫 경제 활동을 시작해보세요!</SmallHint>
             <GoMarketButton onClick={() => navigate("/market")}>
               📈 마켓 바로가기
             </GoMarketButton>
             <TipBox>
-              <TipTitle>💡 투자 꿀팁!</TipTitle>
+              <TipTitle>💡 경제 활동 팁!</TipTitle>
               <TipText>
-                주식은 <strong>쌀 때 사서 비쌀 때 파는</strong> 게 핵심이에요!
+                주식 가격은 뉴스와 회사 상황에 따라 계속 달라질 수 있어요!
                 <br />
-                📉 가격이 내려갈 때 사고 → 📈 올라가면 팔아봐요
+                가격이 어떻게 변하는지 천천히 관찰해봐요
               </TipText>
             </TipBox>
           </Empty>
@@ -128,7 +128,7 @@ const PortfolioPage = () => {
 
                 <Info>
                   <Label>
-                    현재 가치 💰
+                    현재 금액 💰
                     <InfoIcon
                       onClick={(e) => {
                         e.stopPropagation();
@@ -163,14 +163,14 @@ const PortfolioPage = () => {
                         <>
                           💡 가격이 올랐어요! 어떻게 할까요?
                           <br />
-                          ① 지금 팔고 이익 챙기기 💰 <br />② 더 오를 것 같으면
+                          ① 지금 상태를 기록해보기 💰 <br />② 더 오를 것 같으면
                           기다리기 ⏳
                         </>
                       ) : (
                         <>
                           💡 가격이 내려갔어요! 어떻게 할까요? <br />
-                          ① 지금 팔고 손해 줄이기 🛑 <br />② 다시 오를 때까지
-                          기다리기 ⏳
+                          ① 지금 변화를 다시 살펴보기 🛑 <br />② 앞으로 어떻게
+                          변할지 지켜보기 ⏳
                         </>
                       )}
                     </TipHint>

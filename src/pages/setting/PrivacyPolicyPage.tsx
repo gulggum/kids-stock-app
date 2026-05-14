@@ -60,9 +60,9 @@ export default function PrivacyPolicyPage() {
         <SectionBlock>
           <SectionTitle>6. 아동 개인정보 보호</SectionTitle>
           <Text>
-            본 앱은 아동(만 13세 미만)을 대상으로 제공되는 경제 학습 및 주식
-            체험 서비스입니다. 서비스 이용 시 이메일, 닉네임 등 최소한의 정보만
-            수집될 수 있으며, 게스트 모드에서는 개인정보 없이 이용할 수
+            본 앱은 아동(만 13세 미만)을 대상으로 제공되는 경제 학습 및 경제
+            활동 체험 서비스입니다. 서비스 이용 시 이메일, 닉네임 등 최소한의
+            정보만 수집될 수 있으며, 게스트 모드에서는 개인정보 없이 이용할 수
             있습니다.
             <br />
             수집된 정보는 관련 법령에 따라 안전하게 보호됩니다.
@@ -75,8 +75,8 @@ export default function PrivacyPolicyPage() {
         <SectionBlock>
           <SectionTitle>7. 서비스 특성 안내</SectionTitle>
           <Text>
-            본 앱은 실제 금전이 오가지 않는 가상의 주식 체험 서비스입니다. 투자
-            권유 또는 금융 거래를 목적으로 하지 않습니다.
+            본 앱은 실제 금전이 오가지 않는 가상의 경제 활동 체험 서비스입니다.
+            투자 권유 또는 금융 거래를 목적으로 하지 않습니다.
           </Text>
         </SectionBlock>
 

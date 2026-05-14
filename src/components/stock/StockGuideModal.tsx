@@ -40,7 +40,7 @@ const StockGuideModal = ({
     <InfoModal
       open={open}
       width="350px"
-      title="💡 투자를 할 때 약속해요!"
+      title="💡 경제 활동을 할 때 약속해요!"
       onClose={() => {
         // ❗ 전부 체크 안하면 닫기 막기
         if (!isAllChecked) return;
@@ -60,7 +60,7 @@ const StockGuideModal = ({
 
         {/* ⚠️ 2번 */}
         <GuideItem $checked={checks.rule2} onClick={() => toggleCheck("rule2")}>
-          <GuideText>⚠️ 잃어도 괜찮은 돈으로 해야 해요</GuideText>
+          <GuideText>⚠️ 인내심을 가지고 천천히 지켜봐요 </GuideText>
           <CheckIcon $checked={checks.rule2}>
             {checks.rule2 ? "✔" : ""}
           </CheckIcon>
@@ -68,7 +68,7 @@ const StockGuideModal = ({
 
         {/* ⚠️ 3번 */}
         <GuideItem $checked={checks.rule3} onClick={() => toggleCheck("rule3")}>
-          <GuideText>⚠️ 돈을 빌려서 투자하면 안 돼요</GuideText>
+          <GuideText>⚠️ 무리해서 하려고 하지 않아요</GuideText>
           <CheckIcon $checked={checks.rule3}>
             {checks.rule3 ? "✔" : ""}
           </CheckIcon>
@@ -76,7 +76,7 @@ const StockGuideModal = ({
 
         {/* ⚠️ 4번 */}
         <GuideItem $checked={checks.rule4} onClick={() => toggleCheck("rule4")}>
-          <GuideText>⚠️ 회사를 알아보고 투자하면 더 좋아요</GuideText>
+          <GuideText>⚠️ 회사와 뉴스를 함께 살펴보면 도움이 돼요</GuideText>
           <CheckIcon $checked={checks.rule4}>
             {checks.rule4 ? "✔" : ""}
           </CheckIcon>

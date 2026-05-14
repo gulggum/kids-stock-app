@@ -24,7 +24,9 @@ const WelcomePopup = ({ onClose }: Props) => {
           <ContentText>
             <strong>주식</strong>은 회사의 작은 조각을 사는 거예요.
           </ContentText>
-          <ContentText>회사가 잘 되면 내 돈도 같이 늘어나요!📈</ContentText>
+          <ContentText>
+            회사 소식에 따라 주식 가격이 어떻게 변하는지 살펴볼 수 있어요!📈
+          </ContentText>
           <ContentText>
             💰 시작 자금 <strong>500만원</strong>으로 시작해요!
           </ContentText>
@@ -38,11 +40,11 @@ const WelcomePopup = ({ onClose }: Props) => {
           </GuideStep>
           <GuideStep>
             <StepNum>2</StepNum>
-            <StepText>마음에 드는 회사 주식을 사봐요</StepText>
+            <StepText> 관심 있는 회사의 주식을 살펴봐요</StepText>
           </GuideStep>
           <GuideStep>
             <StepNum>3</StepNum>
-            <StepText>가격이 오르면 팔아서 수익을 내봐요!</StepText>
+            <StepText> 뉴스와 함께 주식 가격 변화를 관찰해봐요!</StepText>
           </GuideStep>
         </GuideBox>
 
