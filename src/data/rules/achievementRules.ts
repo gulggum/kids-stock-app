@@ -63,24 +63,24 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "RARE",
     badge: {
       title: "지식 전문가",
-      description: "오늘의 지식을 30번이나 확인했어요!",
-      emoji: "🧠✨",
+      description: "오늘의 지식을 30번 확인했어요!",
+      emoji: "📚",
     },
     reward: { coin: 50, exp: 60 },
     condition: (state) => state.totalKnowledge >= 30,
   },
 
   // ===============================
-  // 📈 투자 관련 업적
+  // 📈 경제 활동 업적
   // ===============================
 
   {
     id: "FIRST_BUY",
     tier: "COMMON",
     badge: {
-      title: "첫 투자",
-      description: "처음으로 주식을 샀어요! 투자 경험이 시작되었어요 🎉",
-      emoji: "🎉",
+      title: "첫 경제 체험",
+      description: "처음으로 기업을 선택했어요! 새로운 경험이 시작되었어요!",
+      emoji: "🌱",
     },
     reward: { coin: 20, exp: 30 },
     condition: (state) => state.totalTrades >= 1,
@@ -90,9 +90,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "TRADE_5",
     tier: "COMMON",
     badge: {
-      title: "거래 시작",
-      description: "주식을 5번 거래했어요! 점점 투자에 익숙해지고 있어요 📊",
-      emoji: "📊",
+      title: "활동 시작",
+      description: "5번 활동했어요! 경제 흐름에 익숙해지고 있어요!",
+      emoji: "📘",
     },
     reward: { coin: 30, exp: 40 },
     condition: (state) => state.totalTrades >= 5,
@@ -102,8 +102,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "TRADE_10",
     tier: "COMMON",
     badge: {
-      title: "차근차근 성장 중",
-      description: "주식을 10번 거래했어요! 다양한 경험이 쌓이고 있어요 📈",
+      title: "차근차근 성장",
+      description: "10번 활동했어요! 다양한 경험이 쌓이고 있어요!",
       emoji: "📈",
     },
     reward: { coin: 40, exp: 50 },
@@ -114,8 +114,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "TRADE_20",
     tier: "RARE",
     badge: {
-      title: "투자 감각 업!",
-      description: "주식을 20번 거래했어요! 투자 흐름을 잘 보고 있어요 💡",
+      title: "경제 감각 업!",
+      description: "20번 활동했어요! 시장 흐름을 잘 이해하고 있어요!",
       emoji: "💡",
     },
     reward: { coin: 60, exp: 70 },
@@ -126,9 +126,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "TRADE_35",
     tier: "RARE",
     badge: {
-      title: "꾸준한 투자자",
-      description: "주식을 35번 거래했어요! 경제 감각이 점점 자라고 있어요 🔄",
-      emoji: "🔄",
+      title: "꾸준한 탐험가",
+      description: "35번 활동했어요! 경제 감각이 자라고 있어요!",
+      emoji: "🔍",
     },
     reward: { coin: 80, exp: 90 },
     condition: (state) => state.totalTrades >= 35,
@@ -138,24 +138,24 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "TRADE_50",
     tier: "LEGEND",
     badge: {
-      title: "거래왕",
-      description:
-        "무려 50번이나 거래했어요! 멋진 투자 경험을 이어가고 있어요 👑",
-      emoji: "👑",
+      title: "활동 마스터",
+      description: "50번 활동했어요! 멋진 경험을 이어가고 있어요!",
+      emoji: "🏅",
     },
     reward: { coin: 120, exp: 120, score: 15 },
     condition: (state) => state.totalTrades >= 50,
   },
+
   // ===============================
-  // 📊 포트폴리오 다양성
+  // 📊 기업 탐험 업적
   // ===============================
 
   {
     id: "STOCK_3_KINDS",
     tier: "COMMON",
     badge: {
-      title: "다양한 투자자",
-      description: "3가지 다른 주식을 사봤어요! 여러 기업을 경험하고 있어요 🌈",
+      title: "기업 탐험가",
+      description: "3가지 기업을 경험했어요! 다양한 기업을 알아가고 있어요!",
       emoji: "🌈",
     },
     reward: { coin: 30, exp: 30 },
@@ -166,9 +166,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "STOCK_5_KINDS",
     tier: "COMMON",
     badge: {
-      title: "분산투자 시작",
-      description: "5가지 종목을 보유했어요! 투자 경험이 넓어지고 있어요 📊",
-      emoji: "🗂️",
+      title: "다양한 경험 시작",
+      description: "5가지 종목을 경험했어요! 활동 범위가 넓어지고 있어요!",
+      emoji: "🧩",
     },
     reward: { coin: 50, exp: 50 },
     condition: (state) => state.uniqueStocks >= 5,
@@ -178,9 +178,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "STOCK_8_KINDS",
     tier: "RARE",
     badge: {
-      title: "포트폴리오 성장",
-      description: "8가지 종목에 투자했어요! 다양한 전략을 시도하고 있어요 🎯",
-      emoji: "🎯",
+      title: "시장 탐험 중",
+      description: "8가지 기업을 경험했어요! 다양한 흐름을 살펴보고 있어요!",
+      emoji: "🧭",
     },
     reward: { coin: 70, exp: 70 },
     condition: (state) => state.uniqueStocks >= 8,
@@ -191,8 +191,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "RARE",
     badge: {
       title: "경제 탐험가",
-      description:
-        "12가지 기업을 경험했어요! 경제 감각이 점점 자라고 있어요 🚀",
+      description: "12가지 기업을 경험했어요! 경제 감각이 자라고 있어요!",
       emoji: "🌍",
     },
     reward: { coin: 100, exp: 90, score: 10 },
@@ -203,9 +202,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "STOCK_20_KINDS",
     tier: "LEGEND",
     badge: {
-      title: "포트폴리오 마스터",
+      title: "경제 마스터",
       description:
-        "20가지 종목에 투자했어요! 멋진 투자 경험을 이어가고 있어요 👑",
+        "20가지 기업을 경험했어요! 멋진 경제 활동을 이어가고 있어요!",
       emoji: "🏆",
     },
     reward: { coin: 150, exp: 120, score: 20 },
@@ -213,16 +212,16 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
 
   // ===============================
-  // 💰 자산 관련 업적
+  // 💰 경제 성장 업적
   // ===============================
 
   {
     id: "FIRST_PROFIT",
     tier: "COMMON",
     badge: {
-      title: "첫 수익 달성",
-      description: "총 자산이 500만원을 넘었어요! 처음으로 수익을 냈어요 😊",
-      emoji: "🤑",
+      title: "첫 성장 경험",
+      description: "활동 기록이 성장하고 있어요! 차근차근 배우고 있어요!",
+      emoji: "⭐",
     },
     reward: { coin: 30, exp: 30 },
     condition: (state) => state.totalAsset > 5000000,
@@ -233,8 +232,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "COMMON",
     badge: {
       title: "조금씩 성장 중",
-      description: "총 자산이 520만원을 넘었어요! 경제 감각이 자라고 있어요 🌱",
-      emoji: "💵",
+      description: "경제 감각이 자라고 있어요!",
+      emoji: "🌿",
     },
     reward: { coin: 20, exp: 20 },
     condition: (state) => state.totalAsset >= 5200000,
@@ -245,8 +244,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "COMMON",
     badge: {
       title: "경제 체험 시작",
-      description:
-        "총 자산이 550만원을 넘었어요! 다양한 기업을 경험하고 있어요 💵",
+      description: "다양한 기업을 경험하고 있어요!",
       emoji: "💰",
     },
     reward: { coin: 40, exp: 50 },
@@ -257,10 +255,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "ASSET_600",
     tier: "RARE",
     badge: {
-      title: "투자 감각 업!",
-      description:
-        "총 자산이 600만원을 넘었어요! 투자 흐름을 잘 보고 있어요 📈",
-      emoji: "💸",
+      title: "경제 감각 업!",
+      description: "경제 흐름을 잘 이해하고 있어요!",
+      emoji: "📊",
     },
     reward: { coin: 55, exp: 60 },
     condition: (state) => state.totalAsset >= 6000000,
@@ -270,10 +267,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "ASSET_700",
     tier: "RARE",
     badge: {
-      title: "포트폴리오 성장",
-      description:
-        "총 자산이 700만원을 넘었어요! 투자 경험이 점점 쌓이고 있어요 💼",
-      emoji: "🪙",
+      title: "성장하는 탐험가",
+      description: "다양한 경험이 점점 쌓이고 있어요!",
+      emoji: "🚀",
     },
     reward: { coin: 70, exp: 70 },
     condition: (state) => state.totalAsset >= 7000000,
@@ -284,8 +280,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "RARE",
     badge: {
       title: "경제 탐험 중",
-      description:
-        "총 자산이 850만원을 넘었어요! 다양한 전략을 시도하고 있어요 🚀",
+      description: "다양한 흐름을 경험하며 배우고 있어요!",
       emoji: "💎",
     },
     reward: { coin: 100, exp: 90, score: 10 },
@@ -296,26 +291,25 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "ASSET_1000",
     tier: "LEGEND",
     badge: {
-      title: "자산 1000만원 달성",
-      description:
-        "총 자산이 1000만원을 넘었어요! 멋진 경제 체험을 이어가고 있어요 👑",
-      emoji: "🐉",
+      title: "경제 성장 달성",
+      description: "멋진 경제 경험을 이어가고 있어요!",
+      emoji: "👑",
     },
     reward: { coin: 150, exp: 100, score: 20 },
     condition: (state) => state.totalAsset >= 10000000,
   },
 
   // ===============================
-  // 😅 실패 업적
+  // 😅 도전 업적
   // ===============================
 
   {
     id: "FIRST_LOSS",
     tier: "COMMON",
     badge: {
-      title: "첫 손실 경험",
-      description: "잃어도 괜찮아! 이것도 소중한 투자 경험이에요 😊",
-      emoji: "😅",
+      title: "첫 경험 완료",
+      description: "실수해도 괜찮아요! 경험은 계속 쌓이고 있어요!",
+      emoji: "🙂",
     },
     reward: { exp: 30 },
     condition: (state) => state.totalLoss >= 1,
@@ -326,8 +320,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "COMMON",
     badge: {
       title: "다시 천천히",
-      description: "조금 손해를 봤어요! 천천히 다시 도전해봐요 🌱",
-      emoji: "🌱",
+      description: "천천히 다시 도전해봐요!",
+      emoji: "🍀",
     },
     reward: { exp: 40, coin: 10 },
     condition: (state) => state.totalAsset <= 4500000,
@@ -337,9 +331,9 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "LOSS_20",
     tier: "RARE",
     badge: {
-      title: "배우는 투자자",
-      description: "실패 속에서도 경험은 계속 쌓이고 있어요 📚",
-      emoji: "📚",
+      title: "배우는 탐험가",
+      description: "실패 속에서도 경험은 계속 쌓이고 있어요!",
+      emoji: "📝",
     },
     reward: { exp: 60, coin: 20 },
     condition: (state) => state.totalAsset <= 4000000,
@@ -350,8 +344,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "RARE",
     badge: {
       title: "포기하지 않는 마음",
-      description: "힘든 순간에도 다시 도전하는 용기가 정말 멋져요 💪",
-      emoji: "💪🔥",
+      description: "다시 도전하는 용기가 정말 멋져요!",
+      emoji: "🔥",
     },
     reward: { exp: 80, coin: 30 },
     condition: (state) => state.totalAsset <= 3500000,
@@ -361,14 +355,14 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "BANKRUPT",
     tier: "LEGEND",
     badge: {
-      title: "전설의 바닥",
-      description:
-        "파산해도 다시 일어서는 투자자! 다시 시작하는 용기도 멋져요 🚀",
+      title: "다시 도전!",
+      description: "다시 시작하는 용기도 정말 멋져요!",
       emoji: "🛠️",
     },
     reward: { exp: 100, coin: 50 },
     condition: (state) => state.hasBankrupt === true,
   },
+
   // ===============================
   // 🧠 퀴즈 업적
   // ===============================
@@ -391,7 +385,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "경제 공부 시작",
       description: "퀴즈를 5번 맞혔어요!",
-      emoji: "📝",
+      emoji: "🖍️",
     },
     reward: { coin: 30, exp: 40 },
     condition: (state) => state.totalQuizCorrect >= 5,
@@ -426,7 +420,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "LEGEND",
     badge: {
       title: "경제 천재",
-      description: "퀴즈를 30번 맞혔어요! 넌 경제 천재야!",
+      description: "퀴즈를 30번 맞혔어요! 정말 대단해요!",
       emoji: "🎓",
     },
     reward: { coin: 100, exp: 100, score: 15 },
@@ -438,7 +432,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "LEGEND",
     badge: {
       title: "지식 마스터",
-      description: "퀴즈를 50번 맞혔어요! 엄청난 지식을 쌓고 있어요!",
+      description: "엄청난 지식을 쌓고 있어요!",
       emoji: "🧪",
     },
     reward: { coin: 150, exp: 130, score: 25 },
@@ -467,7 +461,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "경제 새싹",
       description: "뉴스를 5개 읽었어요!",
-      emoji: "🍀",
+      emoji: "🍃",
     },
     reward: { coin: 20, exp: 30 },
     condition: (state) => state.totalNewsRead >= 5,
@@ -502,12 +496,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "LEGEND",
     badge: {
       title: "경제 마스터",
-      description: "뉴스를 30개 읽었어요! 경제 흐름을 잘 이해하고 있어요!",
+      description: "경제 흐름을 잘 이해하고 있어요!",
       emoji: "📡",
     },
     reward: { coin: 90, exp: 100, score: 15 },
     condition: (state) => state.totalNewsRead >= 30,
   },
+
   // ===============================
   // ⭐ 레벨 업적
   // ===============================
@@ -517,19 +512,20 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "COMMON",
     badge: {
       title: "레벨 5 달성",
-      description: "이제 진짜 투자자!",
-      emoji: "🌟",
+      description: "경제 흐름을 점점 잘 이해하고 있어요!",
+      emoji: "✨",
     },
     reward: { coin: 60, exp: 80 },
     condition: (state) => state.level >= 5,
   },
+
   {
     id: "LEVEL_10",
     tier: "LEGEND",
     badge: {
-      title: "투자 마스터",
-      description: "최고 레벨 달성! 당신은 진짜 투자왕!",
-      emoji: "👑",
+      title: "경제 마스터",
+      description: "최고 레벨 달성! 정말 대단해요!",
+      emoji: "🏵️",
     },
     reward: { coin: 200, exp: 150, score: 30 },
     condition: (state) => state.level >= 10,
@@ -544,63 +540,68 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: "COMMON",
     badge: {
       title: "3일 연속 출석",
-      description: "3일 연속으로 나타났어요!",
-      emoji: "📅🐣",
+      description: "3일 연속으로 찾아왔어요!",
+      emoji: "📅",
     },
     reward: { coin: 20, exp: 20 },
     condition: (state) => state.streak >= 3,
   },
+
   {
     id: "ATTEND_7_DAYS",
     tier: "COMMON",
     badge: {
       title: "일주일 개근",
       description: "7일 연속 출석 성공!",
-      emoji: "📅🔥",
+      emoji: "🔥",
     },
     reward: { coin: 50, exp: 40 },
     condition: (state) => state.streak >= 7,
   },
+
   {
     id: "ATTEND_14_DAYS",
     tier: "RARE",
     badge: {
-      title: "꾸준한 투자자",
+      title: "꾸준한 탐험가",
       description: "14일 연속 출석했어요!",
-      emoji: "📅⏰",
+      emoji: "⏰",
     },
     reward: { coin: 80, exp: 60 },
     condition: (state) => state.streak >= 14,
   },
+
   {
     id: "ATTEND_30_DAYS",
     tier: "RARE",
     badge: {
       title: "한 달 개근",
-      description: "30일 연속 출석!",
-      emoji: "📅🏆",
+      description: "30일 연속 출석 성공!",
+      emoji: "🏠",
     },
     reward: { coin: 150, exp: 100 },
     condition: (state) => state.streak >= 30,
   },
+
   {
     id: "ATTEND_100_DAYS",
     tier: "LEGEND",
     badge: {
       title: "출석 마스터",
-      description: "100일 연속 출석! 엄청난 꾸준함이에요!",
-      emoji: "📅🌟",
+      description: "엄청난 꾸준함을 보여주고 있어요!",
+      emoji: "🌟",
     },
     reward: { coin: 300, exp: 200, score: 30 },
     condition: (state) => state.streak >= 100,
   },
+
   {
     id: "ATTEND_365_DAYS",
     tier: "LEGEND",
     badge: {
       title: "1년 개근왕",
-      description: "365일 연속 출석! 넌 전설이야!",
-      emoji: "📅👑",
+      description: "365일 연속 출석! 정말 대단해요!",
+      emoji: "🎖️",
     },
     reward: { coin: 500, exp: 300, score: 50 },
     condition: (state) => state.streak >= 365,

@@ -23,14 +23,14 @@ export type LevelRule = {
 };
 
 export const LEVEL_RULES: LevelRule[] = [
-  { level: 1, requiredExp: 0, title: "🐣 투자 새싹", tier: "COMMON" },
-  { level: 2, requiredExp: 50, title: "🌱 배우는 투자자", tier: "COMMON" },
-  { level: 3, requiredExp: 150, title: "🐥 도전하는 투자자", tier: "COMMON" },
-  { level: 4, requiredExp: 300, title: "🦊 똑똑한 투자자", tier: "RARE" },
-  { level: 5, requiredExp: 600, title: "🐯 용감한 투자자", tier: "RARE" },
-  { level: 6, requiredExp: 1000, title: "🦁 자신있는 투자자", tier: "RARE" },
-  { level: 7, requiredExp: 1500, title: "🦅 날카로운 투자자", tier: "EPIC" },
-  { level: 8, requiredExp: 2200, title: "🌟 빛나는 투자자", tier: "EPIC" },
-  { level: 9, requiredExp: 3000, title: "💎 다이아 투자자", tier: "LEGEND" },
-  { level: 10, requiredExp: 4000, title: "👑 투자 마스터", tier: "LEGEND" },
+  { level: 1, requiredExp: 0, title: "🐣 경제 새싹", tier: "COMMON" },
+  { level: 2, requiredExp: 50, title: "🌱 배우는 탐험가", tier: "COMMON" },
+  { level: 3, requiredExp: 150, title: "🐥 도전하는 탐험가", tier: "COMMON" },
+  { level: 4, requiredExp: 300, title: "🦊 똑똑한 분석가", tier: "RARE" },
+  { level: 5, requiredExp: 600, title: "🐯 용감한 연구가", tier: "RARE" },
+  { level: 6, requiredExp: 1000, title: "🦁 자신있는 관찰자", tier: "RARE" },
+  { level: 7, requiredExp: 1500, title: "🦅 날카로운 탐험가", tier: "EPIC" },
+  { level: 8, requiredExp: 2200, title: "🌟 빛나는 경제왕", tier: "EPIC" },
+  { level: 9, requiredExp: 3000, title: "💎 다이아 분석가", tier: "LEGEND" },
+  { level: 10, requiredExp: 4000, title: "👑 경제 마스터", tier: "LEGEND" },
 ];
