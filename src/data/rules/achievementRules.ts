@@ -373,7 +373,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     badge: {
       title: "첫 퀴즈 정복",
       description: "처음으로 퀴즈를 맞혔어요!",
-      emoji: "❔",
+      emoji: "🐥",
     },
     reward: { coin: 20, exp: 30 },
     condition: (state) => state.totalQuizCorrect >= 1,
